@@ -22,7 +22,7 @@ function args(argsOrCmd, onOut, onErr) {
     out: params ? onOut : argsOrCmd.out || onOut
   };
 }
-function subprocess(argsOrCmd, onOut = print, onErr = console.log) {
+function subprocess(argsOrCmd, onOut = print, onErr = printerr) {
   const { cmd, err, out } = args(argsOrCmd, onOut, onErr);
   const proc = Array.isArray(cmd) ? default2.Process.subprocessv(cmd) : default2.Process.subprocess(cmd);
   proc.connect("stdout", (_, stdout) => out(stdout));
@@ -30,10 +30,24 @@ function subprocess(argsOrCmd, onOut = print, onErr = console.log) {
   return proc;
 }
 function execAsync(cmd) {
-  const proc = Array.isArray(cmd) ? default2.Process.exec_asyncv(cmd) : default2.Process.exec_async(cmd);
   return new Promise((resolve, reject) => {
-    proc.connect("stdout", (_, out) => resolve(out));
-    proc.connect("stderr", (_, err) => reject(err));
+    if (Array.isArray(cmd)) {
+      default2.Process.exec_asyncv(cmd, (_, res) => {
+        try {
+          resolve(default2.Process.exec_asyncv_finish(res));
+        } catch (error) {
+          reject(error);
+        }
+      });
+    } else {
+      default2.Process.exec_async(cmd, (_, res) => {
+        try {
+          resolve(default2.Process.exec_finish(res));
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
   });
 }
 
@@ -914,28 +928,30 @@ function Workspaces({ id }) {
 import AstalTray from "gi://AstalTray";
 var SystemTray = AstalTray.Tray.get_default();
 var SysTrayItem = (item) => {
+  const menu = item.create_menu?.();
+  const handleClick = (btn, event) => {
+    const button = event.button;
+    if (button === default6.BUTTON_PRIMARY || button === default6.BUTTON_SECONDARY) {
+      menu?.popup_at_widget(btn, default6.Gravity.SOUTH, default6.Gravity.NORTH, null);
+    } else if (button === default6.BUTTON_MIDDLE) {
+      item.activate(0, 0);
+    }
+  };
   return /* @__PURE__ */ jsx(
     "button",
     {
       className: "systray-item",
       halign: default5.Align.CENTER,
       valign: default5.Align.CENTER,
-      onClick: (btn, event) => {
-        const button = event.button;
-        if (button === default6.BUTTON_PRIMARY || button === default6.BUTTON_SECONDARY) {
-          const menu = item.create_menu();
-          menu?.popup_at_widget(btn, default6.Gravity.SOUTH, default6.Gravity.NORTH, null);
-        } else if (button === default6.BUTTON_MIDDLE) {
-          item.activate(0, 0);
-        }
-      },
+      setup: item.create_menu(),
+      onClick: handleClick,
       tooltip_markup: bind(item, "tooltip_markup"),
       children: /* @__PURE__ */ jsx(
         "icon",
         {
           halign: default5.Align.CENTER,
           valign: default5.Align.CENTER,
-          icon: Icons(item.get_icon_name() || item.get_icon_pixbuf())
+          icon: item.get_icon_pixbuf() || Icons(item.get_icon_name())
         }
       )
     }
@@ -946,34 +962,26 @@ function traySetup(box) {
   const AddItem = (id) => {
     if (!id) return;
     const item = SystemTray.get_item(id);
-    if (items.has(id) || !item) return;
-    const widget = SysTrayItem(item);
-    items.set(id, widget);
-    box.pack_start(widget, false, false, 0);
-    box.show_all();
-    console.log(`ID: ${item.get_id?.()}`);
-    console.log(`Title: ${item.get_title?.()}`);
-    console.log(`Icon name: ${item.get_icon_name()}`);
-    console.log(`Icon pixbuf: ${item.get_icon_pixbuf()}`);
-    console.log(`combo: ${Icons(item.get_icon_name() || item.get_icon_pixbuf())}`);
+    if (!item) return;
+    const TrayItem = SysTrayItem(item);
+    items.set(id, TrayItem);
+    box.pack_start(TrayItem, false, false, 0);
+    TrayItem.show();
+    console.log(`ID: ${id}`);
+    console.log(`Title: ${item.get_title?.() || "Unknown"}`);
+    console.log(`Icon name: ${item.get_icon_name?.() || "Unknown"}`);
+    console.log(`Icon pixbuf: ${item.get_icon_pixbuf?.() ? "Exists" : "None"}`);
   };
   const RemoveItem = (id) => {
-    if (!items.has(id)) return;
-    items.get(id)?.destroy();
-    items.delete(id);
+    const widget = items.get(id);
+    if (widget) {
+      widget.destroy();
+      items.delete(id);
+    }
   };
-  SystemTray.get_items().forEach((item) => {
-    console.log("Tray Item:", item);
-    AddItem(item.item_id);
-  });
-  box.hook(SystemTray, "item_added", (box2, id) => {
-    console.log(`Item added with ID: ${id}`);
-    AddItem(id);
-  });
-  box.hook(SystemTray, "item_removed", (box2, id) => {
-    console.log(`Item removed with ID: ${id}`);
-    RemoveItem(id);
-  });
+  SystemTray.get_items().forEach((item) => AddItem(parseInt(item.item_id)));
+  box.hook(SystemTray, "item_added", (box2, id) => AddItem(id));
+  box.hook(SystemTray, "item_removed", (box2, id) => RemoveItem(id));
 }
 function Tray() {
   return /* @__PURE__ */ jsx(
