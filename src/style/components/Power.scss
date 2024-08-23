@@ -1,0 +1,243 @@
+@keyframes lowBlink {
+	0% {
+		color: #ff0000;
+	}
+
+	50% {
+		color: #ffff00;
+	}
+
+	100% {
+		color: #000066;
+	}
+}
+
+
+// ------------- Battery bar --------------
+
+.battery {
+	& {
+		border: none;
+		color: $font-color1;
+		font-size: 0.5rem;
+	}
+
+	label {}
+
+	&.low {
+		animation: lowBlink 3s infinite;
+	}
+
+	&:hover {
+		color: $font-color5;
+	}
+
+	& trough {
+
+		border-radius: $radius*5;
+		min-width: 75px;
+
+
+		block {
+			min-height: 10px;
+			border: 1px solid $font-color2;
+			border-radius: $radius * 5;
+			margin: 0px 0.25px;
+
+			&.empty {
+				background: linear-gradient(90deg, red, black 100%);
+			}
+
+			&.filled {
+				background: linear-gradient(90deg, black, lime 100%);
+			}
+		}
+	}
+}
+
+
+// ----------- Power controls on battery button -------
+
+.powerprofiles {
+	&.container {
+		border: $border;
+		border-radius: calc($radius / 2);
+		background: $PrimaryBG;
+		font-size: 1rem;
+		color: lime;
+	}
+
+	box {
+		padding: 1.5px;
+	}
+
+	label {
+		margin-top: 0.5rem;
+		font-weight: bold;
+	}
+
+	button {
+		border: $border;
+		border-width: 5px;
+		border-radius: $radius;
+		padding: 0.45rem 0.65rem;
+		margin: 0.5rem 0.5rem;
+
+		&:first-child {
+			color: lime;
+
+			&:hover {
+				border-left: 5px solid lime;
+				border-right: 5px solid lime;
+				border-top: $border;
+				border-bottom: $border;
+				border-width: 5px;
+				background: linear-gradient(0deg, lime 0%, rgba(0, 0, 0, 0) 50%, lime 100%);
+			}
+
+			.power-saver {
+				border-left-color: lime;
+				border-right-color: lime;
+			}
+		}
+
+		&:nth-child(2) {
+			color: yellow;
+
+			&:hover {
+				border-left: 5px dashed yellow;
+				border-right: 5px dashed yellow;
+				border-top: $border;
+				border-bottom: $border;
+				border-width: 5px;
+				background: linear-gradient(0deg, rgba(255, 255, 0, 1) 0%, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 0, 1) 100%);
+			}
+
+			.balanced {
+				border-left-color: yellow;
+				border-left-style: dashed;
+				border-right-color: yellow;
+				border-right-style: dashed;
+			}
+		}
+
+		&:last-child {
+			color: red;
+
+			&:hover {
+				border-left: 5px dotted red;
+				border-right: 5px dotted red;
+				border-top: $border;
+				border-bottom: $border;
+				border-width: 5px;
+				background: linear-gradient(0deg, rgba(255, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 50%, rgba(255, 0, 0, 1) 100%);
+			}
+
+			.performance {
+				border-left-color: red;
+				border-left-style: dotted;
+				border-right-color: red;
+				border-right-style: dotted;
+			}
+		}
+
+		label {
+			font-weight: bold;
+			margin-top: 0.25rem;
+		}
+
+		image {
+			font-size: 1.5rem;
+		}
+	}
+}
+
+// ---------- Session contrls window ------
+
+.sessioncontrols {
+	all: unset;
+
+	&.window {
+		background: $PrimaryBG;
+	}
+
+	&.container {
+		color: $font-color2;
+		font-size: 2rem;
+		font-weight: bold;
+		background: $PrimaryBG;
+		padding: 0rem 2rem;
+		min-width: 5rem;
+	}
+
+	&.box {
+		background: $PrimaryBG;
+		border-top: 3px solid rgba(0, 0, 0, 0);
+		border-top: $border;
+		border-width: calc($border-width / 2);
+		padding-bottom: 5rem;
+		padding-top: 2rem;
+	}
+
+	button {
+		border-radius: 5rem;
+		min-width: 10rem;
+		min-height: 10rem;
+		border-left: 0.5rem solid #0F9BFF;
+		border-right: 0.5rem solid #0F9BFF;
+		background: linear-gradient(0deg, rgba(0, 0, 255, 0.5) 0%, rgba(0, 0, 255, 1) 15%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 255, 1) 85%, rgba(0, 0, 255, 0.5) 100%);
+		padding: 0.5rem;
+
+		&:first-child,
+		&:nth-child(2),
+		&:nth-child(3),
+		&:last-child {
+			image {
+				//@include button;
+				//border-radius: $radius;
+				min-width: 1.7em;
+				min-height: 1.7em;
+				font-size: 4rem;
+			}
+		}
+
+		label,
+		icon {
+			color: $font-color1;
+			font-size: 2rem;
+		}
+
+		label {
+			//margin-top: 0rem;
+			font-size: 1.75rem
+		}
+
+		&:hover,
+		&:focus,
+		&:active {
+			image {
+				animation: spin 1s infinite;
+			}
+		}
+
+
+		&:hover {
+			border-left: 0.5rem dashed red;
+			border-right: 0.5rem dashed red;
+			background: linear-gradient(0deg, rgba(255, 0, 0, 0.5) 0%, rgba(255, 0, 0, 1) 15%, rgba(0, 0, 0, 0) 50%, rgba(255, 0, 0, 1) 85%, rgba(255, 0, 0, 0.5) 100%);
+		}
+
+		&:focus,
+		&:active {
+			& {
+				border-left: 0.5rem dashed rgba(255, 255, 0, 1);
+				border-right: 0.5rem dashed rgba(255, 255, 0, 1);
+				background: linear-gradient(0deg, rgba(255, 255, 0, 0.5) 0%, rgba(255, 255, 0, 1) 15%, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 0, 1) 85%, rgba(255, 255, 0, 0.5) 100%);
+			}
+
+			label {
+				color: $font-color2;
+			}
+		}
+	}
+}

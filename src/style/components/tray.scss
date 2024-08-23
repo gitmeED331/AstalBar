@@ -1,0 +1,65 @@
+.tray {
+	background: $PrimaryBG;
+	border-top: $border;
+	border-radius: $radius;
+
+	>* {
+		border: 2px solid rgba(0, 0, 0, 0);
+		background-color: transparent;
+		font-weight: bold;
+	}
+
+	button {
+
+		image {
+			color: $font-color1;
+			//font-size: 1.15rem;
+		}
+
+		&:hover {
+			background-color: #1e1e2e;
+			border-radius: $radius;
+			border: $border;
+
+			// image {
+			// }
+		}
+	}
+}
+
+menu>menuitem {
+	background: linear-gradient(0deg,
+			rgba(15, 155, 255, 1) 0%,
+			rgba(0, 0, 0, 1) 45%,
+			rgba(0, 0, 0, 1) 65%,
+			rgba(15, 155, 255, 1) 100%);
+	border-radius: 10px;
+	border: 2px solid rgba(0, 0, 0, 0);
+	color: $font-color1;
+	margin: 1px;
+	padding: 5px;
+
+	&:hover {
+		color: $font-color4;
+		border: 2px solid #0000FF;
+		font-weight: bold;
+
+		image {
+			color: $font-color4;
+		}
+	}
+
+	image {
+		color: $font-color1;
+
+	}
+
+	&:disabled {
+		color: gray;
+		background: linear-gradient(0deg,
+				rgba(83, 94, 101, 1) 0%,
+				rgba(0, 0, 0, 1) 45%,
+				rgba(0, 0, 0, 1) 65%,
+				rgba(83, 94, 101, 1) 100%);
+	}
+}
