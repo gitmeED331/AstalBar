@@ -7,21 +7,19 @@ const SystemTray = AstalTray.Tray.get_default();
 const SysTrayItem = item => {
     const menu = item.create_menu?.();
 
-    const handleClick = (btn, event) => {
-        const button = event.button;
-        if (button === Gdk.BUTTON_PRIMARY || button === Gdk.BUTTON_SECONDARY) {
-            menu?.popup_at_widget(btn, Gdk.Gravity.SOUTH, Gdk.Gravity.NORTH, null);
-        } else if (button === Gdk.BUTTON_MIDDLE) {
-            item.activate(0, 0);
-        }
-    };
     return (
         <button
             className={"systray-item"}
             halign={Gtk.Align.CENTER}
             valign={Gtk.Align.CENTER}
-            setup={menu}
-            onClick={handleClick}
+            onClick={(btn, event) => {
+                if (event.button === Gdk.BUTTON_PRIMARY || event.button === Gdk.BUTTON_SECONDARY) {
+                    menu?.popup_at_widget(btn, Gdk.Gravity.SOUTH, Gdk.Gravity.NORTH, null);
+                } else if (event.button === Gdk.BUTTON_MIDDLE) {
+                    item.activate(0, 0);
+                }
+            }
+            }
             tooltip_markup={bind(item, "tooltip_markup")}
         >
             <icon
@@ -35,44 +33,40 @@ const SysTrayItem = item => {
     );
 };
 
-function traySetup(box: Widget.Box) {
+function traySetup(box) {
+    const items = new Map();
 
-    const items = new Map<number, Widget>();  // Correct the type to Widget
-
-    const AddItem = (id: number) => {
-        if (!id) return;
-
+    const addItem = id => {
         const item = SystemTray.get_item(id);
-        if (!item) return;
+        if (item) {
+            const trayItem = SysTrayItem(item);
+            items.set(id, trayItem);
+            box.add(trayItem);
+            trayItem.show();
+        }
 
-        const TrayItem = SysTrayItem(item);
-
-        items.set(id, TrayItem);
-        box.pack_start(TrayItem, false, false, 0);
-        TrayItem.show();
-
-        // Log item properties
-        console.log(`ID: ${id}`);
-        console.log(`Title: ${item.get_title?.() || "Unknown"}`);
-        console.log(`Icon name: ${item.get_icon_name?.() || "Unknown"}`);
-        console.log(`Icon pixbuf: ${item.get_icon_pixbuf?.() ? "Exists" : "None"}`);
+        console.log(`added item ${id}`);
+        console.log(`items: ${items.size}`);
+        console.log(`icons: ${item.get_icon_name()}`);
+        console.log(`pixbuf: ${item.get_icon_pixbuf()}`);
+        console.log(`category: ${item.get_category()}`);
+        console.log(`tooltip: ${item.get_tooltip_markup()}`);
+        console.log(`label: ${item.get_title()}`);
     };
 
-    const RemoveItem = (id: number) => {
-        const widget = items.get(id);
-        if (widget) {
-            widget.destroy();
+    const removeItem = id => {
+        const trayItem = items.get(id);
+        if (trayItem) {
+            trayItem.destroy();
             items.delete(id);
         }
     };
 
-    // Add existing items on setup
-    SystemTray.get_items().forEach(item => AddItem(parseInt(item.item_id)));
-
-    // Hook to add and remove items dynamically
-    box.hook(SystemTray, "item_added", (box, id) => AddItem(id));
-    box.hook(SystemTray, "item_removed", (box, id) => RemoveItem(id));
+    SystemTray.get_items().forEach(item => addItem(item.item_id));
+    SystemTray.connect("item_added", (tray, id) => addItem(id));
+    SystemTray.connect("item_removed", (tray, id) => removeItem(id));
 }
+
 
 function Tray() {
     return (
