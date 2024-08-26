@@ -1,10 +1,6 @@
-import { Widget, App, bind, Astal, Gtk } from "astal";
+import { App, Astal, Gdk } from "astal";
 import Mpris from "gi://AstalMpris";
-import Pango from "gi://Pango";
 import { Player } from "../Widgets/index";
-import PopupWindow from "../service/PopupWindow";
-
-//const { RoundedCorner } = Roundedges
 
 const player = Mpris.Player.new("Deezer")
 
@@ -16,16 +12,18 @@ export default function MediaPlayerWindow() {
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
       layer={Astal.Layer.OVERLAY}
       exclusivity={Astal.Exclusivity.NORMAL}
-      keymode={Astal.Keymode.NONE}
+      keymode={Astal.Keymode.EXCLUSIVE}
       visible={false}
       application={App}
       margin-right={90}
-      margin-top={125}
-      clickThrough={true}
     >
-      <box className={"mediaplayerbox"}>
-        <Player player={player} />
-      </box>
+      <eventbox onKeyPressEvent={(_, event) => {
+        if (event.get_keyval()[1] === Gdk.KEY_Escape) { App.toggle_window("mediaplayerwindow") }
+      }}>
+        <box className={"mediaplayerbox"}>
+          <Player player={player} />
+        </box>
+      </eventbox>
     </window>
   );
 }

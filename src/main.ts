@@ -31,12 +31,12 @@ import {
   MediaPlayerWindow,
   Calendar,
   AudioMixer,
-  // NotificationPopups,
+  NotificationPopups,
   // Overview,
   sessioncontrol,
   powerprofiles,
   // Launcher,
-  // cliphist
+  //cliphist
 } from "./modules/Windows/index";
 
 App.start({
@@ -63,11 +63,11 @@ App.start({
     MediaPlayerWindow();
     Calendar();
     AudioMixer();
-    // NotificationPopups()
+    NotificationPopups(0)
     // Overview()
     sessioncontrol();
     powerprofiles();
     // Launcher()
-    // cliphist()
+    //cliphist()
   },
 });

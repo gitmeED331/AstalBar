@@ -9,7 +9,7 @@ import PowerProfiles from "./powerprofiles"
 
 export {
     AudioMixer,
-    //Notification,
+    Notification,
     //BrightnessSlider,
     GridCalendar,
     VolumeIndicator,

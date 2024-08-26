@@ -1,8 +1,5 @@
-import { GLib, execAsync, Widget, Gtk, App } from 'astal';
-import Pango from 'gi://Pango'
-const WINDOW_NAME = "cliphist";
-import popupwindow from "modules/service/popupwindow.ts";
-const { Box } = Widget
+import { GLib, execAsync, Widget, Gtk, App, Astal } from 'astal';
+import Pango from 'gi://Pango';
 
 type EntryObject = {
     id: string;
@@ -10,36 +7,49 @@ type EntryObject = {
     entry: string;
 };
 
+const Separator = () => {
+    return (
+        <box
+            className={"clip_divider"}
+            heightRequest={1}
+            css={`
+                background-color: #ccc;
+                margin: 10px 0px;
+            `}
+        />
+    );
+};
+
 function ClipHistItem(entry: string) {
     let [id, ...content] = entry.split("\t");
     let clickCount = 0;
-    let button = <button
-        className={"clip_container"}
-    >
-        <box>
-            <label
-                label={id}
-                className={"clip_id"}
-                valign={Gtk.Align.CENTER}
-            />
-            <label
-                label={"・"}
-                className={"dot_divider"}
-                valign={Gtk.Align.CENTER}
-            />
-            <label
-                label={content.join(" ").trim()}
-                className={"clip_label"}
-                valign={Gtk.Align.CENTER}
-                ellipsize={Pango.EllipsizeMode.END}
-            />
-        </box>
-    </button>
+
+    const button = (
+        <button className={"clip_container"}>
+            <box>
+                <label
+                    label={id}
+                    className={"clip_id"}
+                    valign={Gtk.Align.CENTER}
+                />
+                <label
+                    label={"・"}
+                    className={"dot_divider"}
+                    valign={Gtk.Align.CENTER}
+                />
+                <label
+                    label={content.join(" ").trim()}
+                    className={"clip_label"}
+                    valign={Gtk.Align.CENTER}
+                    ellipsize={Pango.EllipsizeMode.END}
+                />
+            </box>
+        </button>
+    );
 
     button.connect("clicked", () => {
         clickCount++;
         if (clickCount === 2) {
-            const win = (WINDOW_NAME);
             execAsync(`${GLib.get_user_config_dir()}/src/scripts/cliphist.sh --copy-by-id ${id}`);
             clickCount = 0;
         }
@@ -49,95 +59,110 @@ function ClipHistItem(entry: string) {
         clickCount = 0;
     });
 
-    return <box
-        //         attribute={content: content.join(" ").trim()
-        // }
-        // orientation = (Gtk.Orientation.VERTICAL)
-        //     >
-        //     { button }
-        //     < separator
-        // className = { "clip_divider"}
-        // orientation = { Gtk.Orientation.HORIZONTAL }
-        //     />
-        //     </box >
+    return (
+        <box orientation={Gtk.Orientation.VERTICAL}>
+            {button}
+            <Separator />
+        </box>
+    );
+}
 
-        function ClipHistWidget({ width = 500, height = 500, spacing = 12 }) {
-            let output: string;
-            let entries: string[];
-            let clipHistItems: EntryObject[];
-            let widgets: Box<any, any>[];
+function ClipHistWidget({ width = 500, height = 500, spacing = 12 }) {
+    let output = "";
+    let entries: string[] = [];
+    let clipHistItems: EntryObject[] = [];
+    let widgets: JSX.Element[] = [];
 
-            const list = <box
-                vertical={true}
-                spacing
-            >
+    const list = <box vertical={true} spacing={spacing} />;
 
-                async function repopulate() {
-                    output = await Utils.execAsync(`${App.configDir}/scripts/cliphist.sh --get`)
-                        .then((str) => str)
-                        .catch((err) => {
-                            print(err);
-                            return "";
-                        });
-                entries = output.split("\n").filter((line) => line.trim() !== "");
-                clipHistItems = entries.map((entry) => {
-                    let[id, ...content] = entry.split("\t");
-                return {id: id.trim(), content: content.join(" ").trim(), entry: entry };
-                });
-                widgets = clipHistItems.map((item) => ClipHistItem(item.entry));
-                list.children = widgets;
-            }
-                repopulate();
-
-                const entry = Widget.Entry({
-                    hexpand: true,
-                class_name: "cliphistory_entry",
-                placeholder_text: "Search",
-
-                on_change: ({text}) => {
-                    const searchText = (text ?? "").toLowerCase();
-                    widgets.forEach((item) => {
-                    item.visible = item.attribute.content.toLowerCase().includes(searchText);
-                    });
-                }
-            });
-
-                return Widget.Box({
-                    vertical: true,
-                class_name: "cliphistory_box",
-                margin_top: 14,
-                margin_right: 14,
-                children: [
-                entry,
-                Widget.Separator(),
-                Widget.Scrollable({
-                    hscroll: "never",
-                css: `min-width: ${width}px;` + `min-height: ${height}px;`,
-                child: list
-                    })
-                ],
-                setup: (self) =>
-                    self.hook(App, (_, windowName, visible) => {
-                        if (windowName !== WINDOW_NAME) return;
-
-                if (visible) {
-                    repopulate();
-                entry.text = "";
-                        }
-                    })
-            });
+    async function repopulate() {
+        try {
+            output = await execAsync(`${GLib.get_user_config_dir()}/scripts/cliphist.sh --get`);
+        } catch (err) {
+            print(err);
+            output = "";
         }
 
-                export const cliphist = popupwindow({
-                    name: WINDOW_NAME,
+        entries = output.split("\n").filter((line) => line.trim() !== "");
+        clipHistItems = entries.map((entry) => {
+            let [id, ...content] = entry.split("\t");
+            return { id: id.trim(), content: content.join(" ").trim(), entry };
+        });
 
-                class_name: "cliphistory",
-                visible: false,
-                keymode: "exclusive",
-                child: ClipHistWidget({
-                    width: 500,
-                height: 500,
-                spacing: 0
-        }),
-                anchor: ["top", "right"]
-    });
+        // Clear the existing children
+        list.remove_all();
+
+        // Create new widgets and add them to the list
+        widgets = clipHistItems.map((item) => ClipHistItem(item.entry));
+        widgets.forEach(widget => {
+            list.append(widget);
+        });
+    }
+
+    repopulate();
+
+    const entry = (
+        <entry
+            hexpand={true}
+            className={"cliphistory_entry"}
+            placeholder_text={"Search"}
+            on_changed={({ text }) => {
+                const searchText = (text ?? "").toLowerCase();
+                widgets.forEach((item) => {
+                    const content = clipHistItems.find(
+                        (clipItem) => clipItem.entry === item.entry
+                    )?.content.toLowerCase() || "";
+                    item.visible = content.includes(searchText);
+                });
+            }}
+        />
+    );
+
+
+    return (
+        <box
+            vertical={true}
+            className={"cliphistory_box"}
+            margin_top={14}
+            margin_right={14}
+            setup={(self) =>
+                self.hook(App, (_, windowName, visible) => {
+                    if (windowName !== cliphist) return;
+
+                    if (visible) {
+                        repopulate();
+                        entry.text = "";
+                    }
+                })
+            }
+        >
+            {entry}
+            <Separator />
+            <scrollable
+                hscroll={Gtk.PolicyType.NEVER}
+                css={`
+                    min-width: ${width}px; 
+                    min-height: ${height}px;
+                `}
+            >
+                {list}
+            </scrollable>
+        </box>
+    );
+}
+
+const cliphist = (
+    <window
+        name={"cliphist"}
+        className={"cliphistory"}
+        visible={false}
+        keymode={Astal.Keymode.EXCLUSIVE}
+        anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
+        layer={Astal.Layer.OVERLAY}
+        application={App}
+    >
+        <ClipHistWidget width={500} height={500} spacing={0} />
+    </window>
+);
+
+export default cliphist;

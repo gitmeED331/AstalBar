@@ -2,11 +2,11 @@
 import { GLib, Astal, App } from "astal";
 
 const substitutes = {
-  geany: "geany-symbolic",
-  vivaldi: "vivaldi-symbolic",
+  "geany": "geany-symbolic",
+  "vivaldi": "vivaldi-symbolic",
   "vivaldi-stable": "vivaldi-symbolic",
   "org.kde.konsole": "terminal-symbolic",
-  konsole: "terminal-symbolic",
+  "konsole": "terminal-symbolic",
   "audio-headset-bluetooth": "audio-headphones-symbolic",
   "audio-card-analog-usb": "audio-speakers-symbolic",
   "audio-card-analog-pci": "audio-card-symbolic",
@@ -14,15 +14,14 @@ const substitutes = {
   "com.github.Aylur.ags-symbolic": "controls-symbolic",
   "com.github.Aylur.ags": "controls-symbolic",
   "pcloud-symbolic": "pcloud-symbolic",
-  keepassxc: "keepassxc-symbolic",
+  "keepassxc": "keepassxc-symbolic",
   "org.keepassxc.KeePassXC": "keepassxc-symbolic",
   //"filen-desktop": "filen-desktop-symbolic",
   "filen-desktop-symbolic": "filen-desktop-symbolic",
-  WebCord: "discord-symbolic",
+  "WebCord": "discord-symbolic",
   "armcord-symbolic": "discord-symbolic",
-  ArmCord: "discord-symbolic",
+  "ArmCord": "discord-symbolic",
   "deezer-enhanced-symbolic": "deezer-symbolic",
-  deezer: "deezer-symbolic",
   "com.visualstudio.code.oss-symbolic": "vs-code-symbolic",
   "code-oss": "vs-code-symbolic",
   "kate-symbolic": "geany-symbolic",
@@ -34,6 +33,7 @@ const Icon = {
   settings: "preferences-system-symbolic",
   refresh: "view-refresh-symbolic",
   missing: "image-missing-symbolic",
+  deezer: "deezer-symbolic",
 
   app: {
     terminal: "terminal-symbolic",

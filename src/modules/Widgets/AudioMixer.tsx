@@ -111,6 +111,7 @@ function SettingsButton() {
             className={"audio-mixer settings-button"}
             onClick={() => {
                 execAsync("pavucontrol")
+                App.toggle_window("audiomixerwindow")
             }}
             hexpand={true}
             halign={Gtk.Align.END}

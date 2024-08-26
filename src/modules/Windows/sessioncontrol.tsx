@@ -1,6 +1,7 @@
 import { App, Astal, execAsync, Gdk, Gtk } from "astal";
 import Icon, { Icons } from "../lib/icons.js";
 import { winheight } from "../lib/screensizeadjust";
+import { RoundedAngleEnd } from "../lib/roundedCorner"
 
 // type Action = "lock" | "reboot" | "logout" | "shutdown";
 
@@ -55,28 +56,35 @@ export default () => {
     }
     layer={Astal.Layer.OVERLAY}
     exclusivity={Astal.Exclusivity.NORMAL}
-    keymode={Astal.Keymode.NONE}
+    keymode={Astal.Keymode.EXCLUSIVE}
     visible={false}
     application={App}
   >
-    <box
-      className={"sessioncontrols container"}
-      halign={Gtk.Align.CENTER}
-      valign={Gtk.Align.END}
-      visible={true}
-    >
+    <eventbox
+      onClick={() => App.toggle_window("sessioncontrols")}
+      onKeyPressEvent={(_, event) => {
+        if (event.get_keyval()[1] === Gdk.KEY_Escape) { App.toggle_window("sessioncontrols") }
+      }}
+      widthRequest={winheight(1)} heightRequest={winheight(1)} >
       <box
-        className={"sessioncontrols box"}
-        valign={Gtk.Align.END}
+        className={"sessioncontrols container"}
         halign={Gtk.Align.CENTER}
-        spacing={30}
+        valign={Gtk.Align.CENTER}
         visible={true}
       >
-        {SysButton("lock", "Lock")}
-        {SysButton("logout", "Log Out")}
-        {SysButton("reboot", "Reboot")}
-        {SysButton("shutdown", "Shutdown")}
+        <box
+          className={"sessioncontrols box"}
+          valign={Gtk.Align.CENTER}
+          halign={Gtk.Align.CENTER}
+          spacing={30}
+          visible={true}
+        >
+          {SysButton("lock", "Lock")}
+          {SysButton("logout", "Log Out")}
+          {SysButton("reboot", "Reboot")}
+          {SysButton("shutdown", "Shutdown")}
+        </box>
       </box>
-    </box>
+    </eventbox>
   </window >;
 };

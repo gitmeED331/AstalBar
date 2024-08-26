@@ -28,21 +28,28 @@
 }
 
 menu>menuitem {
-	background: linear-gradient(0deg,
-			rgba(15, 155, 255, 1) 0%,
-			rgba(0, 0, 0, 1) 45%,
-			rgba(0, 0, 0, 1) 65%,
-			rgba(15, 155, 255, 1) 100%);
-	border-radius: 10px;
-	border: 2px solid rgba(0, 0, 0, 0);
+	// background: linear-gradient(0deg,
+	// 		rgba(15, 155, 255, 1) 0%,
+	// 		rgba(0, 0, 0, 1) 45%,
+	// 		rgba(0, 0, 0, 1) 65%,
+	// 		rgba(15, 155, 255, 1) 100%);
+
+	background: $PrimaryBG;
+	border-radius: $radius;
+	border-bottom: $border;
 	color: $font-color1;
-	margin: 1px;
+	margin: 0.5px;
 	padding: 5px;
 
 	&:hover {
 		color: $font-color4;
 		border: 2px solid #0000FF;
 		font-weight: bold;
+		background: linear-gradient(180deg,
+				rgba(15, 155, 255, 0) 0%,
+				rgba(0, 0, 0, 0.5) 45%,
+				rgba(0, 0, 0, 1) 65%,
+				rgba(15, 155, 255, 1) 100%);
 
 		image {
 			color: $font-color4;
@@ -51,7 +58,6 @@ menu>menuitem {
 
 	image {
 		color: $font-color1;
-
 	}
 
 	&:disabled {

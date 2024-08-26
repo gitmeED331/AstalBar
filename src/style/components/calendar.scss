@@ -2,8 +2,8 @@
   background: $SecondaryBG;
   border-radius: 2rem;
   border: $border;
-  padding: 5px;
-  padding-top: 10px;
+  padding: 1rem;
+
 }
 
 .dashcal {
@@ -48,10 +48,8 @@
   }
 
   &-today {
-    background: radial-gradient(
-      rgba(0, 0, 0, 1) 25%,
-      rgba(15, 155, 255, 1) 100%
-    );
+    background: radial-gradient(rgba(0, 0, 0, 1) 25%,
+        rgba(15, 155, 255, 1) 100%);
     color: red;
     border-radius: $radius;
     font-weight: bolder;

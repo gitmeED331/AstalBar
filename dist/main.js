@@ -55,6 +55,12 @@ function execAsync(cmd) {
 function interval(interval2, callback) {
   return default2.Time.interval(interval2, () => void callback?.());
 }
+function timeout(timeout2, callback) {
+  return default2.Time.timeout(timeout2, () => void callback?.());
+}
+function idle(callback) {
+  return default2.Time.idle(() => void callback?.());
+}
 
 // node_modules/astal/src/binding.ts
 var snakeify = (str) => str.replace(/([a-z])([A-Z])/g, "$1_$2").replaceAll("-", "_").toLowerCase();
@@ -74,9 +80,9 @@ var Binding = class _Binding {
     return `Binding<${this.emitter}${this.prop ? `, "${this.prop}"` : ""}>`;
   }
   as(fn) {
-    const bind3 = new _Binding(this.emitter, this.prop);
-    bind3.transformFn = (v) => fn(this.transformFn(v));
-    return bind3;
+    const bind2 = new _Binding(this.emitter, this.prop);
+    bind2.transformFn = (v) => fn(this.transformFn(v));
+    return bind2;
   }
   get() {
     if (typeof this.emitter.get === "function")
@@ -381,13 +387,13 @@ function ctor(self, config = {}, children = []) {
       self.connect(signal, () => execAsync(callback).then(print).catch(console.error));
     }
   }
-  for (const [prop, bind3] of bindings) {
+  for (const [prop, bind2] of bindings) {
     if (prop === "child" || prop === "children") {
-      self.connect("destroy", bind3.subscribe((v) => {
+      self.connect("destroy", bind2.subscribe((v) => {
         setChildren(self, v);
       }));
     }
-    self.connect("destroy", bind3.subscribe((v) => {
+    self.connect("destroy", bind2.subscribe((v) => {
       setProp(self, prop, v);
     }));
   }
@@ -564,11 +570,11 @@ import Pango from "gi://Pango";
 
 // src/modules/lib/icons.tsx
 var substitutes = {
-  geany: "geany-symbolic",
-  vivaldi: "vivaldi-symbolic",
+  "geany": "geany-symbolic",
+  "vivaldi": "vivaldi-symbolic",
   "vivaldi-stable": "vivaldi-symbolic",
   "org.kde.konsole": "terminal-symbolic",
-  konsole: "terminal-symbolic",
+  "konsole": "terminal-symbolic",
   "audio-headset-bluetooth": "audio-headphones-symbolic",
   "audio-card-analog-usb": "audio-speakers-symbolic",
   "audio-card-analog-pci": "audio-card-symbolic",
@@ -576,15 +582,14 @@ var substitutes = {
   "com.github.Aylur.ags-symbolic": "controls-symbolic",
   "com.github.Aylur.ags": "controls-symbolic",
   "pcloud-symbolic": "pcloud-symbolic",
-  keepassxc: "keepassxc-symbolic",
+  "keepassxc": "keepassxc-symbolic",
   "org.keepassxc.KeePassXC": "keepassxc-symbolic",
   //"filen-desktop": "filen-desktop-symbolic",
   "filen-desktop-symbolic": "filen-desktop-symbolic",
-  WebCord: "discord-symbolic",
+  "WebCord": "discord-symbolic",
   "armcord-symbolic": "discord-symbolic",
-  ArmCord: "discord-symbolic",
+  "ArmCord": "discord-symbolic",
   "deezer-enhanced-symbolic": "deezer-symbolic",
-  deezer: "deezer-symbolic",
   "com.visualstudio.code.oss-symbolic": "vs-code-symbolic",
   "code-oss": "vs-code-symbolic",
   "kate-symbolic": "geany-symbolic",
@@ -595,6 +600,7 @@ var Icon2 = {
   settings: "preferences-system-symbolic",
   refresh: "view-refresh-symbolic",
   missing: "image-missing-symbolic",
+  deezer: "deezer-symbolic",
   app: {
     terminal: "terminal-symbolic"
   },
@@ -948,7 +954,9 @@ var SysTrayItem = (item) => {
         {
           halign: default5.Align.CENTER,
           valign: default5.Align.CENTER,
-          icon: item.get_icon_pixbuf() || Icons(item.get_icon_name())
+          pixbuf: bind(item, "icon_pixbuf"),
+          gicon: bind(item, "gicon"),
+          icon: bind(item, "icon_name").as(Icons)
         }
       )
     }
@@ -964,13 +972,6 @@ function traySetup(box) {
       box.add(trayItem);
       trayItem.show();
     }
-    console.log(`added item ${id}`);
-    console.log(`items: ${items.size}`);
-    console.log(`icons: ${item.get_icon_name()}`);
-    console.log(`pixbuf: ${item.get_icon_pixbuf()}`);
-    console.log(`category: ${item.get_category()}`);
-    console.log(`tooltip: ${item.get_tooltip_markup()}`);
-    console.log(`label: ${item.get_title()}`);
   };
   const removeItem = (id) => {
     const trayItem = items.get(id);
@@ -980,8 +981,8 @@ function traySetup(box) {
     }
   };
   SystemTray.get_items().forEach((item) => addItem(item.item_id));
-  SystemTray.connect("item_added", (tray, id) => addItem(id));
-  SystemTray.connect("item_removed", (tray, id) => removeItem(id));
+  SystemTray.connect("item_added", (SystemTray2, id) => addItem(id));
+  SystemTray.connect("item_removed", (SystemTray2, id) => removeItem(id));
 }
 function Tray() {
   return /* @__PURE__ */ jsx(
@@ -996,7 +997,7 @@ var Tray_default = Tray;
 
 // src/modules/bar/clock.tsx
 function Clock() {
-  const time = Variable("").poll(1e3, 'date "+%a %b %d %H:%M:%S"');
+  const time2 = Variable("").poll(1e3, 'date "+%a %b %d %H:%M:%S"');
   return /* @__PURE__ */ jsx(
     "button",
     {
@@ -1010,7 +1011,7 @@ function Clock() {
           }
         }
       },
-      children: /* @__PURE__ */ jsx("label", { label: bind(time) })
+      children: /* @__PURE__ */ jsx("label", { label: bind(time2) })
     }
   );
 }
@@ -1454,11 +1455,11 @@ var blurCoverArtCss = async (cover_art) => {
   }
   return "background-color: #0e0e1e";
 };
-function Player({ player: player5 }) {
+function Player({ player: player6 }) {
   async function setup(box) {
-    box.css = await blurCoverArtCss(player5.cover_art);
-    box.hook(player5, "notify::cover-art", async () => {
-      box.css = await blurCoverArtCss(player5.cover_art);
+    box.css = await blurCoverArtCss(player6.cover_art);
+    box.hook(player6, "notify::cover-art", async () => {
+      box.css = await blurCoverArtCss(player6.cover_art);
     });
   }
   return /* @__PURE__ */ jsxs(
@@ -1479,7 +1480,7 @@ function Player({ player: player5 }) {
             vertical: true,
             vexpand: true,
             startWidget: /* @__PURE__ */ jsxs("box", { vertical: false, valign: default5.Align.CENTER, children: [
-              /* @__PURE__ */ jsx(TrackInfo, { player: player5 }),
+              /* @__PURE__ */ jsx(TrackInfo, { player: player6 }),
               /* @__PURE__ */ jsx(PlayerIcon, {})
             ] }),
             centerWidget: /* @__PURE__ */ jsx(TrackPosition, {}),
@@ -1492,6 +1493,156 @@ function Player({ player: player5 }) {
   );
 }
 var MediaPlayer_default = Player;
+
+// src/modules/Widgets/Notification.tsx
+import Notifd from "gi://AstalNotifd";
+import Pango3 from "gi://Pango";
+var Notif = Notifd.get_default();
+Notif.set_property("popupTimeout", 3e4);
+Notif.set_property("forceTimeout", false);
+Notif.set_property("cacheActions", false);
+Notif.set_property("clearDelay", 1e3);
+var time = (time2, format = "%H:%M") => default7.DateTime.new_from_unix_local(time2).format(format);
+var NotificationIcon = ({ app_entry, app_icon, image }) => {
+  if (image) {
+    return /* @__PURE__ */ jsx(
+      "box",
+      {
+        hexpand: false,
+        className: "icon img",
+        css: `
+          background-image: url("${image}");
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-position: center;
+          min-width: 5rem;
+          min-height: 5rem;
+        `
+      }
+    );
+  }
+  let icon = icons_default.fallback.notification;
+  if (Icons(app_icon)) icon = Icons(app_icon);
+  if (Icons(app_entry || "")) icon = Icons(app_entry || "");
+  return /* @__PURE__ */ jsx(
+    "box",
+    {
+      valign: default5.Align.CENTER,
+      hexpand: false,
+      className: "notiftemIcon",
+      css: `
+        min-width: 20px;
+        min-height: 20px;
+      `,
+      children: /* @__PURE__ */ jsx(
+        "icon",
+        {
+          icon,
+          icon_size: 58,
+          halign: default5.Align.CENTER,
+          valign: default5.Align.CENTER,
+          hexpand: true,
+          vexpand: true
+        }
+      )
+    }
+  );
+};
+var Notification_default = (notification) => {
+  const content = /* @__PURE__ */ jsxs("box", { className: "content", valign: default5.Align.CENTER, halign: default5.Align.FILL, children: [
+    NotificationIcon(notification),
+    /* @__PURE__ */ jsxs("box", { vertical: true, halign: default5.Align.FILL, children: [
+      /* @__PURE__ */ jsxs("box", { spacing: 5, vertical: false, hexpand: true, children: [
+        /* @__PURE__ */ jsx(
+          "label",
+          {
+            className: "notifItemTitle",
+            name: "nTitle",
+            xalign: 0,
+            lines: 2,
+            maxWidthChars: 35,
+            ellipsize: Pango3.EllipsizeMode.END,
+            wrap: true,
+            use_markup: true,
+            hexpand: true,
+            valign: default5.Align.CENTER,
+            halign: default5.Align.START,
+            label: notification.summary.trim()
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          "label",
+          {
+            className: "time",
+            halign: default5.Align.END,
+            valign: default5.Align.CENTER,
+            children: time(notification.time)
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          "button",
+          {
+            className: "close-button",
+            halign: default5.Align.END,
+            valign: default5.Align.CENTER,
+            onClick: notification.dismiss,
+            children: /* @__PURE__ */ jsx("icon", { icon: "window-close-symbolic" })
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx(
+        "label",
+        {
+          className: "notifItemBody",
+          hexpand: false,
+          halign: default5.Align.START,
+          use_markup: true,
+          xalign: 0,
+          label: notification.body.trim(),
+          maxWidthChars: 50,
+          lines: 3,
+          ellipsize: Pango3.EllipsizeMode.END,
+          wrap: true
+        }
+      )
+    ] })
+  ] });
+  const actionsbox = notification.actions.length > 0 ? /* @__PURE__ */ jsx("revealer", { transitionType: default5.RevealerTransitionType.SLIDE_DOWN, children: /* @__PURE__ */ jsx("eventbox", { className: "actions horizontal", children: notification.actions.map((action) => /* @__PURE__ */ jsx(
+    "button",
+    {
+      className: "action-button",
+      onClick: (_, event) => {
+        if (event.button === default6.BUTTON_PRIMARY) {
+          notification.invoke(action.id);
+        }
+      },
+      hexpand: true,
+      children: /* @__PURE__ */ jsx("label", { label: action.label })
+    }
+  )) }) }) : null;
+  const eventbox = /* @__PURE__ */ jsx(
+    "eventbox",
+    {
+      vexpand: false,
+      hexpand: true,
+      halign: default5.Align.START,
+      onClick: (_, event) => {
+        if (event.button === default6.BUTTON_PRIMARY) {
+          notification.dismiss();
+        }
+      },
+      onHover: (_, event) => {
+        if (actionsbox) actionsbox.reveal_child = true;
+      },
+      onHoverLost: (_, event) => {
+        if (actionsbox) actionsbox.reveal_child = false;
+        notification.dismiss();
+      },
+      children: /* @__PURE__ */ jsx("box", { vertical: true, children: actionsbox ? [content, actionsbox] : [content] })
+    }
+  );
+  return /* @__PURE__ */ jsx("box", { className: `notification ${notification.urgency}`, children: eventbox });
+};
 
 // src/modules/Widgets/VolumeIndicator.tsx
 import Wp from "gi://AstalWp";
@@ -1636,6 +1787,7 @@ function SettingsButton() {
       className: "audio-mixer settings-button",
       onClick: () => {
         execAsync("pavucontrol");
+        application_default.toggle_window("audiomixerwindow");
       },
       hexpand: true,
       halign: default5.Align.END,
@@ -1762,7 +1914,7 @@ function SysInfo() {
 
 // src/modules/bar/MediaTicker.tsx
 import Mpris3 from "gi://AstalMpris";
-import Pango3 from "gi://Pango";
+import Pango4 from "gi://Pango";
 var player3 = Mpris3.Player.new("Deezer");
 function TickerTrack() {
   return /* @__PURE__ */ jsx(
@@ -1773,7 +1925,7 @@ function TickerTrack() {
       wrap: false,
       halign: default5.Align.CENTER,
       valign: default5.Align.CENTER,
-      ellipsize: Pango3.EllipsizeMode.END,
+      ellipsize: Pango4.EllipsizeMode.END,
       label: bind(player3, "title").as((title) => TrimTrackTitle_default(title))
     }
   );
@@ -1786,7 +1938,7 @@ function TickerArtist() {
       wrap: false,
       halign: default5.Align.CENTER,
       valign: default5.Align.CENTER,
-      ellipsize: Pango3.EllipsizeMode.END,
+      ellipsize: Pango4.EllipsizeMode.END,
       maxWidthChars: 35,
       label: bind(player3, "artist").as((artist) => artist || "Unknown Artist")
     }
@@ -1864,14 +2016,11 @@ function MediaTickerButton() {
           player3.play_pause();
         }
       },
-      onScroll: (_, event) => {
-        if (event.direction === default6.ScrollDirection.UP) {
+      onScroll: (_, { delta_y }) => {
+        if (delta_y < 0) {
           player3.previous();
-          console.log("UP");
-        }
-        if (event.direction === default6.ScrollDirection.DOWN) {
+        } else {
           player3.next();
-          console.log("DOWN");
         }
       },
       children: /* @__PURE__ */ jsx(TickerBox, {})
@@ -2008,48 +2157,286 @@ var winwidth = (value) => {
 };
 
 // src/modules/Windows/dashboard/dashboard.tsx
-var Dashcal = () => /* @__PURE__ */ jsx(
+import Mpris4 from "gi://AstalMpris";
+
+// src/modules/Windows/dashboard/notificationList.tsx
+import Notifd2 from "gi://AstalNotifd";
+import Pango5 from "gi://Pango";
+var Notif2 = Notifd2.get_default();
+var NotificationIcon2 = ({ app_entry, app_icon, image }) => {
+  if (image) {
+    return /* @__PURE__ */ jsx(
+      "box",
+      {
+        className: "Notif icon",
+        css: `
+                    background-image: url("${image}");
+                    background-size: contain;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    min-width: 2rem;
+                    min-height: 2rem;
+                `
+      }
+    );
+  }
+  const icon = Icons(app_icon) || Icons(app_entry) || icons_default.fallback.notification;
+  return /* @__PURE__ */ jsx(
+    "box",
+    {
+      className: "notiftemIcon",
+      valign: default5.Align.CENTER,
+      css: `
+                min-width: 2rem;
+                min-height: 2rem;
+            `,
+      children: /* @__PURE__ */ jsx(
+        "icon",
+        {
+          icon,
+          valign: default5.Align.CENTER,
+          halign: default5.Align.CENTER
+        }
+      )
+    }
+  );
+};
+function NotifWidget() {
+  const Time = (time2, format = "%H:%M") => default7.DateTime.new_from_unix_local(time2).format(format);
+  return /* @__PURE__ */ jsx(
+    "box",
+    {
+      className: "notifItem",
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      vexpand: true,
+      children: bind(Notif2, "notifications").as((items) => items.map((item) => /* @__PURE__ */ jsx("box", { vertical: true, children: /* @__PURE__ */ jsx(
+        "centerbox",
+        {
+          vertical: false,
+          halign: default5.Align.CENTER,
+          valign: default5.Align.CENTER,
+          startWidget: /* @__PURE__ */ jsx(NotificationIcon2, {}),
+          centerWidget: /* @__PURE__ */ jsxs("box", { vertical: true, valign: default5.Align.CENTER, halign: default5.Align.CENTER, children: [
+            /* @__PURE__ */ jsx("label", { label: item.summary, maxWidthChars: 50, ellipsize: Pango5.EllipsizeMode.END, halign: default5.Align.START, valign: default5.Align.START }),
+            /* @__PURE__ */ jsx("label", { label: item.body, maxWidthChars: 50, ellipsize: Pango5.EllipsizeMode.END, halign: default5.Align.START, valign: default5.Align.CENTER })
+          ] })
+        }
+      ) })))
+    }
+  );
+}
+var NotifBox = /* @__PURE__ */ jsx(
+  "scrollable",
+  {
+    className: "notificationBox",
+    vscroll: default5.PolicyType.ALWAYS,
+    hscroll: default5.PolicyType.AUTOMATIC,
+    vexpand: true,
+    halign: default5.Align.CENTER,
+    valign: default5.Align.START,
+    children: /* @__PURE__ */ jsx(NotifWidget, {})
+  }
+);
+var Empty = /* @__PURE__ */ jsx(
   "box",
   {
-    className: "dashcal",
-    valign: default5.Align.CENTER,
+    className: "notifEmpty",
     halign: default5.Align.CENTER,
-    children: /* @__PURE__ */ jsx(GridCalendar_default, {})
+    valign: default5.Align.CENTER,
+    vertical: true,
+    children: /* @__PURE__ */ jsx(
+      "label",
+      {
+        label: `\u{F164E}`,
+        valign: default5.Align.CENTER,
+        halign: default5.Align.CENTER,
+        vexpand: true
+      }
+    )
+  }
+);
+var NotificationList = () => {
+  const clearNotifications = () => {
+    Notif2.notifications.forEach((item, n) => timeout(50 * n, () => item?.dismiss()));
+  };
+  const buttonIcon = () => {
+    if (Notif2.get_notifications !== null && Notif2.get_notifications.length === 0) {
+      return icons_default.trash.empty;
+    } else {
+      return icons_default.trash.full;
+    }
+  };
+  return /* @__PURE__ */ jsxs("box", { className: "notif panel", vertical: true, vexpand: true, children: [
+    /* @__PURE__ */ jsx(
+      "centerbox",
+      {
+        className: "notif panel box",
+        spacing: 20,
+        valign: default5.Align.FILL,
+        halign: default5.Align.CENTER,
+        vertical: false,
+        startWidget: /* @__PURE__ */ jsx("label", { label: "Notifications", valign: default5.Align.START, halign: default5.Align.END }),
+        centerWidget: /* @__PURE__ */ jsx(
+          "button",
+          {
+            halign: default5.Align.START,
+            valign: default5.Align.START,
+            onClick: () => {
+              clearNotifications();
+            },
+            children: /* @__PURE__ */ jsx("icon", { icon: buttonIcon() })
+          }
+        ),
+        endWidget: /* @__PURE__ */ jsx(
+          "button",
+          {
+            halign: default5.Align.END,
+            valign: default5.Align.START,
+            onClick: () => {
+              Notif2.set_dont_disturb(!Notif2.dontDisturb);
+              console.log(Notif2.get_dont_disturb());
+            },
+            children: /* @__PURE__ */ jsx(
+              "label",
+              {
+                label: bind(Notif2, "dont_disturb").as((d) => d === false ? "DND: Enabled" : "DND: Disabled"),
+                valign: default5.Align.CENTER,
+                halign: default5.Align.CENTER
+              }
+            )
+          }
+        )
+      }
+    ),
+    NotifBox
+  ] });
+};
+
+// src/modules/Windows/dashboard/dashboard.tsx
+var player4 = Mpris4.Player.new("Deezer");
+var TopCenter = () => /* @__PURE__ */ jsx(
+  "centerbox",
+  {
+    className: "dashboard topCenter",
+    vertical: false,
+    halign: default5.Align.CENTER,
+    valign: default5.Align.START,
+    spacing: 10,
+    centerWidget: /* @__PURE__ */ jsx(MediaPlayer_default, { player: player4 })
+  }
+);
+var LeftSide = () => /* @__PURE__ */ jsx(
+  "centerbox",
+  {
+    className: "dashboard leftSide",
+    vertical: true,
+    halign: default5.Align.START,
+    valign: default5.Align.CENTER,
+    spacing: 10,
+    startWidget: /* @__PURE__ */ jsx(GridCalendar_default, {}),
+    endWidget: /* @__PURE__ */ jsx(powerprofiles_default, {})
+  }
+);
+var RightSide = () => /* @__PURE__ */ jsx(
+  "centerbox",
+  {
+    className: "dashboard rightSide",
+    vertical: true,
+    halign: default5.Align.CENTER,
+    valign: default5.Align.START,
+    hexpand: false,
+    spacing: 10,
+    startWidget: /* @__PURE__ */ jsx(NotificationList, {})
   }
 );
 function Dashboard() {
+  const content = /* @__PURE__ */ jsx(
+    "eventbox",
+    {
+      onKeyPressEvent: (_, event) => {
+        if (event.get_keyval()[1] === default6.KEY_Escape) {
+          application_default.toggle_window("dashboard");
+        }
+      },
+      onClick: () => {
+        application_default.toggle_window("dashboard");
+      },
+      children: /* @__PURE__ */ jsxs(
+        "box",
+        {
+          className: "dashboard container",
+          vertical: true,
+          vexpand: false,
+          hexpand: false,
+          valign: default5.Align.CENTER,
+          halign: default5.Align.CENTER,
+          heightRequest: winheight(0.5),
+          widthRequest: winwidth(0.5),
+          css: `padding:1.5rem;`,
+          children: [
+            /* @__PURE__ */ jsx(
+              "centerbox",
+              {
+                vertical: true,
+                halign: default5.Align.FILL,
+                valign: default5.Align.FILL,
+                startWidget: /* @__PURE__ */ jsx(TopCenter, {}),
+                endWidget: /* @__PURE__ */ jsx(
+                  "box",
+                  {
+                    className: "dashboard divider horizontal",
+                    valign: default5.Align.END,
+                    halign: default5.Align.FILL,
+                    visible: true
+                  }
+                )
+              }
+            ),
+            /* @__PURE__ */ jsx(
+              "centerbox",
+              {
+                vertical: false,
+                halign: default5.Align.FILL,
+                valign: default5.Align.FILL,
+                startWidget: /* @__PURE__ */ jsx(LeftSide, {}),
+                centerWidget: /* @__PURE__ */ jsx(
+                  "box",
+                  {
+                    className: "dashboard divider vertical",
+                    valign: default5.Align.FILL,
+                    halign: default5.Align.CENTER,
+                    visible: true
+                  }
+                ),
+                endWidget: /* @__PURE__ */ jsx(RightSide, {})
+              }
+            )
+          ]
+        }
+      )
+    }
+  );
   return /* @__PURE__ */ jsx(
     "window",
     {
       name: "dashboard",
       className: "dashboard window",
-      anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.BOTTOM | default2.WindowAnchor.RIGHT,
+      anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.LEFT | default2.WindowAnchor.RIGHT,
       layer: default2.Layer.OVERLAY,
       exclusivity: default2.Exclusivity.NORMAL,
-      keymode: default2.Keymode.NONE,
+      keymode: default2.Keymode.EXCLUSIVE,
       visible: false,
       application: application_default,
-      children: /* @__PURE__ */ jsx(
-        "box",
-        {
-          className: "dashboard container",
-          vertical: true,
-          vexpand: true,
-          hexpand: false,
-          valign: default5.Align.CENTER,
-          halign: default5.Align.CENTER,
-          css: `min-height: ${winheight(0.954)}px; min-width: ${winwidth(0.1)}px;`,
-          children: /* @__PURE__ */ jsx(Dashcal, {})
-        }
-      )
+      children: content
     }
   );
 }
 var dashboard_default = Dashboard;
 
 // src/modules/Windows/MediaPlayer.tsx
-import Mpris4 from "gi://AstalMpris";
-var player4 = Mpris4.Player.new("Deezer");
+import Mpris5 from "gi://AstalMpris";
+var player5 = Mpris5.Player.new("Deezer");
 function MediaPlayerWindow() {
   return /* @__PURE__ */ jsx(
     "window",
@@ -2059,13 +2446,15 @@ function MediaPlayerWindow() {
       anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.RIGHT,
       layer: default2.Layer.OVERLAY,
       exclusivity: default2.Exclusivity.NORMAL,
-      keymode: default2.Keymode.NONE,
+      keymode: default2.Keymode.EXCLUSIVE,
       visible: false,
       application: application_default,
       "margin-right": 90,
-      "margin-top": 125,
-      clickThrough: true,
-      children: /* @__PURE__ */ jsx("box", { className: "mediaplayerbox", children: /* @__PURE__ */ jsx(MediaPlayer_default, { player: player4 }) })
+      children: /* @__PURE__ */ jsx("eventbox", { onKeyPressEvent: (_, event) => {
+        if (event.get_keyval()[1] === default6.KEY_Escape) {
+          application_default.toggle_window("mediaplayerwindow");
+        }
+      }, children: /* @__PURE__ */ jsx("box", { className: "mediaplayerbox", children: /* @__PURE__ */ jsx(MediaPlayer_default, { player: player5 }) }) })
     }
   );
 }
@@ -2080,10 +2469,20 @@ function Calendar() {
       anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.TOP,
       layer: default2.Layer.OVERLAY,
       exclusivity: default2.Exclusivity.NORMAL,
-      keymode: default2.Keymode.NONE,
+      keymode: default2.Keymode.EXCLUSIVE,
       visible: false,
       application: application_default,
-      children: /* @__PURE__ */ jsx("box", { className: "calendarbox", children: /* @__PURE__ */ jsx(GridCalendar_default, {}) })
+      children: /* @__PURE__ */ jsx(
+        "eventbox",
+        {
+          onKeyPressEvent: (_, event) => {
+            if (event.get_keyval()[1] === default6.KEY_Escape) {
+              application_default.toggle_window("calendar");
+            }
+          },
+          children: /* @__PURE__ */ jsx("box", { className: "calendarbox", children: /* @__PURE__ */ jsx(GridCalendar_default, {}) })
+        }
+      )
     }
   );
 }
@@ -2097,11 +2496,125 @@ var AudioMixer_default = () => /* @__PURE__ */ jsx(
     anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.TOP,
     layer: default2.Layer.OVERLAY,
     exclusivity: default2.Exclusivity.NORMAL,
-    keymode: default2.Keymode.NONE,
+    keymode: default2.Keymode.EXCLUSIVE,
     visible: false,
     application: application_default,
     "margin-right": 525,
-    children: /* @__PURE__ */ jsx(AudioMixer, {})
+    children: /* @__PURE__ */ jsx("eventbox", { onKeyPressEvent: (_, event) => {
+      if (event.get_keyval()[1] === default6.KEY_Escape) {
+        application_default.toggle_window("audiomixerwindow");
+      }
+    }, children: /* @__PURE__ */ jsx(AudioMixer, {}) })
+  }
+);
+
+// src/modules/Windows/notificationPopups.tsx
+import Notifd3 from "gi://AstalNotifd";
+var Notif3 = Notifd3.get_default();
+var transitionTime = 300;
+function Animated(id) {
+  const n = Notif3.get_notification(id);
+  const theNotify = Notification_default(n);
+  const inner = /* @__PURE__ */ jsx(
+    "revealer",
+    {
+      transitionType: default5.RevealerTransitionType.SLIDE_LEFT,
+      transition_duration: transitionTime,
+      revealChild: false,
+      children: theNotify
+    }
+  );
+  const outer = /* @__PURE__ */ jsx(
+    "revealer",
+    {
+      transitionType: default5.RevealerTransitionType.SLIDE_RIGHT,
+      transition_duration: transitionTime,
+      revealChild: false,
+      children: inner
+    }
+  );
+  const box = /* @__PURE__ */ jsx(
+    "box",
+    {
+      halign: default5.Align.END,
+      children: outer
+    }
+  );
+  idle(() => {
+    outer.reveal_child = true;
+    timeout(transitionTime, () => {
+      inner.reveal_child = true;
+    });
+  });
+  return Object.assign(box, {
+    dismiss() {
+      inner.reveal_child = false;
+      timeout(transitionTime, () => {
+        outer.reveal_child = false;
+        timeout(transitionTime, () => {
+          box.destroy();
+        });
+      });
+    }
+  });
+}
+function popupBoxSetup(box, map) {
+  Notif3.connect("notified", (_, id) => {
+    if (map.has(id)) {
+      remove(null, id);
+    }
+    if (Notif3.dont_disturb) {
+      return;
+    }
+    const w = Animated(id);
+    map.set(id, w);
+    box.children = [w, ...box.children];
+  });
+  Notif3.connect("dismissed", remove);
+  Notif3.connect("closed", remove);
+  function remove(_, id) {
+    const animatedElement = map.get(id);
+    if (animatedElement) {
+      animatedElement.dismiss();
+      map.delete(id);
+    }
+  }
+}
+function PopupList(id) {
+  const map = /* @__PURE__ */ new Map();
+  const notifWidth = Notif3.get_property("width");
+  console.log(`Notificaiton: ${Notif3.get_notification}`);
+  const box = /* @__PURE__ */ jsx(
+    "box",
+    {
+      vertical: true,
+      hexpand: true,
+      halign: default5.Align.FILL,
+      setup: (box2) => popupBoxSetup(box2, map),
+      css: bind(notifWidth).as((w) => `min-width: ${w}px;`)
+    }
+  );
+  return box;
+}
+var notificationPopups_default = (monitor) => /* @__PURE__ */ jsx(
+  "window",
+  {
+    name: `notifications${monitor}`,
+    anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.RIGHT,
+    className: "notifications",
+    hexpand: true,
+    layer: default2.Layer.OVERLAY,
+    exclusivity: default2.Exclusivity.NORMAL,
+    keymode: default2.Keymode.NONE,
+    visible: false,
+    application: application_default,
+    children: /* @__PURE__ */ jsx(
+      "box",
+      {
+        css: "padding: 2px;",
+        children: PopupList
+      }
+    )
   }
 );
 
@@ -2155,30 +2668,43 @@ var sessioncontrol_default = () => {
       anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.BOTTOM | default2.WindowAnchor.LEFT | default2.WindowAnchor.RIGHT,
       layer: default2.Layer.OVERLAY,
       exclusivity: default2.Exclusivity.NORMAL,
-      keymode: default2.Keymode.NONE,
+      keymode: default2.Keymode.EXCLUSIVE,
       visible: false,
       application: application_default,
       children: /* @__PURE__ */ jsx(
-        "box",
+        "eventbox",
         {
-          className: "sessioncontrols container",
-          halign: default5.Align.CENTER,
-          valign: default5.Align.END,
-          visible: true,
-          children: /* @__PURE__ */ jsxs(
+          onClick: () => application_default.toggle_window("sessioncontrols"),
+          onKeyPressEvent: (_, event) => {
+            if (event.get_keyval()[1] === default6.KEY_Escape) {
+              application_default.toggle_window("sessioncontrols");
+            }
+          },
+          widthRequest: winheight(1),
+          heightRequest: winheight(1),
+          children: /* @__PURE__ */ jsx(
             "box",
             {
-              className: "sessioncontrols box",
-              valign: default5.Align.END,
+              className: "sessioncontrols container",
               halign: default5.Align.CENTER,
-              spacing: 30,
+              valign: default5.Align.CENTER,
               visible: true,
-              children: [
-                SysButton2("lock", "Lock"),
-                SysButton2("logout", "Log Out"),
-                SysButton2("reboot", "Reboot"),
-                SysButton2("shutdown", "Shutdown")
-              ]
+              children: /* @__PURE__ */ jsxs(
+                "box",
+                {
+                  className: "sessioncontrols box",
+                  valign: default5.Align.CENTER,
+                  halign: default5.Align.CENTER,
+                  spacing: 30,
+                  visible: true,
+                  children: [
+                    SysButton2("lock", "Lock"),
+                    SysButton2("logout", "Log Out"),
+                    SysButton2("reboot", "Reboot"),
+                    SysButton2("shutdown", "Shutdown")
+                  ]
+                }
+              )
             }
           )
         }
@@ -2196,10 +2722,14 @@ var powerprofile_default = () => /* @__PURE__ */ jsx(
     anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.TOP,
     layer: default2.Layer.OVERLAY,
     exclusivity: default2.Exclusivity.NORMAL,
-    keymode: default2.Keymode.NONE,
+    keymode: default2.Keymode.EXCLUSIVE,
     visible: false,
     application: application_default,
-    children: /* @__PURE__ */ jsx(powerprofiles_default, {})
+    children: /* @__PURE__ */ jsx("eventbox", { onKeyPressEvent: (_, event) => {
+      if (event.get_keyval()[1] === default6.KEY_Escape) {
+        application_default.toggle_window("powerprofiles");
+      }
+    }, children: /* @__PURE__ */ jsx(powerprofiles_default, {}) })
   }
 );
 
@@ -2228,6 +2758,7 @@ application_default.start({
     MediaPlayerWindow();
     Calendar();
     AudioMixer_default();
+    notificationPopups_default(0);
     sessioncontrol_default();
     powerprofile_default();
   }

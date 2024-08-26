@@ -1,4 +1,4 @@
-import { Widget, Gdk, Gtk, bind, Variable, App, Astal } from "astal";
+import { Widget, Gdk, Gtk, bind, Variable, App, Astal, GLib } from "astal";
 import AstalTray from "gi://AstalTray";
 import Icon, { Icons } from "../lib/icons";
 
@@ -24,10 +24,10 @@ const SysTrayItem = item => {
         >
             <icon
                 halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}
-                icon={
-                    item.get_icon_pixbuf() ||
-                    Icons(item.get_icon_name())
-                }
+                pixbuf={bind(item, "icon_pixbuf")}
+                gicon={bind(item, "gicon")}
+                icon={bind(item, "icon_name").as(Icons)}
+
             />
         </button>
     );
@@ -36,7 +36,7 @@ const SysTrayItem = item => {
 function traySetup(box) {
     const items = new Map();
 
-    const addItem = id => {
+    const addItem = (id: number) => {
         const item = SystemTray.get_item(id);
         if (item) {
             const trayItem = SysTrayItem(item);
@@ -44,14 +44,6 @@ function traySetup(box) {
             box.add(trayItem);
             trayItem.show();
         }
-
-        console.log(`added item ${id}`);
-        console.log(`items: ${items.size}`);
-        console.log(`icons: ${item.get_icon_name()}`);
-        console.log(`pixbuf: ${item.get_icon_pixbuf()}`);
-        console.log(`category: ${item.get_category()}`);
-        console.log(`tooltip: ${item.get_tooltip_markup()}`);
-        console.log(`label: ${item.get_title()}`);
     };
 
     const removeItem = id => {
@@ -63,8 +55,8 @@ function traySetup(box) {
     };
 
     SystemTray.get_items().forEach(item => addItem(item.item_id));
-    SystemTray.connect("item_added", (tray, id) => addItem(id));
-    SystemTray.connect("item_removed", (tray, id) => removeItem(id));
+    SystemTray.connect("item_added", (SystemTray, id) => addItem(id));
+    SystemTray.connect("item_removed", (SystemTray, id) => removeItem(id));
 }
 
 

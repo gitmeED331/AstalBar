@@ -5,11 +5,25 @@
 
 	&.container {
 		background: $PrimaryBG;
-		border-radius: $radius-tbleft;
+		border-radius: $radius;
 		//min-height: 78.75rem;
-		border-left: $border;
-		border-bottom: $border;
-		border-top: $border;
-		margin-top: 0.25rem;
+		border: $border;
+		//margin-top: 0.25rem;
+	}
+
+	&.divider {
+		&.vertical {
+			min-height: 2px;
+			margin: 0rem 0.5rem;
+			background: $font-color1;
+			border: $border;
+		}
+
+		&.horizontal {
+			min-width: 2px;
+			margin: 0.5rem 0rem;
+			background: $font-color1;
+			border: $border;
+		}
 	}
 }

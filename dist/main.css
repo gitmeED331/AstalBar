@@ -145,8 +145,7 @@ tooltip > * > * {
   background: #0e0e1e;
   border-radius: 2rem;
   border: 2px solid #0f9bff;
-  padding: 5px;
-  padding-top: 10px;
+  padding: 1rem;
 }
 .dashcal {
   border-top: 2px solid #0f9bff;
@@ -327,11 +326,20 @@ tooltip > * > * {
 }
 .dashboard.container {
   background: rgba(0, 0, 0, 0.5);
-  border-radius: 3rem 0rem 0rem 3rem;
-  border-left: 2px solid #0f9bff;
-  border-bottom: 2px solid #0f9bff;
-  border-top: 2px solid #0f9bff;
-  margin-top: 0.25rem;
+  border-radius: 2rem;
+  border: 2px solid #0f9bff;
+}
+.dashboard.divider.vertical {
+  min-height: 2px;
+  margin: 0rem 0.5rem;
+  background: rgb(255, 140, 0);
+  border: 2px solid #0f9bff;
+}
+.dashboard.divider.horizontal {
+  min-width: 2px;
+  margin: 0.5rem 0rem;
+  background: rgb(255, 140, 0);
+  border: 2px solid #0f9bff;
 }
 .launcher-switcher {
   background: rgba(0, 0, 0, 0.5);
@@ -1097,24 +1105,27 @@ tooltip > * > * {
     -15px 0px 10px yellow,
     0px 0px 0px yellow;
 }
-.notifpanel {
+.notif.panel {
   border-radius: 3rem 0rem 0rem 3rem;
   margin-top: 0.5rem;
   min-width: 25rem;
   padding-left: 2.5rem;
   padding-right: 0.5rem;
 }
-.notifpanelBox {
+.notif.panel.box {
   margin-right: 1rem;
   margin-left: 2rem;
   margin-bottom: 0.5rem;
 }
-.notifpanelBox label {
+.notif.panel.box label {
   font-size: 1.5rem;
   color: rgb(255, 140, 0);
 }
-.notifpanelBox button {
+.notif.panel.box button {
   color: rgb(255, 140, 0);
+}
+.notif.panel.box button icon {
+  font-size: 1.5rem;
 }
 .barNotification {
   background-color: #1e1e2e;
@@ -1463,94 +1474,6 @@ tooltip > * > * {
 .powerprofiles button image {
   font-size: 1.5rem;
 }
-.sessioncontrols {
-  all: unset;
-}
-.sessioncontrols.window {
-  background: rgba(0, 0, 0, 0.5);
-}
-.sessioncontrols.container {
-  color: rgb(15, 155, 255);
-  font-size: 2rem;
-  font-weight: bold;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 0rem 2rem;
-  min-width: 5rem;
-}
-.sessioncontrols.box {
-  background: rgba(0, 0, 0, 0.5);
-  border-top: 3px solid rgba(0, 0, 0, 0);
-  border-top: 2px solid #0f9bff;
-  border-width: 0.5rem;
-  padding-bottom: 5rem;
-  padding-top: 2rem;
-}
-.sessioncontrols button {
-  border-radius: 5rem;
-  min-width: 10rem;
-  min-height: 10rem;
-  border-left: 0.5rem solid #0F9BFF;
-  border-right: 0.5rem solid #0F9BFF;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 255, 0.5) 0%,
-      rgb(0, 0, 255) 15%,
-      rgba(0, 0, 0, 0) 50%,
-      rgb(0, 0, 255) 85%,
-      rgba(0, 0, 255, 0.5) 100%);
-  padding: 0.5rem;
-}
-.sessioncontrols button:first-child image,
-.sessioncontrols button:nth-child(2) image,
-.sessioncontrols button:nth-child(3) image,
-.sessioncontrols button:last-child image {
-  min-width: 1.7em;
-  min-height: 1.7em;
-  font-size: 4rem;
-}
-.sessioncontrols button label,
-.sessioncontrols button icon {
-  color: rgb(255, 140, 0);
-  font-size: 2rem;
-}
-.sessioncontrols button label {
-  font-size: 1.75rem;
-}
-.sessioncontrols button:hover image,
-.sessioncontrols button:focus image,
-.sessioncontrols button:active image {
-  animation: spin 1s infinite;
-}
-.sessioncontrols button:hover {
-  border-left: 0.5rem dashed red;
-  border-right: 0.5rem dashed red;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(255, 0, 0, 0.5) 0%,
-      rgb(255, 0, 0) 15%,
-      rgba(0, 0, 0, 0) 50%,
-      rgb(255, 0, 0) 85%,
-      rgba(255, 0, 0, 0.5) 100%);
-}
-.sessioncontrols button:focus,
-.sessioncontrols button:active {
-  border-left: 0.5rem dashed rgb(255, 255, 0);
-  border-right: 0.5rem dashed rgb(255, 255, 0);
-  background:
-    linear-gradient(
-      0deg,
-      rgba(255, 255, 0, 0.5) 0%,
-      rgb(255, 255, 0) 15%,
-      rgba(0, 0, 0, 0) 50%,
-      rgb(255, 255, 0) 85%,
-      rgba(255, 255, 0, 0.5) 100%);
-}
-.sessioncontrols button:focus label,
-.sessioncontrols button:active label {
-  color: rgb(15, 155, 255);
-}
 .corner {
   background:
     linear-gradient(
@@ -1634,23 +1557,24 @@ tooltip > * > * {
   border: 2px solid #0f9bff;
 }
 menu > menuitem {
-  background:
-    linear-gradient(
-      0deg,
-      rgb(15, 155, 255) 0%,
-      rgb(0, 0, 0) 45%,
-      rgb(0, 0, 0) 65%,
-      rgb(15, 155, 255) 100%);
-  border-radius: 10px;
-  border: 2px solid rgba(0, 0, 0, 0);
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 2rem;
+  border-bottom: 2px solid #0f9bff;
   color: rgb(255, 140, 0);
-  margin: 1px;
+  margin: 0.5px;
   padding: 5px;
 }
 menu > menuitem:hover {
   color: rgb(255, 0, 0);
   border: 2px solid #0000FF;
   font-weight: bold;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(15, 155, 255, 0) 0%,
+      rgba(0, 0, 0, 0.5) 45%,
+      rgb(0, 0, 0) 65%,
+      rgb(15, 155, 255) 100%);
 }
 menu > menuitem:hover image {
   color: rgb(255, 0, 0);
@@ -1830,4 +1754,90 @@ menu > menuitem:disabled {
 }
 .workspaces button:hover label {
   color: rgb(0, 0, 255);
+}
+.sessioncontrols {
+  all: unset;
+}
+.sessioncontrols.window {
+  background: rgba(0, 0, 0, 0.5);
+}
+.sessioncontrols.container {
+  color: rgb(15, 155, 255);
+  font-size: 2rem;
+  font-weight: bold;
+  min-width: 5rem;
+}
+.sessioncontrols.box {
+  background: rgba(0, 0, 0, 0.5);
+  border-top: 2px solid #0f9bff;
+  border-bottom: 2px solid #0f9bff;
+  border-radius: 4rem;
+  border-width: 0.5rem;
+  padding: 2rem;
+}
+.sessioncontrols button {
+  border-radius: 5rem;
+  min-width: 10rem;
+  min-height: 10rem;
+  border-left: 0.5rem solid #0F9BFF;
+  border-right: 0.5rem solid #0F9BFF;
+  background:
+    linear-gradient(
+      0deg,
+      rgba(0, 0, 255, 0.5) 0%,
+      rgb(0, 0, 255) 15%,
+      rgba(0, 0, 0, 0) 50%,
+      rgb(0, 0, 255) 85%,
+      rgba(0, 0, 255, 0.5) 100%);
+  padding: 0.5rem;
+}
+.sessioncontrols button:first-child icon,
+.sessioncontrols button:nth-child(2) icon,
+.sessioncontrols button:nth-child(3) icon,
+.sessioncontrols button:last-child icon {
+  min-width: 2em;
+  min-height: 2em;
+  font-size: 3rem;
+}
+.sessioncontrols button label,
+.sessioncontrols button icon {
+  color: rgb(255, 140, 0);
+  font-size: 2rem;
+}
+.sessioncontrols button label {
+  font-size: 1.75rem;
+}
+.sessioncontrols button:hover image,
+.sessioncontrols button:focus image,
+.sessioncontrols button:active image {
+  animation: spin 1s infinite;
+}
+.sessioncontrols button:hover {
+  border-left: 0.5rem dashed red;
+  border-right: 0.5rem dashed red;
+  background:
+    linear-gradient(
+      0deg,
+      rgba(255, 0, 0, 0.5) 0%,
+      rgb(255, 0, 0) 15%,
+      rgba(0, 0, 0, 0) 50%,
+      rgb(255, 0, 0) 85%,
+      rgba(255, 0, 0, 0.5) 100%);
+}
+.sessioncontrols button:focus,
+.sessioncontrols button:active {
+  border-left: 0.5rem dashed rgb(255, 255, 0);
+  border-right: 0.5rem dashed rgb(255, 255, 0);
+  background:
+    linear-gradient(
+      0deg,
+      rgba(255, 255, 0, 0.5) 0%,
+      rgb(255, 255, 0) 15%,
+      rgba(0, 0, 0, 0) 50%,
+      rgb(255, 255, 0) 85%,
+      rgba(255, 255, 0, 0.5) 100%);
+}
+.sessioncontrols button:focus label,
+.sessioncontrols button:active label {
+  color: rgb(15, 155, 255);
 }

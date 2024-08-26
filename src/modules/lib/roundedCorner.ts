@@ -1,4 +1,4 @@
-import { Widget, Gtk } from "astal";
+import { Widget, Gtk, Astal } from "astal";
 
 /**
  * @param {string} place

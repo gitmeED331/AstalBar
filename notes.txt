@@ -13,6 +13,15 @@ import Notifd from "gi://AstalNotifd"
 import PowerProfiles from "gi://AstalPowerProfiles"
 import Tray from "gi://AstalTray"
 
+/* window parameters */
+
+      layer={Astal.Layer.OVERLAY}
+      exclusivity={Astal.Exclusivity.NORMAL}
+      keymode={Astal.Keymode.NONE}
+      visible={false}
+      application={App}
+
+/* end window parameters */
 
 onClick={(_, event) => {
                 if (event.button === Gdk.BUTTON_PRIMARY) {
@@ -82,3 +91,8 @@ repeatedGreetings()
 
 {RoundedAngleEnd("bottomright", { className: "angleLarge" })}
 {RoundedAngleEnd("bottomleft", { className: "angleLarge" })}
+
+
+ onKeyPressEvent={(_, event) => {
+        if (event.get_keyval()[1] === Gdk.KEY_Escape) { App.toggle_window("sessioncontrols") }
+      }}

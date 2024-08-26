@@ -2,7 +2,7 @@ import Dashboard from "./dashboard/dashboard";
 import MediaPlayerWindow from "./MediaPlayer";
 import Calendar from "./calendar";
 import AudioMixer from "./AudioMixer";
-//import { cliphist } from "./cliphist"
+//import cliphist from "./cliphist"
 
 import NotificationPopups from "./notificationPopups";
 import Overview from "./overview/Overview";
@@ -15,10 +15,10 @@ export {
   MediaPlayerWindow,
   Calendar,
   AudioMixer,
-  // NotificationPopups,
+  NotificationPopups,
   // Overview,
   sessioncontrol,
   powerprofiles,
   // Launcher,
-  // cliphist
+  //cliphist
 };

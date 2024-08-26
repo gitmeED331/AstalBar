@@ -115,14 +115,12 @@ function MediaTickerButton() {
         // }
 
       }}
-      onScroll={(_, event) => {
-        if (event.direction === Gdk.ScrollDirection.UP) {
+      onScroll={(_, { delta_y }) => {
+        if (delta_y < 0) {
           player.previous();
-          console.log("UP");
         }
-        if (event.direction === Gdk.ScrollDirection.DOWN) {
+        else {
           player.next();
-          console.log("DOWN");
         }
       }}
     >
