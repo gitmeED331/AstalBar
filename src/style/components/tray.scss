@@ -1,71 +1,78 @@
 .tray {
-	background: $PrimaryBG;
-	border-top: $border;
-	border-radius: $radius;
+  background: $PrimaryBG;
+  border: $border;
+  border-radius: $radius;
+  padding: 0rem 0.25rem;
 
-	>* {
-		border: 2px solid rgba(0, 0, 0, 0);
-		background-color: transparent;
-		font-weight: bold;
-	}
+  >* {
+    border: 2px solid rgba(0, 0, 0, 0);
+    background-color: transparent;
+    font-weight: bold;
+  }
 
-	button {
+  button {
+    image {
+      color: $font-color1;
+      //font-size: 1.15rem;
+      border-radius: $radius;
+    }
 
-		image {
-			color: $font-color1;
-			//font-size: 1.15rem;
-		}
+    icon {
+      color: $font-color1;
+      //font-size: 1.15rem;
+      border-radius: $radius;
+    }
 
-		&:hover {
-			background-color: #1e1e2e;
-			border-radius: $radius;
-			border: $border;
+    &:hover {
+      background-color: #1e1e2e;
+      border-radius: $radius;
+      border: $border;
 
-			// image {
-			// }
-		}
-	}
+      // image {
+      // }
+    }
+  }
 }
 
 menu>menuitem {
-	// background: linear-gradient(0deg,
-	// 		rgba(15, 155, 255, 1) 0%,
-	// 		rgba(0, 0, 0, 1) 45%,
-	// 		rgba(0, 0, 0, 1) 65%,
-	// 		rgba(15, 155, 255, 1) 100%);
+  // background: linear-gradient(0deg,
+  // 		rgba(15, 155, 255, 1) 0%,
+  // 		rgba(0, 0, 0, 1) 45%,
+  // 		rgba(0, 0, 0, 1) 65%,
+  // 		rgba(15, 155, 255, 1) 100%);
 
-	background: $PrimaryBG;
-	border-radius: $radius;
-	border-bottom: $border;
-	color: $font-color1;
-	margin: 0.5px;
-	padding: 5px;
+  background: $PrimaryBG;
+  border-radius: $radius;
+  border-bottom: $border;
+  color: $font-color1;
+  margin: 0.5px;
+  padding: 5px;
 
-	&:hover {
-		color: $font-color4;
-		border: 2px solid #0000FF;
-		font-weight: bold;
-		background: linear-gradient(180deg,
-				rgba(15, 155, 255, 0) 0%,
-				rgba(0, 0, 0, 0.5) 45%,
-				rgba(0, 0, 0, 1) 65%,
-				rgba(15, 155, 255, 1) 100%);
+  &:hover {
+    color: $font-color4;
+    border: 2px solid #0000ff;
+    font-weight: bold;
+    background: linear-gradient(180deg,
+        rgba(15, 155, 255, 0) 0%,
+        rgba(0, 0, 0, 0.5) 45%,
+        rgba(0, 0, 0, 1) 65%,
+        rgba(15, 155, 255, 1) 100%);
 
-		image {
-			color: $font-color4;
-		}
-	}
+    image {
+      color: $font-color4;
+    }
+  }
 
-	image {
-		color: $font-color1;
-	}
+  image {
+    color: $font-color1;
+  }
 
-	&:disabled {
-		color: gray;
-		background: linear-gradient(0deg,
-				rgba(83, 94, 101, 1) 0%,
-				rgba(0, 0, 0, 1) 45%,
-				rgba(0, 0, 0, 1) 65%,
-				rgba(83, 94, 101, 1) 100%);
-	}
+  &:disabled {
+    color: gray;
+    background: linear-gradient(0deg,
+        rgba(83, 94, 101, 1) 0%,
+        rgba(0, 0, 0, 1) 45%,
+        rgba(0, 0, 0, 1) 65%,
+        rgba(83, 94, 101, 1) 100%);
+  }
 }

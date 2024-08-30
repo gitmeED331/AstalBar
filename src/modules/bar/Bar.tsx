@@ -4,7 +4,6 @@ import { App, Astal, Gtk } from "astal";
 // ----- Widgets -----
 import AppTitleTicker from "./AppTitleTicker";
 import Workspaces from "./Workspaces";
-import Tray from "./Tray"
 import Clock from "./clock";
 import SysInfo from "./sysinfo";
 import MediaTickerButton from "./MediaTicker";
@@ -33,8 +32,6 @@ function CenterBar() {
       valign={Gtk.Align.START}
     >
       <Clock />
-      <Tray />
-      <SysInfo />
     </box>
   );
 }
@@ -48,8 +45,7 @@ function RightBar() {
       spacing={5}
     >
       <MediaTickerButton />
-      <DashboardButton />
-      <SessionControlButton />
+      <SysInfo />
     </box>
   );
 }

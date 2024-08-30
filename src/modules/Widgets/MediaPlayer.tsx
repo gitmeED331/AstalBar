@@ -231,6 +231,7 @@ function Player({ player }: { player: Mpris.Player }) {
       spacing={5}
       halign={Gtk.Align.END}
       valign={Gtk.Align.CENTER}
+      visible={bind(player, "available").as(a => a === true)}
       setup={setup}
     >
       <centerbox className={"mediainfo"} vertical={true} vexpand={true}

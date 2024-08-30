@@ -36,7 +36,6 @@ onClick={(_, event) => {
 const win = App.get_window("overview");
     if (win) { win.visible = !win.visible; }
 
-
 function ClientWidget(client: Hyprland.Client) {
     return <box>
         <label label={bind(client, "title")} />
@@ -50,9 +49,7 @@ function Taskbar() {
     </box>
 }
 
-
 visible = { bind(hyprland, "focusedClient").as(Boolean) }
-
 
 import workspaceEvents from './workspaceEvents';
 
@@ -74,8 +71,6 @@ function ws(id: number) {
 }
 // --- end signal handler ---
 
-
-
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
 const repeatedGreetings = async () => {
@@ -92,7 +87,6 @@ repeatedGreetings()
 {RoundedAngleEnd("bottomright", { className: "angleLarge" })}
 {RoundedAngleEnd("bottomleft", { className: "angleLarge" })}
 
-
- onKeyPressEvent={(_, event) => {
-        if (event.get_keyval()[1] === Gdk.KEY_Escape) { App.toggle_window("sessioncontrols") }
-      }}
+onKeyPressEvent={(_, event) => {
+    if (event.get_keyval()[1] === Gdk.KEY_Escape) { App.toggle_window("sessioncontrols") }
+}}

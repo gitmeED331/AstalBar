@@ -55,11 +55,8 @@ function execAsync(cmd) {
 function interval(interval2, callback) {
   return default2.Time.interval(interval2, () => void callback?.());
 }
-function timeout(timeout2, callback) {
-  return default2.Time.timeout(timeout2, () => void callback?.());
-}
-function idle(callback) {
-  return default2.Time.idle(() => void callback?.());
+function timeout(timeout4, callback) {
+  return default2.Time.timeout(timeout4, () => void callback?.());
 }
 
 // node_modules/astal/src/binding.ts
@@ -216,23 +213,23 @@ var VariableWrapper = class extends Function {
     });
     return () => this.variable.disconnect(id);
   }
-  poll(interval2, exec2, transform = (out) => out) {
+  poll(interval2, exec, transform = (out) => out) {
     this.stopPoll();
     this.pollInterval = interval2;
     this.pollTransform = transform;
-    if (typeof exec2 === "function") {
-      this.pollFn = exec2;
+    if (typeof exec === "function") {
+      this.pollFn = exec;
       delete this.pollExec;
     } else {
-      this.pollExec = exec2;
+      this.pollExec = exec;
       delete this.pollFn;
     }
     this.startPoll();
     return this;
   }
-  watch(exec2, transform = (out) => out) {
+  watch(exec, transform = (out) => out) {
     this.stopWatch();
-    this.watchExec = exec2;
+    this.watchExec = exec;
     this.watchTransform = transform;
     this.startWatch();
     return this;
@@ -930,74 +927,10 @@ function Workspaces({ id }) {
   );
 }
 
-// src/modules/bar/Tray.tsx
-import AstalTray from "gi://AstalTray";
-var SystemTray = AstalTray.Tray.get_default();
-var SysTrayItem = (item) => {
-  const menu = item.create_menu?.();
-  return /* @__PURE__ */ jsx(
-    "button",
-    {
-      className: "systray-item",
-      halign: default5.Align.CENTER,
-      valign: default5.Align.CENTER,
-      onClick: (btn, event) => {
-        if (event.button === default6.BUTTON_PRIMARY || event.button === default6.BUTTON_SECONDARY) {
-          menu?.popup_at_widget(btn, default6.Gravity.SOUTH, default6.Gravity.NORTH, null);
-        } else if (event.button === default6.BUTTON_MIDDLE) {
-          item.activate(0, 0);
-        }
-      },
-      tooltip_markup: bind(item, "tooltip_markup"),
-      children: /* @__PURE__ */ jsx(
-        "icon",
-        {
-          halign: default5.Align.CENTER,
-          valign: default5.Align.CENTER,
-          pixbuf: bind(item, "icon_pixbuf"),
-          gicon: bind(item, "gicon"),
-          icon: bind(item, "icon_name").as(Icons)
-        }
-      )
-    }
-  );
-};
-function traySetup(box) {
-  const items = /* @__PURE__ */ new Map();
-  const addItem = (id) => {
-    const item = SystemTray.get_item(id);
-    if (item) {
-      const trayItem = SysTrayItem(item);
-      items.set(id, trayItem);
-      box.add(trayItem);
-      trayItem.show();
-    }
-  };
-  const removeItem = (id) => {
-    const trayItem = items.get(id);
-    if (trayItem) {
-      trayItem.destroy();
-      items.delete(id);
-    }
-  };
-  SystemTray.get_items().forEach((item) => addItem(item.item_id));
-  SystemTray.connect("item_added", (SystemTray2, id) => addItem(id));
-  SystemTray.connect("item_removed", (SystemTray2, id) => removeItem(id));
-}
-function Tray() {
-  return /* @__PURE__ */ jsx(
-    "box",
-    {
-      className: "tray container",
-      setup: traySetup
-    }
-  );
-}
-var Tray_default = Tray;
-
 // src/modules/bar/clock.tsx
 function Clock() {
-  const time2 = Variable("").poll(1e3, 'date "+%a %b %d %H:%M:%S"');
+  const time = Variable("").poll(1e3, 'date "+%H:%M:%S"');
+  const date = Variable("").poll(1e3, 'date "+%a %b %d"');
   return /* @__PURE__ */ jsx(
     "button",
     {
@@ -1005,13 +938,17 @@ function Clock() {
       cursor: "pointer",
       onClick: (_, event) => {
         if (event.button === default6.BUTTON_PRIMARY) {
-          const win = application_default.get_window("calendar");
+          const win = application_default.get_window("dashboard");
           if (win) {
             win.visible = !win.visible;
           }
         }
       },
-      children: /* @__PURE__ */ jsx("label", { label: bind(time2) })
+      children: /* @__PURE__ */ jsxs("box", { halign: default5.Align.CENTER, valign: default5.Align.CENTER, spacing: 5, children: [
+        /* @__PURE__ */ jsx("label", { label: bind(date) }),
+        /* @__PURE__ */ jsx("icon", { icon: "nix-snowflake-symbolic" }),
+        /* @__PURE__ */ jsx("label", { label: bind(time) })
+      ] })
     }
   );
 }
@@ -1103,7 +1040,7 @@ function BatteryButton() {
       visible: true,
       onClick: (_, event) => {
         if (event.button === default6.BUTTON_PRIMARY) {
-          const win = application_default.get_window("powerprofiles");
+          const win = application_default.get_window("sessioncontrols");
           if (win) {
             win.visible = !win.visible;
           }
@@ -1471,6 +1408,7 @@ function Player({ player: player6 }) {
       spacing: 5,
       halign: default5.Align.END,
       valign: default5.Align.CENTER,
+      visible: bind(player6, "available").as((a) => a === true),
       setup,
       children: [
         /* @__PURE__ */ jsx(
@@ -1498,151 +1436,136 @@ var MediaPlayer_default = Player;
 import Notifd from "gi://AstalNotifd";
 import Pango3 from "gi://Pango";
 var Notif = Notifd.get_default();
-Notif.set_property("popupTimeout", 3e4);
-Notif.set_property("forceTimeout", false);
-Notif.set_property("cacheActions", false);
-Notif.set_property("clearDelay", 1e3);
-var time = (time2, format = "%H:%M") => default7.DateTime.new_from_unix_local(time2).format(format);
-var NotificationIcon = ({ app_entry, app_icon, image }) => {
-  if (image) {
-    return /* @__PURE__ */ jsx(
-      "box",
-      {
-        hexpand: false,
-        className: "icon img",
-        css: `
-          background-image: url("${image}");
-          background-size: cover;
-          background-repeat: no-repeat;
-          background-position: center;
-          min-width: 5rem;
-          min-height: 5rem;
-        `
-      }
-    );
-  }
-  let icon = icons_default.fallback.notification;
-  if (Icons(app_icon)) icon = Icons(app_icon);
-  if (Icons(app_entry || "")) icon = Icons(app_entry || "");
+var Time = (time, format = "%H:%M") => default7.DateTime.new_from_unix_local(time).format(format);
+var Date2 = (time, format = "%b %d") => default7.DateTime.new_from_unix_local(time).format(format);
+var NotifWidget = () => {
   return /* @__PURE__ */ jsx(
     "box",
     {
-      valign: default5.Align.CENTER,
-      hexpand: false,
-      className: "notiftemIcon",
-      css: `
-        min-width: 20px;
-        min-height: 20px;
-      `,
-      children: /* @__PURE__ */ jsx(
-        "icon",
-        {
-          icon,
-          icon_size: 58,
-          halign: default5.Align.CENTER,
-          valign: default5.Align.CENTER,
-          hexpand: true,
-          vexpand: true
+      className: "notif",
+      halign: default5.Align.CENTER | default5.Align.FILL,
+      valign: default5.Align.START,
+      vexpand: true,
+      vertical: true,
+      spacing: 10,
+      widthRequest: 350,
+      children: bind(Notif, "notifications").as((items) => {
+        if (items) {
+          items.sort((a, b) => b.time - a.time);
         }
-      )
+        return items.map((item) => /* @__PURE__ */ jsx("eventbox", { onClick: () => item.dismiss(), children: /* @__PURE__ */ jsxs(
+          "box",
+          {
+            className: `level${item.get_hint("urgency")?.unpack()} outerbox`,
+            vertical: false,
+            vexpand: true,
+            hexpand: false,
+            visible: true,
+            children: [
+              /* @__PURE__ */ jsxs(
+                "box",
+                {
+                  className: "icondatetime",
+                  vertical: true,
+                  valign: default5.Align.CENTER,
+                  halign: default5.Align.START,
+                  spacing: 5,
+                  children: [
+                    /* @__PURE__ */ jsx(
+                      "icon",
+                      {
+                        className: "icon",
+                        icon: item.get_app_icon() || item.get_desktop_entry() || icons_default.fallback.notification,
+                        valign: default5.Align.CENTER,
+                        halign: default5.Align.CENTER
+                      }
+                    ),
+                    /* @__PURE__ */ jsxs("box", { vertical: true, className: "datetime", children: [
+                      /* @__PURE__ */ jsx(
+                        "label",
+                        {
+                          valign: default5.Align.CENTER,
+                          halign: default5.Align.CENTER,
+                          lines: 1,
+                          maxWidthChars: 6,
+                          label: Date2(item.time)?.toString()
+                        }
+                      ),
+                      /* @__PURE__ */ jsx(
+                        "label",
+                        {
+                          valign: default5.Align.CENTER,
+                          halign: default5.Align.CENTER,
+                          lines: 1,
+                          maxWidthChars: 6,
+                          label: Time(item.time)?.toString()
+                        }
+                      )
+                    ] })
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxs(
+                "box",
+                {
+                  vertical: true,
+                  valign: default5.Align.START,
+                  halign: default5.Align.START,
+                  children: [
+                    /* @__PURE__ */ jsx(
+                      "label",
+                      {
+                        className: "title",
+                        label: item.summary,
+                        maxWidthChars: 50,
+                        lines: 2,
+                        ellipsize: Pango3.EllipsizeMode.END,
+                        halign: default5.Align.START,
+                        valign: default5.Align.START
+                      }
+                    ),
+                    /* @__PURE__ */ jsx(
+                      "label",
+                      {
+                        className: "body",
+                        label: item.body,
+                        maxWidthChars: 50,
+                        lines: 3,
+                        ellipsize: Pango3.EllipsizeMode.END,
+                        halign: default5.Align.START,
+                        valign: default5.Align.CENTER
+                      }
+                    ),
+                    /* @__PURE__ */ jsx(
+                      "box",
+                      {
+                        className: "actions",
+                        valign: default5.Align.END,
+                        halign: default5.Align.FILL,
+                        children: item.get_actions().map((action) => /* @__PURE__ */ jsx(
+                          "button",
+                          {
+                            onClick: () => {
+                              item.invoke(action.id);
+                              item.dismiss();
+                            },
+                            hexpand: true,
+                            children: /* @__PURE__ */ jsx("label", { label: action.label })
+                          }
+                        ))
+                      }
+                    )
+                  ]
+                }
+              )
+            ]
+          }
+        ) }));
+      })
     }
   );
 };
-var Notification_default = (notification) => {
-  const content = /* @__PURE__ */ jsxs("box", { className: "content", valign: default5.Align.CENTER, halign: default5.Align.FILL, children: [
-    NotificationIcon(notification),
-    /* @__PURE__ */ jsxs("box", { vertical: true, halign: default5.Align.FILL, children: [
-      /* @__PURE__ */ jsxs("box", { spacing: 5, vertical: false, hexpand: true, children: [
-        /* @__PURE__ */ jsx(
-          "label",
-          {
-            className: "notifItemTitle",
-            name: "nTitle",
-            xalign: 0,
-            lines: 2,
-            maxWidthChars: 35,
-            ellipsize: Pango3.EllipsizeMode.END,
-            wrap: true,
-            use_markup: true,
-            hexpand: true,
-            valign: default5.Align.CENTER,
-            halign: default5.Align.START,
-            label: notification.summary.trim()
-          }
-        ),
-        /* @__PURE__ */ jsx(
-          "label",
-          {
-            className: "time",
-            halign: default5.Align.END,
-            valign: default5.Align.CENTER,
-            children: time(notification.time)
-          }
-        ),
-        /* @__PURE__ */ jsx(
-          "button",
-          {
-            className: "close-button",
-            halign: default5.Align.END,
-            valign: default5.Align.CENTER,
-            onClick: notification.dismiss,
-            children: /* @__PURE__ */ jsx("icon", { icon: "window-close-symbolic" })
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsx(
-        "label",
-        {
-          className: "notifItemBody",
-          hexpand: false,
-          halign: default5.Align.START,
-          use_markup: true,
-          xalign: 0,
-          label: notification.body.trim(),
-          maxWidthChars: 50,
-          lines: 3,
-          ellipsize: Pango3.EllipsizeMode.END,
-          wrap: true
-        }
-      )
-    ] })
-  ] });
-  const actionsbox = notification.actions.length > 0 ? /* @__PURE__ */ jsx("revealer", { transitionType: default5.RevealerTransitionType.SLIDE_DOWN, children: /* @__PURE__ */ jsx("eventbox", { className: "actions horizontal", children: notification.actions.map((action) => /* @__PURE__ */ jsx(
-    "button",
-    {
-      className: "action-button",
-      onClick: (_, event) => {
-        if (event.button === default6.BUTTON_PRIMARY) {
-          notification.invoke(action.id);
-        }
-      },
-      hexpand: true,
-      children: /* @__PURE__ */ jsx("label", { label: action.label })
-    }
-  )) }) }) : null;
-  const eventbox = /* @__PURE__ */ jsx(
-    "eventbox",
-    {
-      vexpand: false,
-      hexpand: true,
-      halign: default5.Align.START,
-      onClick: (_, event) => {
-        if (event.button === default6.BUTTON_PRIMARY) {
-          notification.dismiss();
-        }
-      },
-      onHover: (_, event) => {
-        if (actionsbox) actionsbox.reveal_child = true;
-      },
-      onHoverLost: (_, event) => {
-        if (actionsbox) actionsbox.reveal_child = false;
-        notification.dismiss();
-      },
-      children: /* @__PURE__ */ jsx("box", { vertical: true, children: actionsbox ? [content, actionsbox] : [content] })
-    }
-  );
-  return /* @__PURE__ */ jsx("box", { className: `notification ${notification.urgency}`, children: eventbox });
-};
+var Notification_default = NotifWidget;
 
 // src/modules/Widgets/VolumeIndicator.tsx
 import Wp from "gi://AstalWp";
@@ -1904,12 +1827,85 @@ function PowerProfiles2() {
 }
 var powerprofiles_default = PowerProfiles2;
 
+// src/modules/Widgets/Tray.tsx
+import AstalTray from "gi://AstalTray";
+var SystemTray = AstalTray.Tray.get_default();
+var SysTrayItem = (item) => {
+  const menu = item.create_menu?.();
+  return /* @__PURE__ */ jsx(
+    "button",
+    {
+      className: "systray-item",
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      onClick: (btn, event) => {
+        if (event.button === default6.BUTTON_PRIMARY || event.button === default6.BUTTON_SECONDARY) {
+          menu?.popup_at_widget(
+            btn,
+            default6.Gravity.EAST,
+            default6.Gravity.WEST,
+            null
+          );
+        } else if (event.button === default6.BUTTON_MIDDLE) {
+          item.activate(0, 0);
+        }
+      },
+      tooltip_markup: bind(item, "tooltip_markup"),
+      children: /* @__PURE__ */ jsx(
+        "icon",
+        {
+          halign: default5.Align.CENTER,
+          valign: default5.Align.CENTER,
+          pixbuf: bind(item, "icon_pixbuf"),
+          gicon: bind(item, "gicon"),
+          icon: bind(item, "icon_name")
+        }
+      )
+    }
+  );
+};
+function traySetup(box) {
+  const items = /* @__PURE__ */ new Map();
+  const addItem = (id) => {
+    const item = SystemTray.get_item(id);
+    if (item) {
+      const trayItem = SysTrayItem(item);
+      items.set(id, trayItem);
+      box.add(trayItem);
+      trayItem.show();
+    }
+  };
+  const removeItem = (id) => {
+    const trayItem = items.get(id);
+    if (trayItem) {
+      trayItem.destroy();
+      items.delete(id);
+    }
+  };
+  SystemTray.get_items().forEach((item) => addItem(item.item_id));
+  SystemTray.connect("item_added", (SystemTray2, id) => addItem(id));
+  SystemTray.connect("item_removed", (SystemTray2, id) => removeItem(id));
+}
+function Tray() {
+  return /* @__PURE__ */ jsx("box", { className: "tray container", setup: traySetup, halign: default5.Align.CENTER, valign: default5.Align.CENTER, vertical: true });
+}
+var Tray_default = Tray;
+
 // src/modules/bar/sysinfo.tsx
 function SysInfo() {
-  return /* @__PURE__ */ jsxs("box", { className: "sysinfo", halign: default5.Align.CENTER, valign: default5.Align.CENTER, spacing: 5, children: [
-    /* @__PURE__ */ jsx(VolumeIndicator_default, {}),
-    /* @__PURE__ */ jsx(battery_default, {})
-  ] });
+  return /* @__PURE__ */ jsxs(
+    "box",
+    {
+      className: "sysinfo",
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      spacing: 5,
+      children: [
+        /* @__PURE__ */ jsx(VolumeIndicator_default, {}),
+        /* @__PURE__ */ jsx(battery_default, {})
+      ]
+    }
+  );
 }
 
 // src/modules/bar/MediaTicker.tsx
@@ -2029,54 +2025,6 @@ function MediaTickerButton() {
 }
 var MediaTicker_default = MediaTickerButton;
 
-// src/modules/bar/BarButtons.tsx
-var DashboardButton = () => {
-  return /* @__PURE__ */ jsx(
-    "button",
-    {
-      className: "BarBTN",
-      halign: default5.Align.CENTER,
-      valign: default5.Align.CENTER,
-      css: `
-        padding: 0rem 0.25rem;
-      `,
-      tooltip_text: "Dashboard",
-      onClick: (_, event) => {
-        if (event.button === default6.BUTTON_PRIMARY) {
-          const win = application_default.get_window("dashboard");
-          if (win) {
-            win.visible = !win.visible;
-          }
-        }
-      },
-      children: /* @__PURE__ */ jsx("icon", { icon: "nix-snowflake-symbolic" })
-    }
-  );
-};
-var SessionControlButton = () => {
-  return /* @__PURE__ */ jsx(
-    "button",
-    {
-      className: "BarBTN",
-      halign: default5.Align.CENTER,
-      valign: default5.Align.CENTER,
-      css: `
-        padding: 0rem 0.25rem;
-      `,
-      tooltip_text: "Power Menu",
-      onClick: (_, event) => {
-        if (event.button === default6.BUTTON_PRIMARY) {
-          const win = application_default.get_window("sessioncontrols");
-          if (win) {
-            win.visible = !win.visible;
-          }
-        }
-      },
-      children: /* @__PURE__ */ jsx("icon", { icon: Icons("power-symbolic") })
-    }
-  );
-};
-
 // src/modules/bar/Bar.tsx
 function LeftBar() {
   return /* @__PURE__ */ jsxs(
@@ -2094,18 +2042,14 @@ function LeftBar() {
   );
 }
 function CenterBar() {
-  return /* @__PURE__ */ jsxs(
+  return /* @__PURE__ */ jsx(
     "box",
     {
       className: "center",
       spacing: 10,
       halign: default5.Align.CENTER,
       valign: default5.Align.START,
-      children: [
-        /* @__PURE__ */ jsx(Clock, {}),
-        /* @__PURE__ */ jsx(Tray_default, {}),
-        /* @__PURE__ */ jsx(SysInfo, {})
-      ]
+      children: /* @__PURE__ */ jsx(Clock, {})
     }
   );
 }
@@ -2119,8 +2063,7 @@ function RightBar() {
       spacing: 5,
       children: [
         /* @__PURE__ */ jsx(MediaTicker_default, {}),
-        /* @__PURE__ */ jsx(DashboardButton, {}),
-        /* @__PURE__ */ jsx(SessionControlButton, {})
+        /* @__PURE__ */ jsx(SysInfo, {})
       ]
     }
   );
@@ -2161,87 +2104,24 @@ import Mpris4 from "gi://AstalMpris";
 
 // src/modules/Windows/dashboard/notificationList.tsx
 import Notifd2 from "gi://AstalNotifd";
-import Pango5 from "gi://Pango";
 var Notif2 = Notifd2.get_default();
-var NotificationIcon2 = ({ app_entry, app_icon, image }) => {
-  if (image) {
-    return /* @__PURE__ */ jsx(
-      "box",
-      {
-        className: "Notif icon",
-        css: `
-                    background-image: url("${image}");
-                    background-size: contain;
-                    background-repeat: no-repeat;
-                    background-position: center;
-                    min-width: 2rem;
-                    min-height: 2rem;
-                `
-      }
-    );
-  }
-  const icon = Icons(app_icon) || Icons(app_entry) || icons_default.fallback.notification;
-  return /* @__PURE__ */ jsx(
-    "box",
-    {
-      className: "notiftemIcon",
-      valign: default5.Align.CENTER,
-      css: `
-                min-width: 2rem;
-                min-height: 2rem;
-            `,
-      children: /* @__PURE__ */ jsx(
-        "icon",
-        {
-          icon,
-          valign: default5.Align.CENTER,
-          halign: default5.Align.CENTER
-        }
-      )
-    }
-  );
-};
-function NotifWidget() {
-  const Time = (time2, format = "%H:%M") => default7.DateTime.new_from_unix_local(time2).format(format);
-  return /* @__PURE__ */ jsx(
-    "box",
-    {
-      className: "notifItem",
-      halign: default5.Align.CENTER,
-      valign: default5.Align.CENTER,
-      vexpand: true,
-      children: bind(Notif2, "notifications").as((items) => items.map((item) => /* @__PURE__ */ jsx("box", { vertical: true, children: /* @__PURE__ */ jsx(
-        "centerbox",
-        {
-          vertical: false,
-          halign: default5.Align.CENTER,
-          valign: default5.Align.CENTER,
-          startWidget: /* @__PURE__ */ jsx(NotificationIcon2, {}),
-          centerWidget: /* @__PURE__ */ jsxs("box", { vertical: true, valign: default5.Align.CENTER, halign: default5.Align.CENTER, children: [
-            /* @__PURE__ */ jsx("label", { label: item.summary, maxWidthChars: 50, ellipsize: Pango5.EllipsizeMode.END, halign: default5.Align.START, valign: default5.Align.START }),
-            /* @__PURE__ */ jsx("label", { label: item.body, maxWidthChars: 50, ellipsize: Pango5.EllipsizeMode.END, halign: default5.Align.START, valign: default5.Align.CENTER })
-          ] })
-        }
-      ) })))
-    }
-  );
-}
 var NotifBox = /* @__PURE__ */ jsx(
   "scrollable",
   {
-    className: "notificationBox",
-    vscroll: default5.PolicyType.ALWAYS,
-    hscroll: default5.PolicyType.AUTOMATIC,
+    className: "notif container",
+    vscroll: default5.PolicyType.AUTOMATIC,
+    hscroll: default5.PolicyType.NEVER,
     vexpand: true,
-    halign: default5.Align.CENTER,
-    valign: default5.Align.START,
-    children: /* @__PURE__ */ jsx(NotifWidget, {})
+    hexpand: false,
+    halign: default5.Align.FILL,
+    valign: default5.Align.FILL,
+    children: /* @__PURE__ */ jsx(Notification_default, {})
   }
 );
 var Empty = /* @__PURE__ */ jsx(
   "box",
   {
-    className: "notifEmpty",
+    className: "notif empty",
     halign: default5.Align.CENTER,
     valign: default5.Align.CENTER,
     vertical: true,
@@ -2256,98 +2136,120 @@ var Empty = /* @__PURE__ */ jsx(
     )
   }
 );
-var NotificationList = () => {
-  const clearNotifications = () => {
-    Notif2.notifications.forEach((item, n) => timeout(50 * n, () => item?.dismiss()));
-  };
-  const buttonIcon = () => {
-    if (Notif2.get_notifications !== null && Notif2.get_notifications.length === 0) {
-      return icons_default.trash.empty;
-    } else {
-      return icons_default.trash.full;
-    }
-  };
-  return /* @__PURE__ */ jsxs("box", { className: "notif panel", vertical: true, vexpand: true, children: [
-    /* @__PURE__ */ jsx(
-      "centerbox",
-      {
-        className: "notif panel box",
-        spacing: 20,
-        valign: default5.Align.FILL,
-        halign: default5.Align.CENTER,
-        vertical: false,
-        startWidget: /* @__PURE__ */ jsx("label", { label: "Notifications", valign: default5.Align.START, halign: default5.Align.END }),
-        centerWidget: /* @__PURE__ */ jsx(
-          "button",
+function NotificationList() {
+  return /* @__PURE__ */ jsxs(
+    "box",
+    {
+      className: "notif panel",
+      vertical: true,
+      vexpand: true,
+      hexpand: false,
+      halign: default5.Align.FILL,
+      valign: default5.Align.FILL,
+      children: [
+        /* @__PURE__ */ jsx(
+          "centerbox",
           {
-            halign: default5.Align.START,
-            valign: default5.Align.START,
-            onClick: () => {
-              clearNotifications();
-            },
-            children: /* @__PURE__ */ jsx("icon", { icon: buttonIcon() })
-          }
-        ),
-        endWidget: /* @__PURE__ */ jsx(
-          "button",
-          {
-            halign: default5.Align.END,
-            valign: default5.Align.START,
-            onClick: () => {
-              Notif2.set_dont_disturb(!Notif2.dontDisturb);
-              console.log(Notif2.get_dont_disturb());
-            },
-            children: /* @__PURE__ */ jsx(
+            className: "notif panel box",
+            spacing: 20,
+            valign: default5.Align.FILL,
+            halign: default5.Align.CENTER,
+            vertical: false,
+            startWidget: /* @__PURE__ */ jsx(
               "label",
               {
-                label: bind(Notif2, "dont_disturb").as((d) => d === false ? "DND: Enabled" : "DND: Disabled"),
-                valign: default5.Align.CENTER,
-                halign: default5.Align.CENTER
+                label: "Notifications",
+                valign: default5.Align.START,
+                halign: default5.Align.END
+              }
+            ),
+            centerWidget: /* @__PURE__ */ jsx(
+              "button",
+              {
+                halign: default5.Align.START,
+                valign: default5.Align.START,
+                onClick: (_, event) => {
+                  if (event.button === default6.BUTTON_PRIMARY) {
+                    Notif2.get_notifications().forEach(
+                      (item, id) => timeout(50 * id, () => item.dismiss())
+                    );
+                  }
+                },
+                children: /* @__PURE__ */ jsx(
+                  "icon",
+                  {
+                    icon: bind(Notif2, "notifications").as(
+                      (items) => items.length > 0 ? icons_default.trash.full : icons_default.trash.empty
+                    )
+                  }
+                )
+              }
+            ),
+            endWidget: /* @__PURE__ */ jsx(
+              "button",
+              {
+                halign: default5.Align.END,
+                valign: default5.Align.START,
+                onClick: (_, event) => {
+                  if (event.button === default6.BUTTON_PRIMARY) {
+                    Notif2.set_dont_disturb(!Notif2.get_dont_disturb());
+                  }
+                },
+                children: /* @__PURE__ */ jsx(
+                  "icon",
+                  {
+                    icon: bind(Notif2, "dont_disturb").as(
+                      (d) => d === false ? Icons("bell-disabled-symbolic") : Icons("bell-enabled-symbolic")
+                    ),
+                    valign: default5.Align.CENTER,
+                    halign: default5.Align.CENTER
+                  }
+                )
               }
             )
           }
-        )
-      }
-    ),
-    NotifBox
-  ] });
-};
+        ),
+        NotifBox
+      ]
+    }
+  );
+}
 
 // src/modules/Windows/dashboard/dashboard.tsx
 var player4 = Mpris4.Player.new("Deezer");
-var TopCenter = () => /* @__PURE__ */ jsx(
-  "centerbox",
+var Calendar = () => /* @__PURE__ */ jsx(
+  "box",
   {
-    className: "dashboard topCenter",
-    vertical: false,
+    className: "dashboard calendar",
+    valign: default5.Align.CENTER,
     halign: default5.Align.CENTER,
-    valign: default5.Align.START,
-    spacing: 10,
-    centerWidget: /* @__PURE__ */ jsx(MediaPlayer_default, { player: player4 })
+    children: /* @__PURE__ */ jsx(GridCalendar_default, {})
   }
 );
-var LeftSide = () => /* @__PURE__ */ jsx(
-  "centerbox",
+var LeftSide = () => /* @__PURE__ */ jsxs(
+  "box",
   {
     className: "dashboard leftSide",
     vertical: true,
-    halign: default5.Align.START,
+    halign: default5.Align.CENTER,
     valign: default5.Align.CENTER,
     spacing: 10,
-    startWidget: /* @__PURE__ */ jsx(GridCalendar_default, {}),
-    endWidget: /* @__PURE__ */ jsx(powerprofiles_default, {})
+    children: [
+      /* @__PURE__ */ jsx(Calendar, {}),
+      /* @__PURE__ */ jsx(powerprofiles_default, {})
+    ]
   }
 );
 var RightSide = () => /* @__PURE__ */ jsx(
-  "centerbox",
+  "box",
   {
     className: "dashboard rightSide",
     vertical: true,
     halign: default5.Align.CENTER,
-    valign: default5.Align.START,
+    valign: default5.Align.FILL,
     hexpand: false,
     spacing: 10,
-    startWidget: /* @__PURE__ */ jsx(NotificationList, {})
+    children: /* @__PURE__ */ jsx(NotificationList, {})
   }
 );
 function Dashboard() {
@@ -2369,49 +2271,20 @@ function Dashboard() {
           vertical: true,
           vexpand: false,
           hexpand: false,
-          valign: default5.Align.CENTER,
+          valign: default5.Align.START,
           halign: default5.Align.CENTER,
           heightRequest: winheight(0.5),
-          widthRequest: winwidth(0.5),
-          css: `padding:1.5rem;`,
+          widthRequest: winwidth(0.25),
+          css: `
+          padding: 1.5rem;
+        `,
           children: [
-            /* @__PURE__ */ jsx(
-              "centerbox",
-              {
-                vertical: true,
-                halign: default5.Align.FILL,
-                valign: default5.Align.FILL,
-                startWidget: /* @__PURE__ */ jsx(TopCenter, {}),
-                endWidget: /* @__PURE__ */ jsx(
-                  "box",
-                  {
-                    className: "dashboard divider horizontal",
-                    valign: default5.Align.END,
-                    halign: default5.Align.FILL,
-                    visible: true
-                  }
-                )
-              }
-            ),
-            /* @__PURE__ */ jsx(
-              "centerbox",
-              {
-                vertical: false,
-                halign: default5.Align.FILL,
-                valign: default5.Align.FILL,
-                startWidget: /* @__PURE__ */ jsx(LeftSide, {}),
-                centerWidget: /* @__PURE__ */ jsx(
-                  "box",
-                  {
-                    className: "dashboard divider vertical",
-                    valign: default5.Align.FILL,
-                    halign: default5.Align.CENTER,
-                    visible: true
-                  }
-                ),
-                endWidget: /* @__PURE__ */ jsx(RightSide, {})
-              }
-            )
+            /* @__PURE__ */ jsx("box", { vertical: true, halign: default5.Align.CENTER, valign: default5.Align.CENTER, spacing: 10, children: /* @__PURE__ */ jsx(MediaPlayer_default, { player: player4 }) }),
+            /* @__PURE__ */ jsxs("box", { vertical: false, halign: default5.Align.FILL, valign: default5.Align.FILL, spacing: 10, children: [
+              /* @__PURE__ */ jsx(LeftSide, {}),
+              /* @__PURE__ */ jsx(Tray_default, {}),
+              /* @__PURE__ */ jsx(RightSide, {})
+            ] })
           ]
         }
       )
@@ -2422,7 +2295,7 @@ function Dashboard() {
     {
       name: "dashboard",
       className: "dashboard window",
-      anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.LEFT | default2.WindowAnchor.RIGHT,
+      anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.LEFT | default2.WindowAnchor.RIGHT | default2.WindowAnchor.BOTTOM,
       layer: default2.Layer.OVERLAY,
       exclusivity: default2.Exclusivity.NORMAL,
       keymode: default2.Keymode.EXCLUSIVE,
@@ -2460,7 +2333,7 @@ function MediaPlayerWindow() {
 }
 
 // src/modules/Windows/calendar.tsx
-function Calendar() {
+function Calendar2() {
   return /* @__PURE__ */ jsx(
     "window",
     {
@@ -2493,13 +2366,13 @@ var AudioMixer_default = () => /* @__PURE__ */ jsx(
   {
     name: "audiomixerwindow",
     className: "window audiomixer",
-    anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.TOP,
+    anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.RIGHT,
     layer: default2.Layer.OVERLAY,
     exclusivity: default2.Exclusivity.NORMAL,
     keymode: default2.Keymode.EXCLUSIVE,
     visible: false,
     application: application_default,
-    "margin-right": 525,
+    "margin-right": 50,
     children: /* @__PURE__ */ jsx("eventbox", { onKeyPressEvent: (_, event) => {
       if (event.get_keyval()[1] === default6.KEY_Escape) {
         application_default.toggle_window("audiomixerwindow");
@@ -2508,94 +2381,296 @@ var AudioMixer_default = () => /* @__PURE__ */ jsx(
   }
 );
 
-// src/modules/Windows/notificationPopups.tsx
-import Notifd3 from "gi://AstalNotifd";
-var Notif3 = Notifd3.get_default();
-var transitionTime = 300;
-function Animated(id) {
-  const n = Notif3.get_notification(id);
-  const theNotify = Notification_default(n);
-  const inner = /* @__PURE__ */ jsx(
-    "revealer",
-    {
-      transitionType: default5.RevealerTransitionType.SLIDE_LEFT,
-      transition_duration: transitionTime,
-      revealChild: false,
-      children: theNotify
-    }
-  );
-  const outer = /* @__PURE__ */ jsx(
-    "revealer",
-    {
-      transitionType: default5.RevealerTransitionType.SLIDE_RIGHT,
-      transition_duration: transitionTime,
-      revealChild: false,
-      children: inner
-    }
-  );
-  const box = /* @__PURE__ */ jsx(
+// src/modules/Windows/cliphist.tsx
+import Pango5 from "gi://Pango";
+var Separator = () => {
+  return /* @__PURE__ */ jsx(
     "box",
     {
-      halign: default5.Align.END,
-      children: outer
+      className: "clip_divider",
+      heightRequest: 1,
+      css: `
+        background-color: #ccc;
+        margin: 10px 0px;
+      `
     }
   );
-  idle(() => {
-    outer.reveal_child = true;
-    timeout(transitionTime, () => {
-      inner.reveal_child = true;
+};
+function ClipHistItem(entry) {
+  let [id, ...content] = entry.split("	");
+  let clickCount = 0;
+  const button = /* @__PURE__ */ jsx("button", { className: "clip_container", children: /* @__PURE__ */ jsxs("box", { children: [
+    /* @__PURE__ */ jsx("label", { label: id, className: "clip_id", valign: default5.Align.CENTER }),
+    /* @__PURE__ */ jsx(
+      "label",
+      {
+        label: "\u30FB",
+        className: "dot_divider",
+        valign: default5.Align.CENTER
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      "label",
+      {
+        label: content.join(" ").trim(),
+        className: "clip_label",
+        valign: default5.Align.CENTER,
+        ellipsize: Pango5.EllipsizeMode.END
+      }
+    )
+  ] }) });
+  button.connect("clicked", () => {
+    clickCount++;
+    if (clickCount === 2) {
+      execAsync(
+        `${default7.get_user_config_dir()}/src/scripts/cliphist.sh --copy-by-id ${id}`
+      );
+      clickCount = 0;
+    }
+  });
+  button.connect("focus-out-event", () => {
+    clickCount = 0;
+  });
+  return /* @__PURE__ */ jsxs("box", { orientation: default5.Orientation.VERTICAL, children: [
+    button,
+    /* @__PURE__ */ jsx(Separator, {})
+  ] });
+}
+function ClipHistWidget({ width = 500, height = 500, spacing = 12 }) {
+  let output = "";
+  let entries = [];
+  let clipHistItems = [];
+  let widgets = [];
+  const list = /* @__PURE__ */ jsx("box", { vertical: true, spacing });
+  async function repopulate() {
+    try {
+      output = await execAsync(
+        `${default7.get_user_config_dir()}/scripts/cliphist.sh --get`
+      );
+    } catch (err) {
+      print(err);
+      output = "";
+    }
+    entries = output.split("\n").filter((line) => line.trim() !== "");
+    clipHistItems = entries.map((entry2) => {
+      let [id, ...content] = entry2.split("	");
+      return { id: id.trim(), content: content.join(" ").trim(), entry: entry2 };
     });
-  });
-  return Object.assign(box, {
-    dismiss() {
-      inner.reveal_child = false;
-      timeout(transitionTime, () => {
-        outer.reveal_child = false;
-        timeout(transitionTime, () => {
-          box.destroy();
-        });
-      });
-    }
-  });
-}
-function popupBoxSetup(box, map) {
-  Notif3.connect("notified", (_, id) => {
-    if (map.has(id)) {
-      remove(null, id);
-    }
-    if (Notif3.dont_disturb) {
-      return;
-    }
-    const w = Animated(id);
-    map.set(id, w);
-    box.children = [w, ...box.children];
-  });
-  Notif3.connect("dismissed", remove);
-  Notif3.connect("closed", remove);
-  function remove(_, id) {
-    const animatedElement = map.get(id);
-    if (animatedElement) {
-      animatedElement.dismiss();
-      map.delete(id);
-    }
+    list.remove_all();
+    widgets = clipHistItems.map((item) => ClipHistItem(item.entry));
+    widgets.forEach((widget) => {
+      list.append(widget);
+    });
   }
-}
-function PopupList(id) {
-  const map = /* @__PURE__ */ new Map();
-  const notifWidth = Notif3.get_property("width");
-  console.log(`Notificaiton: ${Notif3.get_notification}`);
-  const box = /* @__PURE__ */ jsx(
+  repopulate();
+  const entry = /* @__PURE__ */ jsx(
+    "entry",
+    {
+      hexpand: true,
+      className: "cliphistory_entry",
+      placeholder_text: "Search",
+      on_changed: ({ text }) => {
+        const searchText = (text ?? "").toLowerCase();
+        widgets.forEach((item) => {
+          const content = clipHistItems.find((clipItem) => clipItem.entry === item.entry)?.content.toLowerCase() || "";
+          item.visible = content.includes(searchText);
+        });
+      }
+    }
+  );
+  return /* @__PURE__ */ jsxs(
     "box",
     {
       vertical: true,
-      hexpand: true,
-      halign: default5.Align.FILL,
-      setup: (box2) => popupBoxSetup(box2, map),
-      css: bind(notifWidth).as((w) => `min-width: ${w}px;`)
+      className: "cliphistory_box",
+      margin_top: 14,
+      margin_right: 14,
+      setup: (self) => self.hook(application_default, (_, windowName, visible) => {
+        if (windowName !== cliphist) return;
+        if (visible) {
+          repopulate();
+          entry.text = "";
+        }
+      }),
+      children: [
+        entry,
+        /* @__PURE__ */ jsx(Separator, {}),
+        /* @__PURE__ */ jsx(
+          "scrollable",
+          {
+            hscroll: default5.PolicyType.NEVER,
+            css: `
+          min-width: ${width}px;
+          min-height: ${height}px;
+        `,
+            children: list
+          }
+        )
+      ]
     }
   );
-  return box;
 }
+var cliphist = /* @__PURE__ */ jsx(
+  "window",
+  {
+    name: "cliphist",
+    className: "cliphistory",
+    visible: false,
+    keymode: default2.Keymode.EXCLUSIVE,
+    anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.RIGHT,
+    layer: default2.Layer.OVERLAY,
+    application: application_default,
+    children: /* @__PURE__ */ jsx(ClipHistWidget, {})
+  }
+);
+
+// src/modules/Windows/notificationPopups.tsx
+import Notifd3 from "gi://AstalNotifd";
+import Pango6 from "gi://Pango";
+var Notif3 = Notifd3.get_default();
+var expireTime = 3e4;
+var Time2 = (time, format = "%H:%M.%S") => default7.DateTime.new_from_unix_local(time).format(format);
+var Date3 = (time, format = "%b %d") => default7.DateTime.new_from_unix_local(time).format(format);
+var NotifWidget2 = () => {
+  return /* @__PURE__ */ jsx(
+    "box",
+    {
+      className: "notif",
+      halign: default5.Align.FILL,
+      valign: default5.Align.START,
+      vexpand: true,
+      vertical: true,
+      spacing: 10,
+      widthRequest: 450,
+      children: bind(Notif3, "notifications").as((items) => {
+        if (items) {
+          items.sort((a, b) => b.time - a.time).forEach((item) => setTimeout(() => item.dismiss(), expireTime));
+        }
+        return items.map((item) => /* @__PURE__ */ jsx(
+          "eventbox",
+          {
+            onClick: () => {
+              item.dismiss();
+            },
+            onHover: () => {
+            },
+            onHoverLost: () => {
+              remove(item.id);
+            },
+            children: /* @__PURE__ */ jsxs(
+              "box",
+              {
+                className: `level${item.get_hint("urgency")?.unpack()} outerbox`,
+                vertical: false,
+                vexpand: true,
+                hexpand: false,
+                visible: true,
+                children: [
+                  /* @__PURE__ */ jsxs(
+                    "box",
+                    {
+                      className: "icondatetime",
+                      vertical: true,
+                      valign: default5.Align.CENTER,
+                      halign: default5.Align.START,
+                      spacing: 5,
+                      children: [
+                        /* @__PURE__ */ jsx(
+                          "icon",
+                          {
+                            className: "icon",
+                            icon: item.get_app_icon() || item.get_desktop_entry() || icons_default.fallback.notification,
+                            valign: default5.Align.CENTER,
+                            halign: default5.Align.CENTER
+                          }
+                        ),
+                        /* @__PURE__ */ jsxs("box", { vertical: true, className: "datetime", children: [
+                          /* @__PURE__ */ jsx(
+                            "label",
+                            {
+                              valign: default5.Align.CENTER,
+                              halign: default5.Align.CENTER,
+                              lines: 1,
+                              maxWidthChars: 6,
+                              label: Date3(item.time)?.toString()
+                            }
+                          ),
+                          /* @__PURE__ */ jsx(
+                            "label",
+                            {
+                              valign: default5.Align.CENTER,
+                              halign: default5.Align.CENTER,
+                              lines: 1,
+                              maxWidthChars: 6,
+                              label: Time2(item.time)?.toString()
+                            }
+                          )
+                        ] })
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxs(
+                    "box",
+                    {
+                      vertical: true,
+                      valign: default5.Align.START,
+                      halign: default5.Align.START,
+                      children: [
+                        /* @__PURE__ */ jsx(
+                          "label",
+                          {
+                            className: "title",
+                            label: item.summary,
+                            maxWidthChars: 50,
+                            lines: 2,
+                            ellipsize: Pango6.EllipsizeMode.END,
+                            halign: default5.Align.START,
+                            valign: default5.Align.START
+                          }
+                        ),
+                        /* @__PURE__ */ jsx(
+                          "label",
+                          {
+                            className: "body",
+                            label: item.body,
+                            maxWidthChars: 50,
+                            lines: 3,
+                            ellipsize: Pango6.EllipsizeMode.END,
+                            halign: default5.Align.START,
+                            valign: default5.Align.CENTER
+                          }
+                        ),
+                        /* @__PURE__ */ jsx(
+                          "box",
+                          {
+                            className: "actions",
+                            valign: default5.Align.END,
+                            halign: default5.Align.FILL,
+                            children: item.get_actions().map((action) => /* @__PURE__ */ jsx(
+                              "button",
+                              {
+                                onClick: () => {
+                                  item.invoke(action.id);
+                                  item.dismiss();
+                                },
+                                hexpand: true,
+                                children: /* @__PURE__ */ jsx("label", { label: action.label })
+                              }
+                            ))
+                          }
+                        )
+                      ]
+                    }
+                  )
+                ]
+              }
+            )
+          }
+        ));
+      })
+    }
+  );
+};
 var notificationPopups_default = (monitor) => /* @__PURE__ */ jsx(
   "window",
   {
@@ -2604,17 +2679,8 @@ var notificationPopups_default = (monitor) => /* @__PURE__ */ jsx(
     className: "notifications",
     hexpand: true,
     layer: default2.Layer.OVERLAY,
-    exclusivity: default2.Exclusivity.NORMAL,
-    keymode: default2.Keymode.NONE,
-    visible: false,
     application: application_default,
-    children: /* @__PURE__ */ jsx(
-      "box",
-      {
-        css: "padding: 2px;",
-        children: PopupList
-      }
-    )
+    children: /* @__PURE__ */ jsx("box", { css: "padding: 2px;", halign: default5.Align.CENTER, children: /* @__PURE__ */ jsx(NotifWidget2, {}) })
   }
 );
 
@@ -2668,7 +2734,7 @@ var sessioncontrol_default = () => {
       anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.BOTTOM | default2.WindowAnchor.LEFT | default2.WindowAnchor.RIGHT,
       layer: default2.Layer.OVERLAY,
       exclusivity: default2.Exclusivity.NORMAL,
-      keymode: default2.Keymode.EXCLUSIVE,
+      keymode: default2.Keymode.ON_DEMAND,
       visible: false,
       application: application_default,
       children: /* @__PURE__ */ jsx(
@@ -2756,7 +2822,7 @@ application_default.start({
     Bar({ monitor: 0 });
     dashboard_default();
     MediaPlayerWindow();
-    Calendar();
+    Calendar2();
     AudioMixer_default();
     notificationPopups_default(0);
     sessioncontrol_default();

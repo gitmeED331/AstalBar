@@ -1,29 +1,38 @@
 .dashboard {
-	font-weight: bold;
-	background: none;
+  font-weight: bold;
 
+  // &.container {
+  // background: transparent;
+  // border-radius: $radius;
+  //min-height: 78.75rem;
+  // border: $border;
+  //margin-top: 0.25rem;
+  // }
 
-	&.container {
-		background: $PrimaryBG;
-		border-radius: $radius;
-		//min-height: 78.75rem;
-		border: $border;
-		//margin-top: 0.25rem;
-	}
+  &.topCenter {
+    border-radius: $radius;
+    background: $PrimaryBG;
+    margin: 0.25rem;
+  }
 
-	&.divider {
-		&.vertical {
-			min-height: 2px;
-			margin: 0rem 0.5rem;
-			background: $font-color1;
-			border: $border;
-		}
+  &.leftSide {
+    border-radius: $radius;
+    margin: 0.25rem;
+    // border: $border;
+    //background: $PrimaryBG;
+  }
 
-		&.horizontal {
-			min-width: 2px;
-			margin: 0.5rem 0rem;
-			background: $font-color1;
-			border: $border;
-		}
-	}
+  &.calendar {
+    border-radius: $radius;
+    border: $border;
+    background: $PrimaryBG;
+    padding: 0.5rem;
+  }
+
+  &.rightSide {
+    border-radius: $radius;
+    margin: 0.25rem;
+    border: $border;
+    background: $PrimaryBG;
+  }
 }

@@ -61,8 +61,17 @@
     font-size: 0.9rem;
   }
 
+  icon {
+    color: $font-color5
+  }
+
   &:hover {
     color: $font-color5;
+
+    icon {
+      color: $font-color1;
+      animation: spin 1s linear infinite;
+    }
   }
 }
 

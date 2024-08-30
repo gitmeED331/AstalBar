@@ -1,5 +1,5 @@
 #!/usr/bin/gjs -m
-import { GLib, App, exec, monitorFile, Astal, Gtk } from "astal";
+import { GLib, App, execAsync, monitorFile, Astal, Gtk } from "astal";
 
 // const Icons = `${GLib.get_user_data_dir()}/icons/Astal`
 // const STYLEDIR = `${GLib.get_user_config_dir()}/astal-gjs/src/style`
@@ -13,7 +13,7 @@ import { GLib, App, exec, monitorFile, Astal, Gtk } from "astal";
 //         // directory that contains the scss files
 //         `${STYLEDIR}`,
 
-//         exec(`sass ${scss} ${css}`),
+//         execAsync(`sass ${scss} ${css}`),
 //         console.log("Scss compiled"),
 
 //         // main scss file
@@ -36,7 +36,9 @@ import {
   sessioncontrol,
   powerprofiles,
   // Launcher,
-  //cliphist
+  //  cliphist,
+  //networkmenu,
+  //bluetoothmenu,
 } from "./modules/Windows/index";
 
 App.start({
@@ -59,15 +61,17 @@ App.start({
   },
   main() {
     Bar({ monitor: 0 });
-    Dashboard()
+    Dashboard();
     MediaPlayerWindow();
     Calendar();
     AudioMixer();
-    NotificationPopups(0)
-    // Overview()
+    NotificationPopups(0);
+    // Overview();
     sessioncontrol();
     powerprofiles();
-    // Launcher()
-    //cliphist()
+    // Launcher();
+    //  cliphist();
+    //  networkmenu();
+    //	bluetoothmenu();
   },
 });

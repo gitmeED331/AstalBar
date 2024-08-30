@@ -1,165 +1,204 @@
-.notification {
-	min-width: 15rem;
-	border-radius: $radius-tbleft;
-	border-bottom-right-radius: calc($radius / 2);
-	border-top-right-radius: calc($radius / 2);
-	padding: 0.5rem;
-	border: $border;
-	background-color: $NotificationBG;
-	margin: 0.5rem 0rem;
+.notif {
+  .outerbox {
+    background: $PrimaryBG;
+    border-radius: $radius;
+    padding: 0.35rem;
+  }
+  .title {
+    font-size: 1.1rem;
+  }
+  .body {
+    color: $font-color3;
+    font-size: 0.9rem;
+  }
+  .icondatetime {
+    padding: 0.5rem;
+    icon {
+      font-size: 2.5rem;
+    }
+    .datetime {
+      padding: 0.25rem;
+      label {
+        color: $font-color2;
+        font-size: 0.8rem;
+      }
+    }
+  }
+  .actions {
+    button {
+      border: $border;
+      border-radius: $radius;
+      margin: 0 0.4rem;
+      margin-top: 0.8rem;
+      font-size: 1.35rem;
+      padding: 0.1rem;
 
-	box {
-		background-color: transparent;
-	}
+      &:first-child {
+        margin-left: 0.25rem;
+      }
 
-	image {
-		margin-right: 0.25rem
-	}
+      &:last-child {
+        margin-right: 0.25rem;
+      }
+    }
+  }
 
-	&.critical {
-		border: 3px dashed red;
-		color: red;
-
-		image {
-			color: red;
-		}
-
-		box {
-			background-color: transparent;
-		}
-	}
-
-	&.normal {
-		border: 3px dotted rgba(15, 155, 255, 1);
-		color: $font-color1;
-
-		image {
-			color: $font-color1;
-		}
-	}
-
-	&.low {
-		border: 3px groove white;
-		color: white;
-
-		image {
-			color: white;
-		}
-
-		box {
-			background-color: transparent;
-		}
-	}
+  .level2 {
+    &.outerbox {
+      border: 3px dotted rgba(255, 0, 0, 1);
+    }
+    .title {
+      color: $font-color4;
+    }
+    .body {
+      color: $font-color3;
+    }
+    .icondatetime {
+      icon {
+        color: $font-color4;
+      }
+      .datetime {
+        label {
+          color: $font-color2;
+        }
+      }
+    }
+  }
+  .level1 {
+    &.outerbox {
+      border: 3px dashed rgba(15, 155, 255, 1);
+    }
+    .title {
+      color: $font-color1;
+    }
+    .body {
+      color: $font-color3;
+    }
+    .icondatetime {
+      icon {
+        color: $font-color2;
+      }
+      .datetime {
+        label {
+          color: $font-color2;
+        }
+      }
+    }
+  }
+  .levelundefined,
+  .level0 {
+    &.outerbox {
+      border: 3px groove white;
+    }
+    .title {
+      color: $font-color1;
+    }
+    .body {
+      color: $font-color3;
+    }
+    .icondatetime {
+      icon {
+        color: white;
+      }
+    }
+  }
 }
-
-.notifActions .action-button {
-	margin: 0 .4rem;
-	margin-top: .8rem;
-	font-size: 1.35rem;
-
-	&:first-child {
-		margin-left: 0.25rem;
-	}
-
-	&:last-child {
-		margin-right: 0.25rem;
-	}
-}
-
 .close-button {
-	font-size: 1.5rem;
-	margin-left: 0.25rem
+  font-size: 1.5rem;
+  margin-left: 0.25rem;
 }
 
 //
 //---------------- dashboard notifications
 //
 .notif {
-	//dashboard panel box
-	// all:unset;
-	background-color: transparent;
+  //dashboard panel box
+  // all:unset;
+  background-color: transparent;
 
-	&Item {
-		box {
-			margin: unset;
-		}
+  &Item {
+    box {
+      margin: unset;
+    }
 
-		&Body {
-			padding: 0.1rem;
-			//border-radius: $radius;
-			color: white;
-		}
+    &Body {
+      padding: 0.1rem;
+      //border-radius: $radius;
+      color: white;
+    }
 
-		&Icon {
-			font-size: 4rem;
+    &Icon {
+      font-size: 4rem;
 
-			box {
-				background-color: transparent;
-			}
-		}
+      box {
+        background-color: transparent;
+      }
+    }
 
-		&Title {
-			text-shadow: none;
-			font-size: 1.15rem;
-			font-weight: bold;
-		}
+    &Title {
+      text-shadow: none;
+      font-size: 1.15rem;
+      font-weight: bold;
+    }
 
-		&Description {
-			color: white;
-			text-shadow: none;
-			font-size: 0.9rem;
-		}
-	}
+    &Description {
+      color: white;
+      text-shadow: none;
+      font-size: 0.9rem;
+    }
+  }
 
-	&Empty {
-		label {
-			all: unset;
-			//color: $font-color1;
-			font-size: 10rem;
-			text-shadow: 15px 0px 10px yellow, -15px 0px 10px yellow, 0px 0px 0px yellow;
-		}
-	}
+  &.empty {
+    label {
+      all: unset;
+      //color: $font-color1;
+      font-size: 5rem;
+      text-shadow:
+        15px 0px 10px yellow,
+        -15px 0px 10px yellow,
+        0px 0px 0px yellow;
+    }
+  }
 
-	&.panel {
-		border-radius: $radius-tbleft;
-		margin-top: 0.5rem;
-		min-width: 25rem;
-		padding-left: 2.5rem;
-		padding-right: 0.5rem;
+  &.panel {
+    border-radius: $radius;
+    margin-top: 0.5rem;
+    // min-width: 10rem;
+    // padding-left: 2.5rem;
+    // padding-right: 0.5rem;
 
-		&.box {
-			margin-right: 1rem;
-			margin-left: 2rem;
-			margin-bottom: 0.5rem;
+    &.box {
+      // margin-right: 1rem;
+      // margin-left: 2rem;
+      // margin-bottom: 0.5rem;
 
-			label {
-				font-size: 1.5rem;
-				color: $font-color1;
-			}
+      label {
+        font-size: 1.5rem;
+        color: $font-color1;
+      }
 
-			button {
-				color: $font-color1;
+      button {
+        color: $font-color1;
 
-				icon {
-					font-size: 1.5rem;
-				}
-
-			}
-		}
-	}
+        icon {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
 }
 
 // ------------- bar
 .barNotification {
-	background-color: #1e1e2e;
-	border-radius: 2rem;
-	border: 2px solid #11111b;
-	color: #cdd6f4;
-	font-weight: bold;
-	margin-right: 10px;
-	padding: 1px 15px;
+  background-color: #1e1e2e;
+  border-radius: 2rem;
+  border: 2px solid #11111b;
+  color: #cdd6f4;
+  font-weight: bold;
+  margin-right: 10px;
+  padding: 1px 15px;
 }
 
 window.notification-popups box.notifications {
-	padding: 0.5rem;
+  padding: 0.5rem;
 }

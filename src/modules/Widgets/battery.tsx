@@ -95,7 +95,7 @@ function BatteryButton() {
 			visible={true}
 			onClick={(_, event) => {
 				if (event.button === Gdk.BUTTON_PRIMARY) {
-					const win = App.get_window("powerprofiles");
+					const win = App.get_window("sessioncontrols");
 					if (win) {
 						win.visible = !win.visible;
 					}

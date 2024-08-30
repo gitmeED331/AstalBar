@@ -99,8 +99,15 @@ tooltip > * > * {
 .clock label {
   font-size: 0.9rem;
 }
+.clock icon {
+  color: rgb(0, 0, 255);
+}
 .clock:hover {
   color: rgb(0, 0, 255);
+}
+.clock:hover icon {
+  color: rgb(255, 140, 0);
+  animation: spin 1s linear infinite;
 }
 .sysinfo {
   background: rgba(0, 0, 0, 0.5);
@@ -322,24 +329,29 @@ tooltip > * > * {
 }
 .dashboard {
   font-weight: bold;
-  background: none;
+  background: rgba(255, 0, 0, 0.5);
+  background-blend-mode: color-burn;
 }
-.dashboard.container {
+.dashboard.topCenter {
+  border-radius: 2rem;
   background: rgba(0, 0, 0, 0.5);
+  margin: 0.25rem;
+}
+.dashboard.leftSide {
+  border-radius: 2rem;
+  margin: 0.25rem;
+}
+.dashboard.calendar {
   border-radius: 2rem;
   border: 2px solid #0f9bff;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.5rem;
 }
-.dashboard.divider.vertical {
-  min-height: 2px;
-  margin: 0rem 0.5rem;
-  background: rgb(255, 140, 0);
+.dashboard.rightSide {
+  border-radius: 2rem;
+  margin: 0.25rem;
   border: 2px solid #0f9bff;
-}
-.dashboard.divider.horizontal {
-  min-width: 2px;
-  margin: 0.5rem 0rem;
-  background: rgb(255, 140, 0);
-  border: 2px solid #0f9bff;
+  background: rgba(0, 0, 0, 0.5);
 }
 .launcher-switcher {
   background: rgba(0, 0, 0, 0.5);
@@ -503,7 +515,7 @@ tooltip > * > * {
 .tickerbtn:hover .tickerartist {
   color: rgb(255, 140, 0);
 }
-.tickerbtn:hover image {
+.tickerbtn:hover icon {
   animation: spin 1s infinite;
 }
 .tickerartist {
@@ -1013,59 +1025,90 @@ tooltip > * > * {
 .simple-toggle image {
   font-size: 1.3em;
 }
-.notification {
-  min-width: 15rem;
-  border-radius: 3rem 0rem 0rem 3rem;
-  border-bottom-right-radius: 1rem;
-  border-top-right-radius: 1rem;
+.notif .outerbox {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 2rem;
+  padding: 0.35rem;
+}
+.notif .title {
+  font-size: 1.1rem;
+}
+.notif .body {
+  color: rgb(155, 255, 15);
+  font-size: 0.9rem;
+}
+.notif .icondatetime {
   padding: 0.5rem;
+}
+.notif .icondatetime icon {
+  font-size: 2.5rem;
+}
+.notif .icondatetime .datetime {
+  padding: 0.25rem;
+}
+.notif .icondatetime .datetime label {
+  color: rgb(15, 155, 255);
+  font-size: 0.8rem;
+}
+.notif .actions button {
   border: 2px solid #0f9bff;
-  background-color: rgba(0, 0, 0, 0.75);
-  margin: 0.5rem 0rem;
-}
-.notification box {
-  background-color: transparent;
-}
-.notification image {
-  margin-right: 0.25rem;
-}
-.notification.critical {
-  border: 3px dashed red;
-  color: red;
-}
-.notification.critical image {
-  color: red;
-}
-.notification.critical box {
-  background-color: transparent;
-}
-.notification.normal {
-  border: 3px dotted rgb(15, 155, 255);
-  color: rgb(255, 140, 0);
-}
-.notification.normal image {
-  color: rgb(255, 140, 0);
-}
-.notification.low {
-  border: 3px groove white;
-  color: white;
-}
-.notification.low image {
-  color: white;
-}
-.notification.low box {
-  background-color: transparent;
-}
-.notifActions .action-button {
+  border-radius: 2rem;
   margin: 0 0.4rem;
   margin-top: 0.8rem;
   font-size: 1.35rem;
+  padding: 0.1rem;
 }
-.notifActions .action-button:first-child {
+.notif .actions button:first-child {
   margin-left: 0.25rem;
 }
-.notifActions .action-button:last-child {
+.notif .actions button:last-child {
   margin-right: 0.25rem;
+}
+.notif .level2.outerbox {
+  border: 3px dotted rgb(255, 0, 0);
+}
+.notif .level2 .title {
+  color: rgb(255, 0, 0);
+}
+.notif .level2 .body {
+  color: rgb(155, 255, 15);
+}
+.notif .level2 .icondatetime icon {
+  color: rgb(255, 0, 0);
+}
+.notif .level2 .icondatetime .datetime label {
+  color: rgb(15, 155, 255);
+}
+.notif .level1.outerbox {
+  border: 3px dashed rgb(15, 155, 255);
+}
+.notif .level1 .title {
+  color: rgb(255, 140, 0);
+}
+.notif .level1 .body {
+  color: rgb(155, 255, 15);
+}
+.notif .level1 .icondatetime icon {
+  color: rgb(15, 155, 255);
+}
+.notif .level1 .icondatetime .datetime label {
+  color: rgb(15, 155, 255);
+}
+.notif .levelundefined.outerbox,
+.notif .level0.outerbox {
+  border: 3px groove white;
+}
+.notif .levelundefined .title,
+.notif .level0 .title {
+  color: rgb(255, 140, 0);
+}
+.notif .levelundefined .body,
+.notif .level0 .body {
+  color: rgb(155, 255, 15);
+}
+.notif .levelundefined .icondatetime icon,
+.notif .level0 .icondatetime icon {
+  color: white;
 }
 .close-button {
   font-size: 1.5rem;
@@ -1097,25 +1140,17 @@ tooltip > * > * {
   text-shadow: none;
   font-size: 0.9rem;
 }
-.notifEmpty label {
+.notif.empty label {
   all: unset;
-  font-size: 10rem;
+  font-size: 5rem;
   text-shadow:
     15px 0px 10px yellow,
     -15px 0px 10px yellow,
     0px 0px 0px yellow;
 }
 .notif.panel {
-  border-radius: 3rem 0rem 0rem 3rem;
+  border-radius: 2rem;
   margin-top: 0.5rem;
-  min-width: 25rem;
-  padding-left: 2.5rem;
-  padding-right: 0.5rem;
-}
-.notif.panel.box {
-  margin-right: 1rem;
-  margin-left: 2rem;
-  margin-bottom: 0.5rem;
 }
 .notif.panel.box label {
   font-size: 1.5rem;
@@ -1540,8 +1575,9 @@ tooltip > * > * {
 }
 .tray {
   background: rgba(0, 0, 0, 0.5);
-  border-top: 2px solid #0f9bff;
+  border: 2px solid #0f9bff;
   border-radius: 2rem;
+  padding: 0rem 0.25rem;
 }
 .tray > * {
   border: 2px solid rgba(0, 0, 0, 0);
@@ -1550,6 +1586,11 @@ tooltip > * > * {
 }
 .tray button image {
   color: rgb(255, 140, 0);
+  border-radius: 2rem;
+}
+.tray button icon {
+  color: rgb(255, 140, 0);
+  border-radius: 2rem;
 }
 .tray button:hover {
   background-color: #1e1e2e;
@@ -1566,7 +1607,7 @@ menu > menuitem {
 }
 menu > menuitem:hover {
   color: rgb(255, 0, 0);
-  border: 2px solid #0000FF;
+  border: 2px solid #0000ff;
   font-weight: bold;
   background:
     linear-gradient(
@@ -1779,8 +1820,8 @@ menu > menuitem:disabled {
   border-radius: 5rem;
   min-width: 10rem;
   min-height: 10rem;
-  border-left: 0.5rem solid #0F9BFF;
-  border-right: 0.5rem solid #0F9BFF;
+  border-left: 0.5rem solid #0f9bff;
+  border-right: 0.5rem solid #0f9bff;
   background:
     linear-gradient(
       0deg,
@@ -1807,9 +1848,9 @@ menu > menuitem:disabled {
 .sessioncontrols button label {
   font-size: 1.75rem;
 }
-.sessioncontrols button:hover image,
-.sessioncontrols button:focus image,
-.sessioncontrols button:active image {
+.sessioncontrols button:hover icon,
+.sessioncontrols button:focus icon,
+.sessioncontrols button:active icon {
   animation: spin 1s infinite;
 }
 .sessioncontrols button:hover {
@@ -1823,6 +1864,9 @@ menu > menuitem:disabled {
       rgba(0, 0, 0, 0) 50%,
       rgb(255, 0, 0) 85%,
       rgba(255, 0, 0, 0.5) 100%);
+}
+.sessioncontrols button:hover label {
+  color: rgb(0, 0, 255);
 }
 .sessioncontrols button:focus,
 .sessioncontrols button:active {
@@ -1839,5 +1883,5 @@ menu > menuitem:disabled {
 }
 .sessioncontrols button:focus label,
 .sessioncontrols button:active label {
-  color: rgb(15, 155, 255);
+  color: rgb(0, 0, 255);
 }

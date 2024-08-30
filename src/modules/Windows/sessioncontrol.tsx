@@ -1,7 +1,7 @@
 import { App, Astal, execAsync, Gdk, Gtk } from "astal";
 import Icon, { Icons } from "../lib/icons.js";
 import { winheight } from "../lib/screensizeadjust";
-import { RoundedAngleEnd } from "../lib/roundedCorner"
+import { RoundedAngleEnd } from "../lib/roundedCorner";
 
 // type Action = "lock" | "reboot" | "logout" | "shutdown";
 
@@ -56,16 +56,20 @@ export default () => {
     }
     layer={Astal.Layer.OVERLAY}
     exclusivity={Astal.Exclusivity.NORMAL}
-    keymode={Astal.Keymode.EXCLUSIVE}
+    keymode={Astal.Keymode.ON_DEMAND}
     visible={false}
     application={App}
   >
     <eventbox
       onClick={() => App.toggle_window("sessioncontrols")}
       onKeyPressEvent={(_, event) => {
-        if (event.get_keyval()[1] === Gdk.KEY_Escape) { App.toggle_window("sessioncontrols") }
+        if (event.get_keyval()[1] === Gdk.KEY_Escape) {
+          App.toggle_window("sessioncontrols");
+        }
       }}
-      widthRequest={winheight(1)} heightRequest={winheight(1)} >
+      widthRequest={winheight(1)}
+      heightRequest={winheight(1)}
+    >
       <box
         className={"sessioncontrols container"}
         halign={Gtk.Align.CENTER}
@@ -86,5 +90,5 @@ export default () => {
         </box>
       </box>
     </eventbox>
-  </window >;
+  </window>;
 };

@@ -1,14 +1,15 @@
-import { App, Variable, Astal, bind, Gdk } from "astal";
+import { App, Gtk, Variable, Astal, bind, Gdk } from "astal";
 
 export default function Clock() {
-  const time = Variable("").poll(1000, 'date "+%a %b %d %H:%M:%S"');
+  const time = Variable("").poll(1000, 'date "+%H:%M:%S"');
+  const date = Variable("").poll(1000, 'date "+%a %b %d"');
   return (
     <button
       className="clock"
       cursor="pointer"
       onClick={(_, event) => {
         if (event.button === Gdk.BUTTON_PRIMARY) {
-          const win = App.get_window("calendar");
+          const win = App.get_window("dashboard");
           if (win) {
             win.visible = !win.visible;
           }
@@ -20,7 +21,11 @@ export default function Clock() {
         // }
       }}
     >
-      <label label={bind(time)} />
+      <box halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} spacing={5}>
+        <label label={bind(date)} />
+        <icon icon="nix-snowflake-symbolic" />
+        <label label={bind(time)} />
+      </box>
     </button>
   );
 }
