@@ -1,37 +1,53 @@
-import { Service, App, Utils, Gio } from "imports"
+import { Astal, Widget, App, Gtk, Gdk, GLib, Gio, monitorFile } from "astal"
 
-const { monitorFile } = Utils
+const Icons = `${GLib.get_user_data_dir()}/icons/Astal`
+const STYLEDIR = `${GLib.get_user_config_dir()}/astal-gjs/src/style`
+const DISTDIR = `${GLib.get_user_config_dir()}/astal-gjs/dist`
 
-class DirectoryMonitorService extends Service {
-  static {
-    Service.register(this, {}, {});
-  }
+const css = `${GLib.get_user_config_dir()}/astal-gjs/dist/style.css`
+const scss = `${GLib.get_user_config_dir()}/astal-gjs/src/style/main.scss`
 
+class DirectoryMonitorService {
   constructor() {
-    super();
-    this.recursiveDirectoryMonitor(`${App.configDir}/style`);
+
+    this.recursiveDirectoryMonitor(STYLEDIR);
   }
 
-  recursiveDirectoryMonitor(directoryPath) {
+  recursiveDirectoryMonitor(STYLEDIR: string) {
+    const monitorFile = (path: string, callback: () => void) => {
+      const file = Gio.File.new_for_path(path);
+      const monitor = file.monitor_file(Gio.FileMonitorFlags.NONE, null);
+      monitor.connect("changed", () => {
+        callback();
+      });
+    };
 
-    monitorFile(directoryPath, (_, eventType) => {
-      if (eventType === Gio.FileMonitorEvent.CHANGES_DONE_HINT) {
-        this.emit("changed");
-      }
-    }, "directory");
+    monitorFile(STYLEDIR, () => {
+      // You can replace this with your custom event handling logic
+      this.onDirectoryChanged();
+    });
 
-    const directory = Gio.File.new_for_path(directoryPath);
-    const enumerator = directory.enumerate_children("standard::*", Gio.FileQueryInfoFlags.NONE, null);
+    const directory = Gio.File.new_for_path(STYLEDIR);
+    const enumerator = directory.enumerate_children(
+      "standard::*",
+      Gio.FileQueryInfoFlags.NONE,
+      null
+    );
 
     let fileInfo;
     while ((fileInfo = enumerator.next_file(null)) !== null) {
-      const childPath = directoryPath + "/" + fileInfo.get_name();
+      const childPath = `${STYLEDIR}/${fileInfo.get_name()}`;
       if (fileInfo.get_file_type() === Gio.FileType.DIRECTORY) {
         this.recursiveDirectoryMonitor(childPath);
       }
     }
   }
+
+  onDirectoryChanged() {
+    // Handle the directory change event
+    print("Directory content changed!");
+  }
 }
 
-const service = new DirectoryMonitorService();
-export default service;
+const DirectoryMonitor = new DirectoryMonitorService();
+export default DirectoryMonitor;

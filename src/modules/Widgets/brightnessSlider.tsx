@@ -1,14 +1,14 @@
-import { Widget, Astal, bind, Gtk, Gdk } from "astal"
-import Brightness from "../service/brightness"
+import { App, Widget, Astal, bind, Gtk, Gdk } from "astal"
+//import Brightness from "../service/brightness"
 
+function Brightness() {
 
-
-
+}
 const TheSlider = () =>
 	<slider
 		className={"brightsld Slider"}
 		drawValue={false}
-		on_change={self => Brightness.screen_value = self.value}
+		on_change={bind(Brightness, 'screen_value')}
 		value={bind(Brightness, 'screen-value').as(n => n > 1 ? 1 : n)}
 
 	/>
@@ -18,8 +18,8 @@ const TheIcon = () =>
 		className={"brightsldIcon"}
 		setup={
 			self => self.hook(Brightness, (self, screenValue) => {
-				const icons = ["󰃚", "󰃛", "󰃜", "󰃝", "󰃞", "󰃟", "󰃠"];
-				self.label = `${icons[Math.floor((Brightness.screen_value * 100) / 15)]}`;
+				const bicons = ["󰃚", "󰃛", "󰃜", "󰃝", "󰃞", "󰃟", "󰃠"];
+				self.label = `${bicons[Math.floor((Brightness.screen_value() * 100) / 15)]}`;
 			}, 'screen-changed')
 		}
 	/>

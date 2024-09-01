@@ -1,28 +1,30 @@
 #!/usr/bin/gjs -m
 import { GLib, App, execAsync, monitorFile, Astal, Gtk } from "astal";
+// import DirectoryMonitorService from "./modules/lib/DirectoryMonitorService";
 
 // const Icons = `${GLib.get_user_data_dir()}/icons/Astal`
 // const STYLEDIR = `${GLib.get_user_config_dir()}/astal-gjs/src/style`
 // const DISTDIR = `${GLib.get_user_config_dir()}/astal-gjs/dist`
 
-// const css = `${GLib.get_user_config_dir()}/astal-gjs/dist/style.css`
-// const scss = `${GLib.get_user_config_dir()}/astal-gjs/src/style/main.scss`
+// const css = `${STYLEDIR}/style.css`
+// const scss = `${STYLEDIR}/main.scss`
 // const applyScss = () => {
-//     // monitor for changes
-//     monitorFile(
-//         // directory that contains the scss files
-//         `${STYLEDIR}`,
+//   const compileScss = () => {
+//     execAsync(`sass ${scss} ${css}`);
+//     console.log("Scss compiled");
+//   };
 
-//         execAsync(`sass ${scss} ${css}`),
-//         console.log("Scss compiled"),
+//   const resetAndApplyCss = () => {
+//     App.reset_css();
+//     console.log("Reset");
+//     applyCss(css);
+//     console.log("Compiled css applied");
+//   };
 
-//         // main scss file
-//         App.reset_css(),
-//         console.log("Reset"),
-//         applyCss(css),
-//         console.log("Compiled css applied"),
-//     );
+//   monitorFile(`${STYLEDIR}`, resetAndApplyCss);
 // };
+
+// DirectoryMonitorService.connect("changed", applyScss);
 
 import "./style/style.css";
 import Bar from "./modules/bar/Bar";
@@ -40,6 +42,8 @@ import {
   //networkmenu,
   //bluetoothmenu,
 } from "./modules/Windows/index";
+
+
 
 App.start({
   requestHandler(request, res) {

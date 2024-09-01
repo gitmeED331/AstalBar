@@ -2,7 +2,7 @@ import Dashboard from "./dashboard/dashboard";
 import MediaPlayerWindow from "./MediaPlayer";
 import Calendar from "./calendar";
 import AudioMixer from "./AudioMixer";
-import cliphist from "./cliphist";
+// import cliphist from "./cliphist";
 
 // import networkmenu from "./network/index";
 // import bluetoothmenu from "./bluetooth/index";
@@ -23,7 +23,7 @@ export {
   sessioncontrol,
   powerprofiles,
   // Launcher,
-  cliphist,
+  // cliphist,
   // networkmenu,
   // bluetoothmenu,
 };

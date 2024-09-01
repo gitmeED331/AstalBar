@@ -2,7 +2,7 @@ import { Astal, Gtk } from "astal";
 import {
   VolumeIndicator,
   BatteryButton,
-  //  NetworkButton,
+  NetworkButton,
   //  BluetoothButton,
 } from "../Widgets/index";
 
@@ -19,8 +19,8 @@ export default function SysInfo() {
       {/* <RoundedAngleEnd class_name="angleLeft" /> */}
       {/* <box spacing={8} hexpand="true" > */}
       <VolumeIndicator />
-      {/* <NetworkButton />
-     <BluetoothButton /> */}
+      {/* <NetworkButton /> */}
+      {/* <BluetoothButton /> */}
       <BatteryButton />
       {/* </box> */}
       {/* <RoundedAngleEnd class_name="angleRight" /> */}

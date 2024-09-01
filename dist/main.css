@@ -75,7 +75,7 @@ tooltip > * > * {
 }
 .AppTitleTicker icon {
   color: rgb(0, 0, 255);
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 .AppTitleTicker label {
   color: rgb(255, 140, 0);
@@ -97,7 +97,7 @@ tooltip > * > * {
   padding: 0rem 0.5rem;
 }
 .clock label {
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 .clock icon {
   color: rgb(0, 0, 255);
@@ -329,8 +329,6 @@ tooltip > * > * {
 }
 .dashboard {
   font-weight: bold;
-  background: rgba(255, 0, 0, 0.5);
-  background-blend-mode: color-burn;
 }
 .dashboard.topCenter {
   border-radius: 2rem;
@@ -344,14 +342,14 @@ tooltip > * > * {
 .dashboard.calendar {
   border-radius: 2rem;
   border: 2px solid #0f9bff;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
   padding: 0.5rem;
 }
 .dashboard.rightSide {
   border-radius: 2rem;
   margin: 0.25rem;
   border: 2px solid #0f9bff;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
 }
 .launcher-switcher {
   background: rgba(0, 0, 0, 0.5);
@@ -1387,8 +1385,14 @@ tooltip > * > * {
   color: rgb(255, 140, 0);
   font-size: 0.5rem;
 }
+.battery icon {
+  color: red;
+}
 .battery.low {
   animation: lowBlink 3s infinite;
+}
+.battery.low label {
+  animation: lowBlink 2s infinite;
 }
 .battery:hover {
   color: rgb(0, 0, 255);
@@ -1420,7 +1424,7 @@ tooltip > * > * {
 .powerprofiles.container {
   border: 2px solid #0f9bff;
   border-radius: 1rem;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
   font-size: 1rem;
   color: lime;
 }

@@ -1,4 +1,4 @@
-import { Variable, Widget, bind, execAsync, Gdk, Gtk, Astal } from "astal";
+import { Variable, Widget, bind, execAsync, Gdk, Gtk, Astal, Binding } from "astal";
 import Mpris from "gi://AstalMpris";
 import Pango from "gi://Pango";
 
@@ -56,16 +56,13 @@ function lengthStr(length: number) {
   return `${min}:${sec0}${sec}`;
 }
 
-
-
 function TrackPosition() {
   const positionSlider = (
     <slider
       className="position"
       drawValue={false}
       onDragged={({ value }) => player.position = value * player.length}
-      visible={true} // {bind(player, "length").as(length => length > 0 ? true : false)}
-      value={bind(player, "position").as(p => player.length > 0 ? p / player.length : 0)}
+      value={bind(player, "position").as(pos => player.length > 0 ? pos / player.length : pos)}
     />
   )
 
@@ -78,7 +75,6 @@ function TrackPosition() {
     <label
       className={"tracklength"}
       halign={Gtk.Align.START}
-      visible={true} // {bind(player, "length").as(length => length > 0 ? true : false)}
       label={bind(player, "length").as(lengthStr)}
     />
   )
@@ -87,19 +83,20 @@ function TrackPosition() {
     <label
       className={"trackposition"}
       halign={Gtk.Align.END}
-      visible={true} // {bind(player, "length").as(length => length > 0 ? true : false)}
       label={bind(player, "position").as(lengthStr)}
     />
   )
 
   return (
-    <box vertical={true}>
+    <box vertical={true}
+      visible={true} // {bind(player, "length").as(length => length > 0 ? true : false)}
+    >
       {positionSlider}
       <centerbox
         startWidget={lengthLabel}
         endWidget={positionLabel}
       />
-    </box>
+    </box >
   );
 }
 
@@ -182,7 +179,15 @@ function PlayerControls() {
 
 function CloseIcon() {
   return (
-    <button className={"close"} valign={Gtk.Align.CENTER}>
+    <button className={"close"} valign={Gtk.Align.CENTER}
+      onClick={async () => {
+        const binding = bind(player, "entry");
+        const entryValue = binding.emitter?.entry;
+        if (entryValue && typeof entryValue === 'string') {
+          await execAsync(`bash -c 'killall "${entryValue}"'`);
+        }
+      }}
+    >
       <icon icon={Icon.mpris.controls.CLOSE} />
     </button>
   );

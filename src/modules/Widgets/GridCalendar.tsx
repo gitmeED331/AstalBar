@@ -1,6 +1,6 @@
 import { Widget, Gtk, Astal } from "astal";
 import { Icons } from "../lib/icons"
-const { Label, Box } = Widget;
+const { Label } = Widget;
 
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -68,14 +68,29 @@ function GridCalendar() {
       week.forEach((day, columnIndex) => {
         const dayLabel = new Label({ label: day.toString() || '' });
         dayLabel.get_style_context().add_class('calendar-day');
-        if (day === new Date().getDate() && currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear()) {
+
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        // Identify whether the day is from the previous, current, or next month
+        const isPrevMonthDay = rowIndex === 0 && columnIndex < firstDayOfMonth;
+        const isNextMonthDay = rowIndex > 0 && day <= 7 && (rowIndex === updatedWeeks.length - 1 || columnIndex >= daysInMonth);
+
+        const isCurrentMonthDay = !isPrevMonthDay && !isNextMonthDay;
+
+        if (isCurrentMonthDay &&
+          day === new Date().getDate() &&
+          currentMonth === new Date().getMonth() &&
+          currentYear === new Date().getFullYear()) {
           dayLabel.set_markup(`<b>${day}</b>`);
           dayLabel.get_style_context().add_class("calendar-today");
         }
+
         gridCalendar.attach(dayLabel, columnIndex, rowIndex + 1, 1, 1);
         dayLabels.push(dayLabel);
       });
     });
+
 
     gridCalendar.show_all();
   };

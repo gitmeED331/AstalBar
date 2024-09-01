@@ -1,5 +1,5 @@
 import { App, monitorFile, execAsync, exec, GLib, writeFile } from "astal"
-
+import DirectoryMonitorService from "../modules/lib/DirectoryMonitorService"
 // const Icons = `${GLib.get_user_data_dir()}/icons/Astal`
 const STYLEDIR = `${GLib.get_user_config_dir()}/astal-gjs/src/style`
 const DISTDIR = `${GLib.get_user_config_dir()}/astal-gjs/dist`
@@ -21,3 +21,5 @@ async function resetCss() {
 monitorFile(`${STYLEDIR}`, resetCss)
 //DirectoryMonitorService.connect("changed", () => resetCss())
 await resetCss()
+
+export default {}

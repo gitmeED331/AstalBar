@@ -531,7 +531,7 @@ var AstalJS = class extends default2.Application {
     super.quit();
     exit(code ?? 0);
   }
-  start({ requestHandler, css, hold, main, client, ...cfg } = {}) {
+  start({ requestHandler, css, hold, main, client, icons, ...cfg } = {}) {
     client ??= () => {
       print(`Astal instance "${this.instanceName}" already running`);
       exit(1);
@@ -551,6 +551,8 @@ var AstalJS = class extends default2.Application {
       return client((msg) => default2.Application.send_message(this.instanceName, msg), ...programArgs);
     if (css)
       this.apply_css(css, false);
+    if (icons)
+      this.add_icons(icons);
     hold ??= true;
     if (hold)
       this.hold();
@@ -1068,7 +1070,7 @@ function BatteryButton() {
 var battery_default = BatteryButton;
 
 // src/modules/Widgets/GridCalendar.tsx
-var { Label: Label2, Box: Box2 } = widgets_exports;
+var { Label: Label2 } = widgets_exports;
 var daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 var monthNamesShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var generateCalendar = (month, year) => {
@@ -1122,7 +1124,12 @@ function GridCalendar() {
       week.forEach((day, columnIndex) => {
         const dayLabel = new Label2({ label: day.toString() || "" });
         dayLabel.get_style_context().add_class("calendar-day");
-        if (day === (/* @__PURE__ */ new Date()).getDate() && currentMonth === (/* @__PURE__ */ new Date()).getMonth() && currentYear === (/* @__PURE__ */ new Date()).getFullYear()) {
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const isPrevMonthDay = rowIndex === 0 && columnIndex < firstDayOfMonth;
+        const isNextMonthDay = rowIndex > 0 && day <= 7 && (rowIndex === updatedWeeks.length - 1 || columnIndex >= daysInMonth);
+        const isCurrentMonthDay = !isPrevMonthDay && !isNextMonthDay;
+        if (isCurrentMonthDay && day === (/* @__PURE__ */ new Date()).getDate() && currentMonth === (/* @__PURE__ */ new Date()).getMonth() && currentYear === (/* @__PURE__ */ new Date()).getFullYear()) {
           dayLabel.set_markup(`<b>${day}</b>`);
           dayLabel.get_style_context().add_class("calendar-today");
         }
@@ -1259,16 +1266,18 @@ function TrackPosition() {
       className: "position",
       drawValue: false,
       onDragged: ({ value }) => player2.position = value * player2.length,
-      visible: true,
-      value: bind(player2, "position").as((p) => player2.length > 0 ? p / player2.length : 0)
+      value: bind(player2, "position").as((pos) => player2.length > 0 ? pos / player2.length : pos)
     }
   );
+  setInterval(() => {
+    console.log("position", player2.position);
+    console.log("length", player2.length);
+  }, 1e3);
   const lengthLabel = /* @__PURE__ */ jsx(
     "label",
     {
       className: "tracklength",
       halign: default5.Align.START,
-      visible: true,
       label: bind(player2, "length").as(lengthStr)
     }
   );
@@ -1277,20 +1286,26 @@ function TrackPosition() {
     {
       className: "trackposition",
       halign: default5.Align.END,
-      visible: true,
       label: bind(player2, "position").as(lengthStr)
     }
   );
-  return /* @__PURE__ */ jsxs("box", { vertical: true, children: [
-    positionSlider,
-    /* @__PURE__ */ jsx(
-      "centerbox",
-      {
-        startWidget: lengthLabel,
-        endWidget: positionLabel
-      }
-    )
-  ] });
+  return /* @__PURE__ */ jsxs(
+    "box",
+    {
+      vertical: true,
+      visible: true,
+      children: [
+        positionSlider,
+        /* @__PURE__ */ jsx(
+          "centerbox",
+          {
+            startWidget: lengthLabel,
+            endWidget: positionLabel
+          }
+        )
+      ]
+    }
+  );
 }
 function PlayerIcon() {
   return /* @__PURE__ */ jsx(
@@ -1376,7 +1391,21 @@ function PlayerControls() {
   );
 }
 function CloseIcon() {
-  return /* @__PURE__ */ jsx("button", { className: "close", valign: default5.Align.CENTER, children: /* @__PURE__ */ jsx("icon", { icon: icons_default.mpris.controls.CLOSE }) });
+  return /* @__PURE__ */ jsx(
+    "button",
+    {
+      className: "close",
+      valign: default5.Align.CENTER,
+      onClick: async () => {
+        const binding = bind(player2, "entry");
+        const entryValue = binding.emitter?.entry;
+        if (entryValue && typeof entryValue === "string") {
+          await execAsync(`bash -c 'killall "${entryValue}"'`);
+        }
+      },
+      children: /* @__PURE__ */ jsx("icon", { icon: icons_default.mpris.controls.CLOSE })
+    }
+  );
 }
 var blurCoverArtCss = async (cover_art) => {
   const playerBGgen = (bg, color) => `background-image: radial-gradient(circle at left, rgba(0, 0, 0, 0), ${color} 11.5rem), url('${bg}');
@@ -1826,6 +1855,12 @@ function PowerProfiles2() {
   );
 }
 var powerprofiles_default = PowerProfiles2;
+
+// src/modules/Widgets/Network.tsx
+import AstalNetwork from "gi://AstalNetwork";
+var network = AstalNetwork.get_default();
+var Wired = network.wired;
+var Wifi = network.wifi;
 
 // src/modules/Widgets/Tray.tsx
 import AstalTray from "gi://AstalTray";
@@ -2381,152 +2416,9 @@ var AudioMixer_default = () => /* @__PURE__ */ jsx(
   }
 );
 
-// src/modules/Windows/cliphist.tsx
-import Pango5 from "gi://Pango";
-var Separator = () => {
-  return /* @__PURE__ */ jsx(
-    "box",
-    {
-      className: "clip_divider",
-      heightRequest: 1,
-      css: `
-        background-color: #ccc;
-        margin: 10px 0px;
-      `
-    }
-  );
-};
-function ClipHistItem(entry) {
-  let [id, ...content] = entry.split("	");
-  let clickCount = 0;
-  const button = /* @__PURE__ */ jsx("button", { className: "clip_container", children: /* @__PURE__ */ jsxs("box", { children: [
-    /* @__PURE__ */ jsx("label", { label: id, className: "clip_id", valign: default5.Align.CENTER }),
-    /* @__PURE__ */ jsx(
-      "label",
-      {
-        label: "\u30FB",
-        className: "dot_divider",
-        valign: default5.Align.CENTER
-      }
-    ),
-    /* @__PURE__ */ jsx(
-      "label",
-      {
-        label: content.join(" ").trim(),
-        className: "clip_label",
-        valign: default5.Align.CENTER,
-        ellipsize: Pango5.EllipsizeMode.END
-      }
-    )
-  ] }) });
-  button.connect("clicked", () => {
-    clickCount++;
-    if (clickCount === 2) {
-      execAsync(
-        `${default7.get_user_config_dir()}/src/scripts/cliphist.sh --copy-by-id ${id}`
-      );
-      clickCount = 0;
-    }
-  });
-  button.connect("focus-out-event", () => {
-    clickCount = 0;
-  });
-  return /* @__PURE__ */ jsxs("box", { orientation: default5.Orientation.VERTICAL, children: [
-    button,
-    /* @__PURE__ */ jsx(Separator, {})
-  ] });
-}
-function ClipHistWidget({ width = 500, height = 500, spacing = 12 }) {
-  let output = "";
-  let entries = [];
-  let clipHistItems = [];
-  let widgets = [];
-  const list = /* @__PURE__ */ jsx("box", { vertical: true, spacing });
-  async function repopulate() {
-    try {
-      output = await execAsync(
-        `${default7.get_user_config_dir()}/scripts/cliphist.sh --get`
-      );
-    } catch (err) {
-      print(err);
-      output = "";
-    }
-    entries = output.split("\n").filter((line) => line.trim() !== "");
-    clipHistItems = entries.map((entry2) => {
-      let [id, ...content] = entry2.split("	");
-      return { id: id.trim(), content: content.join(" ").trim(), entry: entry2 };
-    });
-    list.remove_all();
-    widgets = clipHistItems.map((item) => ClipHistItem(item.entry));
-    widgets.forEach((widget) => {
-      list.append(widget);
-    });
-  }
-  repopulate();
-  const entry = /* @__PURE__ */ jsx(
-    "entry",
-    {
-      hexpand: true,
-      className: "cliphistory_entry",
-      placeholder_text: "Search",
-      on_changed: ({ text }) => {
-        const searchText = (text ?? "").toLowerCase();
-        widgets.forEach((item) => {
-          const content = clipHistItems.find((clipItem) => clipItem.entry === item.entry)?.content.toLowerCase() || "";
-          item.visible = content.includes(searchText);
-        });
-      }
-    }
-  );
-  return /* @__PURE__ */ jsxs(
-    "box",
-    {
-      vertical: true,
-      className: "cliphistory_box",
-      margin_top: 14,
-      margin_right: 14,
-      setup: (self) => self.hook(application_default, (_, windowName, visible) => {
-        if (windowName !== cliphist) return;
-        if (visible) {
-          repopulate();
-          entry.text = "";
-        }
-      }),
-      children: [
-        entry,
-        /* @__PURE__ */ jsx(Separator, {}),
-        /* @__PURE__ */ jsx(
-          "scrollable",
-          {
-            hscroll: default5.PolicyType.NEVER,
-            css: `
-          min-width: ${width}px;
-          min-height: ${height}px;
-        `,
-            children: list
-          }
-        )
-      ]
-    }
-  );
-}
-var cliphist = /* @__PURE__ */ jsx(
-  "window",
-  {
-    name: "cliphist",
-    className: "cliphistory",
-    visible: false,
-    keymode: default2.Keymode.EXCLUSIVE,
-    anchor: default2.WindowAnchor.TOP | default2.WindowAnchor.RIGHT,
-    layer: default2.Layer.OVERLAY,
-    application: application_default,
-    children: /* @__PURE__ */ jsx(ClipHistWidget, {})
-  }
-);
-
 // src/modules/Windows/notificationPopups.tsx
 import Notifd3 from "gi://AstalNotifd";
-import Pango6 from "gi://Pango";
+import Pango5 from "gi://Pango";
 var Notif3 = Notifd3.get_default();
 var expireTime = 3e4;
 var Time2 = (time, format = "%H:%M.%S") => default7.DateTime.new_from_unix_local(time).format(format);
@@ -2623,7 +2515,7 @@ var NotifWidget2 = () => {
                             label: item.summary,
                             maxWidthChars: 50,
                             lines: 2,
-                            ellipsize: Pango6.EllipsizeMode.END,
+                            ellipsize: Pango5.EllipsizeMode.END,
                             halign: default5.Align.START,
                             valign: default5.Align.START
                           }
@@ -2635,7 +2527,7 @@ var NotifWidget2 = () => {
                             label: item.body,
                             maxWidthChars: 50,
                             lines: 3,
-                            ellipsize: Pango6.EllipsizeMode.END,
+                            ellipsize: Pango5.EllipsizeMode.END,
                             halign: default5.Align.START,
                             valign: default5.Align.CENTER
                           }
