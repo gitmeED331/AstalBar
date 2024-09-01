@@ -5,15 +5,15 @@ https://github.com/user-attachments/assets/c80fd1b5-7d66-4ecb-87ad-b08b3d813149
 Many of the files are not being used and will not be used, they will be removed later, they remain until I reach a point I am happy with my setup.
 
 # Elements of this project:
-- [] Overview
+- [ ] Overview
   - Status: in progress
 - [X] Title box
-- [] Media Ticker & Player Popup:
+- [ ] Media Ticker & Player Popup:
   - Status: nearly complete
     - Issues:
-    - [] popup window (auto close on click off)
-    - [] progress bar not working due to issue with player.length
-- []System app Tray
+    - [ ] popup window (auto close on click off)
+    - [ ] progress bar not working due to issue with player.length
+- [ ]System app Tray
   - status: nearly complete
   - issues:
     - [ ] Need to find a way for specific "favorite" or "always show" apps so I can shrink the bar but keep the ones I use most always visible
@@ -21,7 +21,7 @@ Many of the files are not being used and will not be used, they will be removed 
   - Status: nearly complete
   - issues:
     - [X] Reactive Volume icon with popup window sliders
-      - [] added app mixer and sink selector
+    - [ ] added app mixer and sink selector
     - [ ] need to finish network control
     - [ ] need to finish bluetooth control
 - [X] Date/Clock & Calendar Popup
@@ -30,9 +30,9 @@ Many of the files are not being used and will not be used, they will be removed 
   - Issues:
     - popup window
       - [X] auto close on click off
-- [] Lockscreen
+- [ ] Lockscreen
 - [X] Session Control window
-- [] Greeter (greetd)
+- [ ] Greeter (greetd)
 - Theming/Styling
   - Status: almost complete
   - Issues:
