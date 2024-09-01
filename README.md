@@ -2,19 +2,12 @@
 
 https://github.com/user-attachments/assets/c80fd1b5-7d66-4ecb-87ad-b08b3d813149
 
-The folder structure is a mess and will be cleaned up at a later time, when I reach a point I have every feature I want.
-
 Many of the files are not being used and will not be used, they will be removed later, they remain until I reach a point I am happy with my setup.
 
 # Elements of this project:
 - [] Overview
   - Status: in progress
 - [X] Title box
-- [] Notifications
-    - Status: nearly complete
-    - Issues:
-        - [] making it so notification timeout does not dismiss the notification
-        - [] improve styling
 - [] Media Ticker & Player Popup:
   - Status: nearly complete
     - Issues:
