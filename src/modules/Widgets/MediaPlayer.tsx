@@ -3,7 +3,6 @@ import Mpris from "gi://AstalMpris";
 import Pango from "gi://Pango";
 
 import Icon, { Icons } from "../lib/icons";
-//const { RoundedCorner } = "lib/roundedCorner"
 import TrimTrackTitle from "../lib/TrimTrackTitle";
 
 const player = Mpris.Player.new("Deezer")
@@ -62,14 +61,11 @@ function TrackPosition() {
       className="position"
       drawValue={false}
       onDragged={({ value }) => player.position = value * player.length}
+      max={bind(player, "length").as(leng => player.length > 0 ? leng : undefined)}
+      min={0}
       value={bind(player, "position").as(pos => player.length > 0 ? pos / player.length : pos)}
     />
   )
-
-  // setInterval(() => {
-  //   console.log("position", player.position);
-  //   console.log("length", player.length);
-  // }, 1000);
 
   const lengthLabel = (
     <label
@@ -90,6 +86,7 @@ function TrackPosition() {
   return (
     <box vertical={true}
       visible={true} // {bind(player, "length").as(length => length > 0 ? true : false)}
+      margin-left={10}
     >
       {positionSlider}
       <centerbox

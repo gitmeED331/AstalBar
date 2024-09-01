@@ -1266,13 +1266,11 @@ function TrackPosition() {
       className: "position",
       drawValue: false,
       onDragged: ({ value }) => player2.position = value * player2.length,
+      max: bind(player2, "length").as((leng) => player2.length > 0 ? leng : void 0),
+      min: 0,
       value: bind(player2, "position").as((pos) => player2.length > 0 ? pos / player2.length : pos)
     }
   );
-  setInterval(() => {
-    console.log("position", player2.position);
-    console.log("length", player2.length);
-  }, 1e3);
   const lengthLabel = /* @__PURE__ */ jsx(
     "label",
     {
@@ -1294,6 +1292,7 @@ function TrackPosition() {
     {
       vertical: true,
       visible: true,
+      "margin-left": 10,
       children: [
         positionSlider,
         /* @__PURE__ */ jsx(
