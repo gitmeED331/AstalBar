@@ -1,6 +1,5 @@
-import { App, Widget, Astal, execAsync, bind, Gtk, Gdk, GObject } from "astal";
+import { App, Widget, Astal, execAsync, exec, bind, Gtk, Gdk, GObject } from "astal";
 import Icon, { Icons } from "../lib/icons";
-// import Brightness from "../service/brightness"
 import AstalPowerProfiles from "gi://AstalPowerProfiles";
 
 const powerprofile = AstalPowerProfiles.get_default();
@@ -12,23 +11,25 @@ powerprofile.connect("notify::active-profile", () => {
     performance: 100,
   };
 
-  const setBrightness = (level) => {
-    execAsync(`light -S ${level}`);
+  const setBrightness = async (level: number) => {
+    await execAsync(`light -S ${level}`).catch();
+    brightness.set(level).catch();
   };
 
   const updateBrightness = () => {
     const level = brightnessLevels[powerprofile.activeProfile];
-    setBrightness(level);
+    setBrightness(level).catch();
   };
 
   updateBrightness();
 });
 
-const SysButton = (action, label) => (
+const SysButton = (action: string, label: string) => (
   <button
     onClick={(_, event) => {
       if (event.button === Gdk.BUTTON_PRIMARY) {
         powerprofile.activeProfile = action;
+        currentBrightness();
       }
     }}
     className={bind(powerprofile, "activeProfile").as((c) => (c === action ? c : ""))}
@@ -39,42 +40,49 @@ const SysButton = (action, label) => (
     </box>
   </button>
 );
-
-
+function currentBrightness() { return parseInt(exec("light -G").trim()) }
 function PowerProfiles() {
+
   return (
     <box
       className={"powerprofiles container"}
       vertical={true}
       valign={Gtk.Align.CENTER}
       halign={Gtk.Align.CENTER}
+      spacing={10}
     >
-      <box
-        vertical={true}
+      <centerbox
+        className={"powerprofiles header"}
+        vertical={false}
         valign={Gtk.Align.CENTER}
-        halign={Gtk.Align.CENTER}
-        spacing={10}
-      >
-        <label
+        halign={Gtk.Align.FILL}
+        centerWidget={<label
           valign={Gtk.Align.CENTER}
           halign={Gtk.Align.CENTER}
           label={bind(powerprofile, "active_profile").as((l) => l.toUpperCase())}
-        />
-        {/* <label
-				valign={Gtk.Align.CENTER}
-				css={`padding-bottom: 5px;`}
-				setup={
-					self => self.hook(Brightness, (self, screenValue) => {
-						const icons = ["󰃚", "󰃛", "󰃜", "󰃝", "󰃞", "󰃟", "󰃠"];
-						self.label = `${icons[Math.floor((Brightness.screen_value * 100) / 15)]}`;
-					}, 'screen-changed')
-				}
-			/>
-			<label
-				valign={Gtk.Align.CENTER}
-				label={bind(Brightness, "screen_value").as(v => `${Math.floor(v * 100)}%`)}
-			/> */}
-      </box>
+        />}
+        endWidget={<box halign={Gtk.Align.CENTER} vertical={false} spacing={10}>
+          <icon
+            valign={Gtk.Align.END}
+            halign={Gtk.Align.CENTER}
+            css={`padding-bottom: 5px;`}
+            icon={bind(powerprofile, "active_profile").as((l) =>
+              l === "power-saver" ? Icon.brightness.levels.low :
+                l === "balanced" ? Icon.brightness.levels.medium :
+                  l === "performance" ? Icon.brightness.levels.high : ""
+            )}
+          />
+          <label
+            valign={Gtk.Align.CENTER}
+            halign={Gtk.Align.CENTER}
+            label={bind(powerprofile, "active_profile").as((l) =>
+              l === "power-saver" ? "30%" :
+                l === "balanced" ? "60%" :
+                  l === "performance" ? "100%" : ""
+            )}
+          />
+        </box>}
+      />
       <box
         className={"powerprofiles box"}
         vertical={false}

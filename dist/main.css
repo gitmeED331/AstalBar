@@ -556,6 +556,9 @@ tooltip > * > * {
   margin-top: -1rem;
   margin-bottom: 0.75rem;
 }
+.player .positioncontainer {
+  margin-left: 0.5rem;
+}
 .trackposition,
 .tracklength {
   color: rgb(255, 140, 0);
@@ -588,7 +591,7 @@ tooltip > * > * {
   text-shadow: 0.1rem 0.1rem rgba(0, 0, 0, 0.5);
 }
 .player scale.position {
-  margin-bottom: 0.3em;
+  margin-bottom: 0.3rem;
   padding: 0.25rem;
   min-width: 12rem;
 }
@@ -672,361 +675,29 @@ tooltip > * > * {
   color: red;
   opacity: 1;
 }
-.row.horizontal > * {
-  margin: 0 0.15rem;
-}
-.row.horizontal > *:first-child {
-  margin-left: 0;
-}
-.row.horizontal > *:last-child {
-  margin-right: 0;
-}
-.row.vertical > * {
-  margin: 0.15rem 0;
-}
-.row.vertical > *:first-child {
-  margin-top: 0;
-}
-.row.vertical > *:last-child {
-  margin-bottom: 0;
-}
-.row {
-  margin: 1rem 1rem;
-}
-.menu {
-  all: unset;
-  transition: 100ms;
-  border-radius: 2rem;
-  color: rgb(255, 140, 0);
-  background: rgba(0, 0, 0, 0.5);
-  border: 2px solid #0f9bff;
-}
-.menu {
-  padding: 0.9rem;
-  margin-top: 0.3rem;
-  margin: 0.5rem 1rem;
-}
-.menu .icon {
-  margin-right: 0.5rem;
-  font-size: 1.5rem;
-  color: yellow;
-}
-.menu .title {
-  font-weight: bold;
-  font-size: 1.25rem;
-  color: rgb(15, 155, 255);
-}
-.menu separator {
-  margin: 0.3rem;
-  background: #0f9bff;
-}
-.menu button {
-  all: unset;
-  transition: 100ms;
-  border-radius: 2rem;
-  color: rgb(255, 0, 0);
-  background-color: transparent;
-  background-image: none;
-  box-shadow: none;
-}
-.menu button:focus {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 55, 0.5) 0%,
-      rgb(0, 0, 255) 15%,
-      rgba(0, 0, 0, 0) 50%,
-      rgb(0, 0, 255) 85%,
-      rgba(0, 0, 55, 0.5) 100%);
-  color: rgb(255, 0, 0);
-}
-.menu button:hover {
-  box-shadow: inset 0 0 2px 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 55, 0.5) 0%,
-      rgb(0, 0, 255) 15%,
-      rgba(0, 0, 0, 0) 50%,
-      rgb(0, 0, 255) 85%,
-      rgba(0, 0, 55, 0.5) 100%);
-  color: rgb(255, 0, 0);
-}
-.menu button:active,
-.menu button.on,
-.menu button.active,
-.menu button:checked {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.25) 0%,
-      rgba(15, 155, 255, 0.5) 50%,
-      rgba(0, 0, 0, 0.25) 100%);
-  color: rgb(255, 0, 0);
-}
-.menu button:active:hover,
-.menu button.on:hover,
-.menu button.active:hover,
-.menu button:checked:hover {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff, inset 0 0 0 99px rgba(15, 155, 255, 0.5);
-}
-.menu button:disabled {
-  box-shadow: none;
-  background-color: transparent;
-  color: rgba(255, 140, 0, 0.3);
-}
-.menu button {
-  padding: 0.6rem;
-  color: rgb(255, 140, 0);
-}
-.menu button image:first-child {
-  margin-right: 0.6rem;
-}
-.menu .bluetooth-devices.horizontal > * {
-  margin: 0 0.075rem;
-}
-.menu .bluetooth-devices.horizontal > *:first-child {
-  margin-left: 0;
-}
-.menu .bluetooth-devices.horizontal > *:last-child {
-  margin-right: 0;
-}
-.menu .bluetooth-devices.vertical > * {
-  margin: 0.075rem 0;
-}
-.menu .bluetooth-devices.vertical > *:first-child {
-  margin-top: 0;
-}
-.menu .bluetooth-devices.vertical > *:last-child {
-  margin-bottom: 0;
-}
-.menu .bluetooth-devices {
-  margin-top: 0.5rem;
-}
-.menu .bluetooth-devices spinner {
-  margin-right: 1rem;
-}
-.menu switch {
-  all: unset;
-  transition: 100ms;
-  border-radius: 2rem;
-  color: rgb(255, 0, 0);
-  background: rgba(0, 0, 0, 0.5);
-  box-shadow: inset 0 0 0 0.1rem #0f9bff;
-}
-.menu switch:focus {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 55, 0.5) 0%,
-      rgb(0, 0, 255) 15%,
-      rgba(0, 0, 0, 0) 50%,
-      rgb(0, 0, 255) 85%,
-      rgba(0, 0, 55, 0.5) 100%);
-  color: rgb(255, 0, 0);
-}
-.menu switch:hover {
-  box-shadow: inset 0 0 2px 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 55, 0.5) 0%,
-      rgb(0, 0, 255) 15%,
-      rgba(0, 0, 0, 0) 50%,
-      rgb(0, 0, 255) 85%,
-      rgba(0, 0, 55, 0.5) 100%);
-  color: rgb(255, 0, 0);
-}
-.menu switch:active,
-.menu switch.on,
-.menu switch.active,
-.menu switch:checked {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.25) 0%,
-      rgba(15, 155, 255, 0.5) 50%,
-      rgba(0, 0, 0, 0.25) 100%);
-  color: rgb(255, 0, 0);
-}
-.menu switch:active:hover,
-.menu switch.on:hover,
-.menu switch.active:hover,
-.menu switch:checked:hover {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff, inset 0 0 0 99px rgba(15, 155, 255, 0.5);
-}
-.menu switch:disabled {
-  box-shadow: none;
-  background-color: transparent;
-  color: rgba(255, 140, 0, 0.3);
-}
-.menu switch slider {
-  background: rgb(155, 255, 15);
-  border-radius: 2rem;
-  min-width: 24px;
-  min-height: 24px;
-}
-.menu switch image {
-  color: transparent;
-}
-.toggle-button {
-  all: unset;
-  transition: 100ms;
-  border-radius: 2rem;
-  color: rgb(255, 0, 0);
-  background: rgba(0, 0, 0, 0.5);
-  box-shadow: inset 0 0 0 0.1rem #0f9bff;
-}
-.toggle-button:focus {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 55, 0.5) 0%,
-      rgb(0, 0, 255) 15%,
-      rgba(0, 0, 0, 0) 50%,
-      rgb(0, 0, 255) 85%,
-      rgba(0, 0, 55, 0.5) 100%);
-  color: rgb(255, 0, 0);
-}
-.toggle-button:hover {
-  box-shadow: inset 0 0 2px 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 55, 0.5) 0%,
-      rgb(0, 0, 255) 15%,
-      rgba(0, 0, 0, 0) 50%,
-      rgb(0, 0, 255) 85%,
-      rgba(0, 0, 55, 0.5) 100%);
-  color: rgb(255, 0, 0);
-}
-.toggle-button:active,
-.toggle-button.on,
-.toggle-button.active,
-.toggle-button:checked {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.25) 0%,
-      rgba(15, 155, 255, 0.5) 50%,
-      rgba(0, 0, 0, 0.25) 100%);
-  color: rgb(255, 0, 0);
-}
-.toggle-button:active:hover,
-.toggle-button.on:hover,
-.toggle-button.active:hover,
-.toggle-button:checked:hover {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff, inset 0 0 0 99px rgba(15, 155, 255, 0.5);
-}
-.toggle-button:disabled {
-  box-shadow: none;
-  background-color: transparent;
-  color: rgba(255, 140, 0, 0.3);
-}
-.toggle-button {
-  font-weight: bold;
-}
-.toggle-button image {
-  font-size: 1.5em;
-  margin-right: 0.5rem;
-}
-.toggle-button label {
-  margin-left: 0.09rem;
-}
-.toggle-button button {
-  padding: 0.5rem;
-}
-.toggle-button button:first-child {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.toggle-button button:last-child {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-.toggle-button.active {
-  background: rgba(0, 0, 0, 0.5);
-}
-.toggle-button.active label,
-.toggle-button.active image {
-  color: rgb(255, 140, 0);
-}
-.simple-toggle {
-  all: unset;
-  transition: 100ms;
-  border-radius: 2rem;
-  color: rgb(255, 0, 0);
-  background: rgba(0, 0, 0, 0.5);
-  box-shadow: inset 0 0 0 0.1rem #0f9bff;
-}
-.simple-toggle:focus {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 55, 0.5) 0%,
-      rgb(0, 0, 255) 15%,
-      rgba(0, 0, 0, 0) 50%,
-      rgb(0, 0, 255) 85%,
-      rgba(0, 0, 55, 0.5) 100%);
-  color: rgb(255, 0, 0);
-}
-.simple-toggle:hover {
-  box-shadow: inset 0 0 2px 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 55, 0.5) 0%,
-      rgb(0, 0, 255) 15%,
-      rgba(0, 0, 0, 0) 50%,
-      rgb(0, 0, 255) 85%,
-      rgba(0, 0, 55, 0.5) 100%);
-  color: rgb(255, 0, 0);
-}
-.simple-toggle:active,
-.simple-toggle.on,
-.simple-toggle.active,
-.simple-toggle:checked {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff;
-  background:
-    linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.25) 0%,
-      rgba(15, 155, 255, 0.5) 50%,
-      rgba(0, 0, 0, 0.25) 100%);
-  color: rgb(255, 0, 0);
-}
-.simple-toggle:active:hover,
-.simple-toggle.on:hover,
-.simple-toggle.active:hover,
-.simple-toggle:checked:hover {
-  box-shadow: inset 0 0 0 0.1rem #0f9bff, inset 0 0 0 99px rgba(15, 155, 255, 0.5);
-}
-.simple-toggle:disabled {
-  box-shadow: none;
-  background-color: transparent;
-  color: rgba(255, 140, 0, 0.3);
-}
-.simple-toggle {
-  font-weight: bold;
-  padding: 0.36rem;
-}
-.simple-toggle label {
-  margin-left: 0.09rem;
-}
-.simple-toggle image {
-  font-size: 1.3em;
-}
 .notif .outerbox {
   background: rgba(0, 0, 0, 0.5);
   border-radius: 2rem;
   padding: 0.35rem;
+}
+.notif.panel {
+  margin-top: 0.25rem;
+  padding: 0rem 0.5rem;
+}
+.notif.panel.box {
+  border-radius: 2rem;
+  border-bottom: 2px solid #0f9bff;
+  box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+}
+.notif.panel.box label {
+  font-size: 1.1rem;
+  color: rgb(255, 140, 0);
+}
+.notif.panel.box button {
+  color: rgb(255, 140, 0);
+}
+.notif.panel.box button icon {
+  font-size: 1.1rem;
 }
 .notif .title {
   font-size: 1.1rem;
@@ -1111,66 +782,6 @@ tooltip > * > * {
 .close-button {
   font-size: 1.5rem;
   margin-left: 0.25rem;
-}
-.notif {
-  background-color: transparent;
-}
-.notifItem box {
-  margin: unset;
-}
-.notifItemBody {
-  padding: 0.1rem;
-  color: white;
-}
-.notifItemIcon {
-  font-size: 4rem;
-}
-.notifItemIcon box {
-  background-color: transparent;
-}
-.notifItemTitle {
-  text-shadow: none;
-  font-size: 1.15rem;
-  font-weight: bold;
-}
-.notifItemDescription {
-  color: white;
-  text-shadow: none;
-  font-size: 0.9rem;
-}
-.notif.empty label {
-  all: unset;
-  font-size: 5rem;
-  text-shadow:
-    15px 0px 10px yellow,
-    -15px 0px 10px yellow,
-    0px 0px 0px yellow;
-}
-.notif.panel {
-  border-radius: 2rem;
-  margin-top: 0.5rem;
-}
-.notif.panel.box label {
-  font-size: 1.5rem;
-  color: rgb(255, 140, 0);
-}
-.notif.panel.box button {
-  color: rgb(255, 140, 0);
-}
-.notif.panel.box button icon {
-  font-size: 1.5rem;
-}
-.barNotification {
-  background-color: #1e1e2e;
-  border-radius: 2rem;
-  border: 2px solid #11111b;
-  color: #cdd6f4;
-  font-weight: bold;
-  margin-right: 10px;
-  padding: 1px 15px;
-}
-window.notification-popups box.notifications {
-  padding: 0.5rem;
 }
 @keyframes lowBlink {
   0% {
@@ -1428,6 +1039,11 @@ tooltip > * > * {
   font-size: 1rem;
   color: lime;
 }
+.powerprofiles.header {
+  border-radius: 2rem;
+  border-bottom: 2px solid #0f9bff;
+  box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+}
 .powerprofiles box {
   padding: 1.5px;
 }
@@ -1581,7 +1197,7 @@ tooltip > * > * {
   background: rgba(0, 0, 0, 0.5);
   border: 2px solid #0f9bff;
   border-radius: 2rem;
-  padding: 0rem 0.25rem;
+  padding: 0.25rem;
 }
 .tray > * {
   border: 2px solid rgba(0, 0, 0, 0);
@@ -1888,4 +1504,68 @@ menu > menuitem:disabled {
 .sessioncontrols button:focus label,
 .sessioncontrols button:active label {
   color: rgb(0, 0, 255);
+}
+.bluetooth button.power-on {
+  color: rgb(155, 255, 15);
+}
+.bluetooth button.power-off {
+  color: rgb(255, 0, 0);
+}
+.bluetooth button:hover {
+  color: rgb(0, 0, 255);
+}
+.bluetooth .refreshing {
+  color: rgb(155, 255, 15);
+}
+.bluetooth .refreshing icon {
+  animation: spin 1s infinite linear;
+}
+.bluetooth.container {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 2rem;
+  border: 2px solid #0f9bff;
+}
+.bluetooth.devicelist {
+  color: rgb(255, 140, 0);
+  padding: 0.25rem;
+}
+.bluetooth.devicelist.header {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 2rem;
+  border-bottom: 2px solid #0f9bff;
+  box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+}
+.bluetooth.devicelist.items {
+  border-radius: 2rem;
+  border-bottom: 2px solid #0f9bff;
+}
+.bluetooth.devicelist.items icon {
+  color: rgb(255, 140, 0);
+}
+.bluetooth.devicelist.items.connected {
+  border-color: rgb(155, 255, 15);
+}
+.bluetooth.devicelist.items.connected.itemicon {
+  border: none;
+  color: rgb(155, 255, 15);
+}
+.bluetooth.devicelist.items.connected label {
+  color: rgb(155, 255, 15);
+}
+.bluetooth.devicelist.items.controls {
+  all: unset;
+  background: transparent;
+  border-radius: 2rem;
+  border-left: 2px solid #0f9bff;
+  padding: 0rem 0.5rem;
+  box-shadow: -0.75rem 0rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+}
+.bluetooth.devicelist.items.controls icon {
+  font-size: 1.25rem;
+}
+.bluetooth.barbutton:hover {
+  color: rgb(0, 0, 255);
+}
+.bluetooth.barbutton-label {
+  color: rgb(15, 155, 255);
 }

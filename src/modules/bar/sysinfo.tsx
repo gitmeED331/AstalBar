@@ -3,7 +3,7 @@ import {
   VolumeIndicator,
   BatteryButton,
   NetworkButton,
-  //  BluetoothButton,
+  BluetoothButton,
 } from "../Widgets/index";
 
 //const { RoundedAngleEnd } = Roundedges;
@@ -16,14 +16,10 @@ export default function SysInfo() {
       valign={Gtk.Align.CENTER}
       spacing={5}
     >
-      {/* <RoundedAngleEnd class_name="angleLeft" /> */}
-      {/* <box spacing={8} hexpand="true" > */}
       <VolumeIndicator />
-      {/* <NetworkButton /> */}
-      {/* <BluetoothButton /> */}
+      <NetworkButton />
+      <BluetoothButton />
       <BatteryButton />
-      {/* </box> */}
-      {/* <RoundedAngleEnd class_name="angleRight" /> */}
     </box>
   );
 }

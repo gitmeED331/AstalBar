@@ -10,6 +10,9 @@ import {
   Player,
   PowerProfiles,
   Tray,
+  BluetoothDevices,
+  EthernetWidget,
+  WifiAPs,
 } from "../../Widgets/index";
 import { NotificationList } from "./notificationList";
 
@@ -20,17 +23,6 @@ const Calendar = () => (
     halign={Gtk.Align.CENTER}
   >
     <GridCalendar />
-  </box>
-);
-const TopCenter = () => (
-  <box
-    className={"dashboard topCenter"}
-    vertical={true}
-    halign={Gtk.Align.CENTER}
-    valign={Gtk.Align.START}
-    spacing={10}
-  >
-
   </box>
 );
 const LeftSide = () => (
@@ -45,6 +37,7 @@ const LeftSide = () => (
     <Calendar />
     {/* <BrightnessSlider /> */}
     <PowerProfiles />
+    <BluetoothDevices />
   </box>
 );
 const RightSide = () => (
@@ -58,7 +51,10 @@ const RightSide = () => (
   //widthRequest={winwidth(0.25)}
   >
     <NotificationList />
+    <EthernetWidget />
+    <WifiAPs />
   </box>
+
 );
 function Dashboard() {
   const content = (
@@ -75,7 +71,7 @@ function Dashboard() {
       <box
         className={"dashboard container"}
         vertical={true}
-        vexpand={false}
+        vexpand={true}
         hexpand={false}
         valign={Gtk.Align.START}
         halign={Gtk.Align.CENTER}

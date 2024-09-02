@@ -39,8 +39,6 @@ import {
   powerprofiles,
   // Launcher,
   //  cliphist,
-  //networkmenu,
-  //bluetoothmenu,
 } from "./modules/Windows/index";
 
 
@@ -75,7 +73,5 @@ App.start({
     powerprofiles();
     // Launcher();
     //  cliphist();
-    //  networkmenu();
-    //	bluetoothmenu();
   },
 });

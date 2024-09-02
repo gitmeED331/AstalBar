@@ -107,10 +107,35 @@ const Icon = {
     enabled: "bluetooth-active-symbolic",
     disabled: "bluetooth-disabled-symbolic",
   },
+  network: {
+    ethernet: {
+      connected: "network-wired-symbolic",
+      disconnected: "network-wireless-signal-none-symbolic",
+    },
+    wifi: {
+      enabled: "network-wireless-symbolic",
+      disabled: "network-wireless-signal-none-symbolic",
+      connected: "network-wireless-symbolic",
+      disconnected: "network-wireless-signal-none-symbolic",
+      signal: {
+        low: "network-wireless-signal-strength-0-symbolic",
+        medium: "network-wireless-signal-strength-1-symbolic",
+        high: "network-wireless-signal-strength-2-symbolic",
+        full: "network-wireless-signal-strength-3-symbolic",
+        overamplified: "network-wireless-signal-strength-4-symbolic",
+      }
+    }
+  },
   brightness: {
     indicator: "display-brightness-symbolic",
     keyboard: "keyboard-brightness-symbolic",
     screen: "display-brightness-symbolic",
+    levels: {
+      low: "brightness-low-symbolic",
+      medium: "brightness-medium-symbolic",
+      high: "brightness-high-symbolic",
+      full: "brightness-full-symbolic",
+    }
   },
   powermenu: {
     lock: "system-lock-screen-symbolic",
@@ -153,16 +178,6 @@ const Icon = {
     cpu: "org.gnome.SystemMonitor-symbolic",
     ram: "drive-harddisk-solidstate-symbolic",
     temp: "temperature-symbolic",
-  },
-  color: {
-    dark: "dark-mode-symbolic",
-    light: "light-mode-symbolic",
-  },
-  SCMenu: {
-    AShot: "screenshooter-symbolic",
-    FShot: "accessories-screenshot-symbolic",
-    ARecord: "vm-snapshot-recording",
-    FRecord: "record",
   },
   launcher: {
     search: "system-search-symbolic",

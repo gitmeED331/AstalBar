@@ -4,26 +4,59 @@
     border-radius: $radius;
     padding: 0.35rem;
   }
+
+  &.panel {
+    margin-top: 0.25rem;
+    padding: 0rem 0.5rem;
+
+
+    &.box {
+      border-radius: $radius;
+      border-bottom: $border;
+      box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+
+      label {
+        font-size: 1.1rem;
+        color: $font-color1;
+
+      }
+
+      button {
+        color: $font-color1;
+
+        icon {
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+
   .title {
     font-size: 1.1rem;
   }
+
   .body {
     color: $font-color3;
     font-size: 0.9rem;
   }
+
   .icondatetime {
     padding: 0.5rem;
+
     icon {
       font-size: 2.5rem;
     }
+
     .datetime {
       padding: 0.25rem;
+
       label {
         color: $font-color2;
         font-size: 0.8rem;
       }
     }
   }
+
   .actions {
     button {
       border: $border;
@@ -47,16 +80,20 @@
     &.outerbox {
       border: 3px dotted rgba(255, 0, 0, 1);
     }
+
     .title {
       color: $font-color4;
     }
+
     .body {
       color: $font-color3;
     }
+
     .icondatetime {
       icon {
         color: $font-color4;
       }
+
       .datetime {
         label {
           color: $font-color2;
@@ -64,20 +101,25 @@
       }
     }
   }
+
   .level1 {
     &.outerbox {
       border: 3px dashed rgba(15, 155, 255, 1);
     }
+
     .title {
       color: $font-color1;
     }
+
     .body {
       color: $font-color3;
     }
+
     .icondatetime {
       icon {
         color: $font-color2;
       }
+
       .datetime {
         label {
           color: $font-color2;
@@ -85,17 +127,21 @@
       }
     }
   }
+
   .levelundefined,
   .level0 {
     &.outerbox {
       border: 3px groove white;
     }
+
     .title {
       color: $font-color1;
     }
+
     .body {
       color: $font-color3;
     }
+
     .icondatetime {
       icon {
         color: white;
@@ -103,6 +149,7 @@
     }
   }
 }
+
 .close-button {
   font-size: 1.5rem;
   margin-left: 0.25rem;
@@ -110,95 +157,68 @@
 
 //
 //---------------- dashboard notifications
-//
-.notif {
-  //dashboard panel box
-  // all:unset;
-  background-color: transparent;
+// //
+// .notif {
+//   //dashboard panel box
+//   // all:unset;
+//   background-color: transparent;
 
-  &Item {
-    box {
-      margin: unset;
-    }
+//   &Item {
+//     box {
+//       margin: unset;
+//     }
 
-    &Body {
-      padding: 0.1rem;
-      //border-radius: $radius;
-      color: white;
-    }
+//     &Body {
+//       padding: 0.1rem;
+//       //border-radius: $radius;
+//       color: white;
+//     }
 
-    &Icon {
-      font-size: 4rem;
+//     &Icon {
+//       font-size: 4rem;
 
-      box {
-        background-color: transparent;
-      }
-    }
+//       box {
+//         background-color: transparent;
+//       }
+//     }
 
-    &Title {
-      text-shadow: none;
-      font-size: 1.15rem;
-      font-weight: bold;
-    }
+//     &Title {
+//       text-shadow: none;
+//       font-size: 1.15rem;
+//       font-weight: bold;
+//     }
 
-    &Description {
-      color: white;
-      text-shadow: none;
-      font-size: 0.9rem;
-    }
-  }
+//     &Description {
+//       color: white;
+//       text-shadow: none;
+//       font-size: 0.9rem;
+//     }
+//   }
 
-  &.empty {
-    label {
-      all: unset;
-      //color: $font-color1;
-      font-size: 5rem;
-      text-shadow:
-        15px 0px 10px yellow,
-        -15px 0px 10px yellow,
-        0px 0px 0px yellow;
-    }
-  }
+//   &.empty {
+//     label {
+//       all: unset;
+//       //color: $font-color1;
+//       font-size: 5rem;
+//       text-shadow:
+//         15px 0px 10px yellow,
+//         -15px 0px 10px yellow,
+//         0px 0px 0px yellow;
+//     }
+//   }
+// }
 
-  &.panel {
-    border-radius: $radius;
-    margin-top: 0.5rem;
-    // min-width: 10rem;
-    // padding-left: 2.5rem;
-    // padding-right: 0.5rem;
+// // ------------- bar
+// .barNotification {
+//   background-color: #1e1e2e;
+//   border-radius: 2rem;
+//   border: 2px solid #11111b;
+//   color: #cdd6f4;
+//   font-weight: bold;
+//   margin-right: 10px;
+//   padding: 1px 15px;
+// }
 
-    &.box {
-      // margin-right: 1rem;
-      // margin-left: 2rem;
-      // margin-bottom: 0.5rem;
-
-      label {
-        font-size: 1.5rem;
-        color: $font-color1;
-      }
-
-      button {
-        color: $font-color1;
-
-        icon {
-          font-size: 1.5rem;
-        }
-      }
-    }
-  }
-}
-
-// ------------- bar
-.barNotification {
-  background-color: #1e1e2e;
-  border-radius: 2rem;
-  border: 2px solid #11111b;
-  color: #cdd6f4;
-  font-weight: bold;
-  margin-right: 10px;
-  padding: 1px 15px;
-}
-
-window.notification-popups box.notifications {
-  padding: 0.5rem;
-}
+// window.notification-popups box.notifications {
+//   padding: 0.5rem;
+// }

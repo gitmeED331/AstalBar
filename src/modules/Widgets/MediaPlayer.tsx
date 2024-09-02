@@ -84,9 +84,10 @@ function TrackPosition() {
   )
 
   return (
-    <box vertical={true}
+    <box
+      className={"positioncontainer"}
+      vertical={true}
       visible={true} // {bind(player, "length").as(length => length > 0 ? true : false)}
-      margin-left={10}
     >
       {positionSlider}
       <centerbox

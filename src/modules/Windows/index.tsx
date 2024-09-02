@@ -4,9 +4,6 @@ import Calendar from "./calendar";
 import AudioMixer from "./AudioMixer";
 // import cliphist from "./cliphist";
 
-// import networkmenu from "./network/index";
-// import bluetoothmenu from "./bluetooth/index";
-
 import NotificationPopups from "./notificationPopups";
 import Overview from "./overview/Overview";
 import sessioncontrol from "./sessioncontrol";
@@ -24,6 +21,4 @@ export {
   powerprofiles,
   // Launcher,
   // cliphist,
-  // networkmenu,
-  // bluetoothmenu,
 };

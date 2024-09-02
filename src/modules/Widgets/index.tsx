@@ -6,8 +6,11 @@ import NotifWidget from "./Notification";
 import VolumeIndicator from "./VolumeIndicator";
 import AudioMixer from "./AudioMixer";
 import PowerProfiles from "./powerprofiles";
-import NetworkButton from "./Network";
-// import BluetoothButton from "./Bluetooth";
+import NetworkButton from "./Network/BarButton";
+import EthernetWidget from "./Network/Ethernet";
+import WifiAPs from "./Network/WiFi";
+import BluetoothButton from "./Bluetooth/BarButton";
+import BluetoothDevices from "./Bluetooth/BluetoothDevices";
 import Tray from "./Tray";
 
 export {
@@ -19,7 +22,7 @@ export {
   BatteryButton,
   Player,
   PowerProfiles,
-  NetworkButton,
-  // BluetoothButton,
+  NetworkButton, EthernetWidget, WifiAPs,
+  BluetoothButton, BluetoothDevices,
   Tray,
 };

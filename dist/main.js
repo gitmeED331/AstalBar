@@ -29,6 +29,9 @@ function subprocess(argsOrCmd, onOut = print, onErr = printerr) {
   proc.connect("stderr", (_, stderr) => err(stderr));
   return proc;
 }
+function exec(cmd) {
+  return Array.isArray(cmd) ? default2.Process.execv(cmd) : default2.Process.exec(cmd);
+}
 function execAsync(cmd) {
   return new Promise((resolve, reject) => {
     if (Array.isArray(cmd)) {
@@ -213,23 +216,23 @@ var VariableWrapper = class extends Function {
     });
     return () => this.variable.disconnect(id);
   }
-  poll(interval2, exec, transform = (out) => out) {
+  poll(interval2, exec2, transform = (out) => out) {
     this.stopPoll();
     this.pollInterval = interval2;
     this.pollTransform = transform;
-    if (typeof exec === "function") {
-      this.pollFn = exec;
+    if (typeof exec2 === "function") {
+      this.pollFn = exec2;
       delete this.pollExec;
     } else {
-      this.pollExec = exec;
+      this.pollExec = exec2;
       delete this.pollFn;
     }
     this.startPoll();
     return this;
   }
-  watch(exec, transform = (out) => out) {
+  watch(exec2, transform = (out) => out) {
     this.stopWatch();
-    this.watchExec = exec;
+    this.watchExec = exec2;
     this.watchTransform = transform;
     this.startWatch();
     return this;
@@ -672,10 +675,35 @@ var Icon2 = {
     enabled: "bluetooth-active-symbolic",
     disabled: "bluetooth-disabled-symbolic"
   },
+  network: {
+    ethernet: {
+      connected: "network-wired-symbolic",
+      disconnected: "network-wireless-signal-none-symbolic"
+    },
+    wifi: {
+      enabled: "network-wireless-symbolic",
+      disabled: "network-wireless-signal-none-symbolic",
+      connected: "network-wireless-symbolic",
+      disconnected: "network-wireless-signal-none-symbolic",
+      signal: {
+        low: "network-wireless-signal-strength-0-symbolic",
+        medium: "network-wireless-signal-strength-1-symbolic",
+        high: "network-wireless-signal-strength-2-symbolic",
+        full: "network-wireless-signal-strength-3-symbolic",
+        overamplified: "network-wireless-signal-strength-4-symbolic"
+      }
+    }
+  },
   brightness: {
     indicator: "display-brightness-symbolic",
     keyboard: "keyboard-brightness-symbolic",
-    screen: "display-brightness-symbolic"
+    screen: "display-brightness-symbolic",
+    levels: {
+      low: "brightness-low-symbolic",
+      medium: "brightness-medium-symbolic",
+      high: "brightness-high-symbolic",
+      full: "brightness-full-symbolic"
+    }
   },
   powermenu: {
     lock: "system-lock-screen-symbolic",
@@ -718,16 +746,6 @@ var Icon2 = {
     cpu: "org.gnome.SystemMonitor-symbolic",
     ram: "drive-harddisk-solidstate-symbolic",
     temp: "temperature-symbolic"
-  },
-  color: {
-    dark: "dark-mode-symbolic",
-    light: "light-mode-symbolic"
-  },
-  SCMenu: {
-    AShot: "screenshooter-symbolic",
-    FShot: "accessories-screenshot-symbolic",
-    ARecord: "vm-snapshot-recording",
-    FRecord: "record"
   },
   launcher: {
     search: "system-search-symbolic",
@@ -1161,7 +1179,7 @@ function GridCalendar() {
   monthLabel.get_style_context().add_class("calendar-month-label");
   const yearLabel = new Label2({ label: currentYear.toString() });
   yearLabel.get_style_context().add_class("calendar-year-label");
-  const header = /* @__PURE__ */ jsxs("box", { orientation: default5.Orientation.HORIZONTAL, spacing: 10, halign: default5.Align.CENTER, valign: default5.Align.CENTER, children: [
+  const header3 = /* @__PURE__ */ jsxs("box", { orientation: default5.Orientation.HORIZONTAL, spacing: 10, halign: default5.Align.CENTER, valign: default5.Align.CENTER, children: [
     /* @__PURE__ */ jsx("button", { halign: default5.Align.CENTER, valign: default5.Align.CENTER, className: "calendar month arrow-left", onClick: () => changeMonth(-1), children: /* @__PURE__ */ jsx("icon", { icon: Icons("arrow-back-circle-symbolic") }) }),
     monthLabel,
     /* @__PURE__ */ jsx("button", { halign: default5.Align.CENTER, valign: default5.Align.CENTER, className: "calendar month arrow-right", onClick: () => changeMonth(1), children: /* @__PURE__ */ jsx("icon", { icon: Icons("arrow-forward-circle-symbolic") }) }),
@@ -1178,7 +1196,7 @@ function GridCalendar() {
   ] });
   updateGridCalendar();
   return /* @__PURE__ */ jsxs("box", { orientation: default5.Orientation.VERTICAL, halign: default5.Align.CENTER, valign: default5.Align.CENTER, children: [
-    header,
+    header3,
     gridCalendar
   ] });
 }
@@ -1290,9 +1308,9 @@ function TrackPosition() {
   return /* @__PURE__ */ jsxs(
     "box",
     {
+      className: "positioncontainer",
       vertical: true,
       visible: true,
-      "margin-left": 10,
       children: [
         positionSlider,
         /* @__PURE__ */ jsx(
@@ -1783,12 +1801,13 @@ powerprofile.connect("notify::active-profile", () => {
     balanced: 60,
     performance: 100
   };
-  const setBrightness = (level) => {
-    execAsync(`light -S ${level}`);
+  const setBrightness = async (level) => {
+    await execAsync(`light -S ${level}`).catch();
+    brightness.set(level).catch();
   };
   const updateBrightness = () => {
     const level = brightnessLevels[powerprofile.activeProfile];
-    setBrightness(level);
+    setBrightness(level).catch();
   };
   updateBrightness();
 });
@@ -1798,6 +1817,7 @@ var SysButton = (action, label) => /* @__PURE__ */ jsx(
     onClick: (_, event) => {
       if (event.button === default6.BUTTON_PRIMARY) {
         powerprofile.activeProfile = action;
+        currentBrightness();
       }
     },
     className: bind(powerprofile, "activeProfile").as((c) => c === action ? c : ""),
@@ -1807,6 +1827,9 @@ var SysButton = (action, label) => /* @__PURE__ */ jsx(
     ] })
   }
 );
+function currentBrightness() {
+  return parseInt(exec("light -G").trim());
+}
 function PowerProfiles2() {
   return /* @__PURE__ */ jsxs(
     "box",
@@ -1815,22 +1838,46 @@ function PowerProfiles2() {
       vertical: true,
       valign: default5.Align.CENTER,
       halign: default5.Align.CENTER,
+      spacing: 10,
       children: [
         /* @__PURE__ */ jsx(
-          "box",
+          "centerbox",
           {
-            vertical: true,
+            className: "powerprofiles header",
+            vertical: false,
             valign: default5.Align.CENTER,
-            halign: default5.Align.CENTER,
-            spacing: 10,
-            children: /* @__PURE__ */ jsx(
+            halign: default5.Align.FILL,
+            centerWidget: /* @__PURE__ */ jsx(
               "label",
               {
                 valign: default5.Align.CENTER,
                 halign: default5.Align.CENTER,
                 label: bind(powerprofile, "active_profile").as((l) => l.toUpperCase())
               }
-            )
+            ),
+            endWidget: /* @__PURE__ */ jsxs("box", { halign: default5.Align.CENTER, vertical: false, spacing: 10, children: [
+              /* @__PURE__ */ jsx(
+                "icon",
+                {
+                  valign: default5.Align.END,
+                  halign: default5.Align.CENTER,
+                  css: `padding-bottom: 5px;`,
+                  icon: bind(powerprofile, "active_profile").as(
+                    (l) => l === "power-saver" ? icons_default.brightness.levels.low : l === "balanced" ? icons_default.brightness.levels.medium : l === "performance" ? icons_default.brightness.levels.high : ""
+                  )
+                }
+              ),
+              /* @__PURE__ */ jsx(
+                "label",
+                {
+                  valign: default5.Align.CENTER,
+                  halign: default5.Align.CENTER,
+                  label: bind(powerprofile, "active_profile").as(
+                    (l) => l === "power-saver" ? "30%" : l === "balanced" ? "60%" : l === "performance" ? "100%" : ""
+                  )
+                }
+              )
+            ] })
           }
         ),
         /* @__PURE__ */ jsxs(
@@ -1855,11 +1902,656 @@ function PowerProfiles2() {
 }
 var powerprofiles_default = PowerProfiles2;
 
-// src/modules/Widgets/Network.tsx
+// src/modules/Widgets/Network/BarButton.tsx
 import AstalNetwork from "gi://AstalNetwork";
 var network = AstalNetwork.get_default();
 var Wired = network.wired;
 var Wifi = network.wifi;
+var NetworkWidget = () => {
+  const wifiIcon = /* @__PURE__ */ jsx(
+    "icon",
+    {
+      className: "network-wifi",
+      icon: bind(Wifi, "icon_name")
+    }
+  );
+  const wifiLabel = /* @__PURE__ */ jsx(
+    "label",
+    {
+      className: "network-barlabel-wifi",
+      label: "--"
+    }
+  );
+  const updateWifiLabel = () => {
+    const wifi = network.wifi;
+    wifiLabel.label = wifi && wifi.ssid ? `${wifi.ssid.substring(0, 7)}` : "--";
+  };
+  updateWifiLabel();
+  network.connect("notify::wifi", updateWifiLabel);
+  const wifiIndicator = /* @__PURE__ */ jsx(
+    "box",
+    {
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      visible: bind(network, "wifi").as((showLabel) => !!showLabel),
+      children: [wifiIcon, wifiLabel]
+    }
+  );
+  const wiredIcon = /* @__PURE__ */ jsx(
+    "icon",
+    {
+      className: "network-baricon-wired",
+      icon: bind(Wired, "icon_name")
+    }
+  );
+  const wiredLabel = /* @__PURE__ */ jsx(
+    "label",
+    {
+      className: "network-barlabel-wired",
+      label: "Wired"
+    }
+  );
+  const wiredIndicator = /* @__PURE__ */ jsx(
+    "box",
+    {
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      visible: bind(network, "wired").as((showLabel) => !!showLabel),
+      children: [wiredIcon, wiredLabel]
+    }
+  );
+  return /* @__PURE__ */ jsx(
+    "box",
+    {
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      className: "network-barbox",
+      visible: true,
+      children: bind(network, "primary").as((w) => w === AstalNetwork.Primary.WIRED ? wiredIndicator : wifiIndicator)
+    }
+  );
+};
+function NetworkButton() {
+  return /* @__PURE__ */ jsx(
+    "button",
+    {
+      className: "network barbutton",
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      onClick: () => {
+        application_default.toggle_window("dashboard");
+      },
+      children: /* @__PURE__ */ jsx(NetworkWidget, {})
+    }
+  );
+}
+var BarButton_default = NetworkButton;
+
+// src/modules/Widgets/Network/Ethernet.tsx
+import AstalNetwork2 from "gi://AstalNetwork";
+var network2 = AstalNetwork2.get_default();
+var Wired2 = network2.wired;
+function header() {
+  const ethernetIcon = /* @__PURE__ */ jsx(
+    "icon",
+    {
+      className: "network-ethernet",
+      icon: bind(Wired2, "icon_name")
+    }
+  );
+  const ethernetLabel = /* @__PURE__ */ jsx(
+    "label",
+    {
+      className: "network-ethernet barlabel",
+      label: "Ethernet"
+    }
+  );
+  const ethernetIndicator = /* @__PURE__ */ jsx(
+    "box",
+    {
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      visible: bind(network2, "wired").as((showLabel) => !!showLabel),
+      spacing: 5,
+      children: [ethernetIcon, ethernetLabel]
+    }
+  );
+  return ethernetIndicator;
+}
+var status = /* @__PURE__ */ jsx(
+  "box",
+  {
+    halign: default5.Align.CENTER,
+    valign: default5.Align.CENTER,
+    spacing: 5,
+    children: /* @__PURE__ */ jsx(
+      "label",
+      {
+        label: bind(Wired2, "internet").as((i) => i == 0 ? "Connected" : i == 1 ? "Connecting" : "Disconnected"),
+        halign: default5.Align.CENTER,
+        valign: default5.Align.CENTER
+      }
+    )
+  }
+);
+function EthernetWidget() {
+  return /* @__PURE__ */ jsx(
+    "box",
+    {
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      vertical: true,
+      children: /* @__PURE__ */ jsxs(
+        "box",
+        {
+          className: "network-ethernet container",
+          halign: default5.Align.CENTER,
+          valign: default5.Align.CENTER,
+          spacing: 5,
+          vertical: false,
+          children: [
+            header(),
+            status
+          ]
+        }
+      )
+    }
+  );
+}
+var Ethernet_default = EthernetWidget;
+
+// src/modules/Widgets/Network/WiFi.tsx
+import AstalNetwork3 from "gi://AstalNetwork";
+var network3 = AstalNetwork3.get_default();
+var Wifi2 = network3.wifi;
+function header2() {
+  const refresh = /* @__PURE__ */ jsx(
+    "button",
+    {
+      onClick: (_, event) => {
+        if (event.button === default6.BUTTON_PRIMARY) {
+          Wifi2.scan();
+        }
+      },
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      tooltip_text: bind(Wifi2, "scanning").as((v) => v ? "wifi scanning" : ""),
+      children: /* @__PURE__ */ jsx(
+        "icon",
+        {
+          icon: "view-refresh-symbolic",
+          halign: default5.Align.END,
+          valign: default5.Align.CENTER
+        }
+      )
+    }
+  );
+  const enable = /* @__PURE__ */ jsx(
+    "button",
+    {
+      onClick: (_, event) => {
+        if (event.button === default6.BUTTON_PRIMARY) {
+          execAsync(`nmcli radio wifi ${Wifi2.enabled ? "off" : "on"}`);
+        }
+      },
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      tooltip_text: bind(Wifi2, "enabled").as((v) => v ? "Disable" : "Enable"),
+      children: /* @__PURE__ */ jsx(
+        "icon",
+        {
+          icon: bind(Wifi2, "enabled").as((v) => v ? icons_default.network.wifi.enabled : icons_default.network.wifi.disabled),
+          halign: default5.Align.END,
+          valign: default5.Align.CENTER
+        }
+      )
+    }
+  );
+  const head = /* @__PURE__ */ jsx(
+    "label",
+    {
+      label: "Wi-Fi",
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER
+    }
+  );
+  return /* @__PURE__ */ jsx(
+    "centerbox",
+    {
+      className: "network-wifi header",
+      halign: default5.Align.FILL,
+      valign: default5.Align.FILL,
+      spacing: 5,
+      vertical: false,
+      startWidget: head,
+      endWidget: /* @__PURE__ */ jsxs("box", { halign: default5.Align.CENTER, vertical: false, spacing: 5, children: [
+        enable,
+        refresh
+      ] })
+    }
+  );
+}
+function WifiWidget() {
+  const wifiIcon = /* @__PURE__ */ jsx(
+    "icon",
+    {
+      className: "network-wifi",
+      icon: bind(Wifi2, "icon_name")
+    }
+  );
+  const wifiLabel = /* @__PURE__ */ jsx(
+    "label",
+    {
+      className: "network-barlabel-wifi",
+      label: "--"
+    }
+  );
+  const updateWifiLabel = () => {
+    const wifi = network3.wifi;
+    wifiLabel.label = wifi && wifi.ssid ? `${wifi.ssid.substring(0, 15)}` : "--";
+  };
+  updateWifiLabel();
+  network3.connect("notify::wifi", updateWifiLabel);
+  const wifiIndicator = /* @__PURE__ */ jsx(
+    "button",
+    {
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      visible: bind(network3, "wifi").as((showLabel) => !!showLabel),
+      onClick: () => {
+        execAsync(`nmcli dev wifi ${network3.wifi.connected ? "disconnect" : "connect"} ${network3.wifi.ssid}`);
+      },
+      children: /* @__PURE__ */ jsx("box", { spacing: 5, children: [wifiIcon, wifiLabel] })
+    }
+  );
+  return wifiIndicator;
+}
+function WifiAPs() {
+  return /* @__PURE__ */ jsxs(
+    "box",
+    {
+      className: "network-wifi container",
+      halign: default5.Align.FILL,
+      valign: default5.Align.FILL,
+      visible: true,
+      vertical: true,
+      spacing: 10,
+      children: [
+        header2(),
+        /* @__PURE__ */ jsx(WifiWidget, {})
+      ]
+    }
+  );
+}
+var WiFi_default = WifiAPs;
+
+// src/modules/Widgets/Bluetooth/BarButton.tsx
+import AstalBluetooth from "gi://AstalBluetooth";
+var Bluetooth = AstalBluetooth.get_default();
+var btreveal = Variable(true);
+var BluetoothWidget = () => {
+  const updateLabel = (btLabel) => {
+    const btEnabled = Bluetooth.is_powered;
+    const btDevices = Bluetooth.is_connected;
+    const label = btEnabled && btDevices.length ? ` (${btDevices.length})` : btEnabled ? "On" : "Off";
+    btLabel.label = label;
+  };
+  Bluetooth.connect("notify::enabled", updateLabel);
+  Bluetooth.connect("notify::connected_devices", updateLabel);
+  return /* @__PURE__ */ jsx(
+    "box",
+    {
+      className: "bluetooth barbutton content",
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      visible: true,
+      children: bind(Bluetooth, "is_powered").as((showLabel) => /* @__PURE__ */ jsxs("box", { children: [
+        /* @__PURE__ */ jsx(
+          "icon",
+          {
+            className: "bluetooth barbutton-icon",
+            icon: bind(Bluetooth, "is_powered").as((v) => v ? icons_default.bluetooth.enabled : icons_default.bluetooth.disabled)
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          "revealer",
+          {
+            transitionType: default5.RevealerTransitionType.SLIDE_RIGHT,
+            clickThrough: true,
+            reveal_child: bind(btreveal),
+            children: /* @__PURE__ */ jsx(
+              "label",
+              {
+                className: "bluetooth barbutton-label",
+                setup: updateLabel
+              }
+            )
+          }
+        )
+      ] }))
+    }
+  );
+};
+function BluetoothButton() {
+  return /* @__PURE__ */ jsx(
+    "button",
+    {
+      className: "bluetooth barbutton",
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      onClick: (_, event) => {
+        if (event.button === default6.BUTTON_PRIMARY) {
+          const win = application_default.get_window("dashboard");
+          if (win) {
+            win.visible = !win.visible;
+          }
+        } else if (event.button === default6.BUTTON_SECONDARY) {
+          btreveal.set(!btreveal.get());
+        }
+      },
+      children: /* @__PURE__ */ jsx(BluetoothWidget, {})
+    }
+  );
+}
+var BarButton_default2 = BluetoothButton;
+
+// src/modules/Widgets/Bluetooth/BluetoothDevices.tsx
+import AstalBluetooth2 from "gi://AstalBluetooth";
+import Pango4 from "gi://Pango";
+var Bluetooth2 = AstalBluetooth2.get_default();
+var Adapter = Bluetooth2.adapter;
+var btControls = () => {
+  const btPower = /* @__PURE__ */ jsx(
+    "button",
+    {
+      className: bind(Bluetooth2, "is_powered").as((v) => v ? "bluetooth power-on" : "bluetooth power-off"),
+      onClick: (_, event) => {
+        if (event.button === default6.BUTTON_PRIMARY) {
+          execAsync(`bluetoothctl power ${Bluetooth2.is_powered ? "off" : "on"}`);
+        }
+      },
+      halign: default5.Align.END,
+      valign: default5.Align.CENTER,
+      tooltip_text: bind(Bluetooth2, "is_powered").as((v) => v ? "Power off" : "Power on"),
+      children: /* @__PURE__ */ jsx(
+        "icon",
+        {
+          icon: bind(Bluetooth2, "is_powered").as((v) => v ? icons_default.bluetooth.enabled : icons_default.bluetooth.disabled),
+          halign: default5.Align.END,
+          valign: default5.Align.CENTER
+        }
+      )
+    }
+  );
+  const Refresh = /* @__PURE__ */ jsx(
+    "button",
+    {
+      className: bind(Adapter, "discovering").as((v) => v ? "bluetooth refreshing" : "bluetooth stale"),
+      onClick: async (_, event) => {
+        if (event.button === default6.BUTTON_PRIMARY) {
+          await execAsync("bluetoothctl --timeout 120 scan on").catch(console.error);
+        }
+      },
+      halign: default5.Align.END,
+      valign: default5.Align.CENTER,
+      tooltip_text: "Refresh",
+      children: /* @__PURE__ */ jsx(
+        "icon",
+        {
+          icon: "view-refresh-symbolic",
+          halign: default5.Align.END,
+          valign: default5.Align.CENTER
+        }
+      )
+    }
+  );
+  return /* @__PURE__ */ jsxs(
+    "box",
+    {
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      spacing: 5,
+      children: [
+        btPower,
+        Refresh
+      ]
+    }
+  );
+};
+function content(device) {
+  const DeviceButton = () => {
+    const btDeviceLabel = /* @__PURE__ */ jsx(
+      "label",
+      {
+        label: device.name,
+        halign: default5.Align.START,
+        valign: default5.Align.CENTER,
+        ellipsize: Pango4.EllipsizeMode.END,
+        tooltip_text: device.address || "No Address"
+      }
+    );
+    const DeviceTypeIcon = /* @__PURE__ */ jsx(
+      "icon",
+      {
+        className: `bluetooth devicelist ${device.connected ? "connected" : ""} itemicon`,
+        icon: device.icon || "bluetooth-symbolic",
+        halign: default5.Align.START,
+        valign: default5.Align.CENTER
+      }
+    );
+    return /* @__PURE__ */ jsx(
+      "button",
+      {
+        className: "bluetooth devicelist itemcontent",
+        halign: default5.Align.FILL,
+        valign: default5.Align.CENTER,
+        onClick: () => {
+          execAsync(`bluetoothctl ${device.connected ? "disconnect" : "connect"} ${device.address}`);
+        },
+        children: /* @__PURE__ */ jsx(
+          "centerbox",
+          {
+            halign: default5.Align.START,
+            valign: default5.Align.CENTER,
+            spacing: 5,
+            startWidget: DeviceTypeIcon,
+            centerWidget: btDeviceLabel
+          }
+        )
+      }
+    );
+  };
+  const btDeviceControls = () => {
+    const PairDevice = /* @__PURE__ */ jsx(
+      "button",
+      {
+        onClick: (_, event) => {
+          if (event.button === default6.BUTTON_PRIMARY) {
+            execAsync(`bluetoothctl ${device.paired ? "Unpair" : "Pair"} ${device.address}`);
+          } else if (event.button === default6.BUTTON_SECONDARY) {
+            execAsync(`bluetoothctl cancel-pairing ${device.address}`);
+          }
+        },
+        halign: default5.Align.END,
+        valign: default5.Align.CENTER,
+        tooltip_text: bind(device, "paired").as((v) => v ? "Unpair" : "Pair"),
+        children: /* @__PURE__ */ jsx(
+          "icon",
+          {
+            icon: bind(device, "paired").as((v) => v ? Icons("bluetooth-link-symbolic") : Icons("bluetooth-unlink-symbolic")),
+            halign: default5.Align.END,
+            valign: default5.Align.CENTER
+          }
+        )
+      }
+    );
+    const TrustDevice = /* @__PURE__ */ jsx(
+      "button",
+      {
+        onClick: (_, event) => {
+          if (event.button === default6.BUTTON_PRIMARY) {
+            execAsync(`bluetoothctl ${device.trusted ? "untrust" : "trust"} ${device.address}`);
+          }
+        },
+        halign: default5.Align.END,
+        valign: default5.Align.CENTER,
+        tooltip_text: bind(device, "trusted").as((v) => v ? "Untrust" : "Trust"),
+        children: /* @__PURE__ */ jsx(
+          "icon",
+          {
+            icon: bind(device, "trusted").as((v) => v ? Icons("bluetooth-trust-symbolic") : Icons("bluetooth-untrust-symbolic")),
+            halign: default5.Align.END,
+            valign: default5.Align.CENTER
+          }
+        )
+      }
+    );
+    const ConnectDevice = /* @__PURE__ */ jsx(
+      "button",
+      {
+        onClick: (_, event) => {
+          if (event.button === default6.BUTTON_PRIMARY) {
+            execAsync(`bluetoothctl ${device.connected ? "disconnect" : "connect"} ${device.address}`);
+          }
+        },
+        halign: default5.Align.END,
+        valign: default5.Align.CENTER,
+        tooltip_text: bind(device, "connected").as((v) => v ? "Disconnect" : "Connect"),
+        children: /* @__PURE__ */ jsx(
+          "icon",
+          {
+            icon: bind(device, "connected").as((v) => v ? Icons("bluetooth-connect-symbolic") : Icons("bluetooth-disconnect-symbolic")),
+            halign: default5.Align.END,
+            valign: default5.Align.CENTER
+          }
+        )
+      }
+    );
+    const ForgetDevice = /* @__PURE__ */ jsx(
+      "button",
+      {
+        className: "bluetooth deviceList delete",
+        onClick: (_, event) => {
+          if (event.button === default6.BUTTON_PRIMARY) {
+            execAsync(`bluetoothctl remove ${device.address}`);
+          }
+        },
+        visible: device.paired,
+        halign: default5.Align.END,
+        valign: default5.Align.CENTER,
+        tooltip_text: "Forget",
+        children: /* @__PURE__ */ jsx(
+          "icon",
+          {
+            tooltip_text: "Forget",
+            icon: Icons("circle-x-symbolic"),
+            halign: default5.Align.END,
+            valign: default5.Align.CENTER
+          }
+        )
+      }
+    );
+    return /* @__PURE__ */ jsxs(
+      "box",
+      {
+        className: "bluetooth devicelist items controls",
+        halign: default5.Align.END,
+        valign: default5.Align.FILL,
+        spacing: 5,
+        children: [
+          PairDevice,
+          TrustDevice,
+          ConnectDevice,
+          ForgetDevice
+        ]
+      }
+    );
+  };
+  return /* @__PURE__ */ jsx(
+    "box",
+    {
+      className: `bluetooth devicelist items ${device.connected ? "connected" : ""}`,
+      halign: default5.Align.FILL,
+      valign: default5.Align.FILL,
+      visible: true,
+      vertical: true,
+      children: /* @__PURE__ */ jsx(
+        "centerbox",
+        {
+          vertical: false,
+          halign: default5.Align.FILL,
+          valign: default5.Align.CENTER,
+          startWidget: /* @__PURE__ */ jsx(DeviceButton, {}),
+          endWidget: btDeviceControls()
+        }
+      )
+    }
+  );
+}
+function BluetoothDevices() {
+  const btdevicelist = bind(Bluetooth2, "devices").as((devices) => {
+    const availableDevices = devices.filter((btDev) => {
+      const name = btDev.name ? btDev.name.trim() : null;
+      return name && name !== "Unknown Device" && name !== "";
+    }).sort((a, b) => {
+      if (a.connected && !b.connected) return -1;
+      if (!a.connected && b.connected) return 1;
+      if (a.paired && !b.paired) return -1;
+      if (!a.paired && b.paired) return 1;
+      return a.name.localeCompare(b.name);
+    });
+    return availableDevices.map((device) => content(device));
+  });
+  return /* @__PURE__ */ jsxs(
+    "box",
+    {
+      className: "bluetooth devicelist container",
+      halign: default5.Align.FILL,
+      valign: default5.Align.FILL,
+      visible: true,
+      vertical: true,
+      spacing: 10,
+      children: [
+        /* @__PURE__ */ jsx(
+          "centerbox",
+          {
+            className: "bluetooth devicelist header",
+            vertical: false,
+            halign: default5.Align.FILL,
+            valign: default5.Align.CENTER,
+            centerWidget: /* @__PURE__ */ jsx("label", { label: "Bluetooth" }),
+            endWidget: btControls()
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          "scrollable",
+          {
+            halign: default5.Align.FILL,
+            valign: default5.Align.FILL,
+            visible: true,
+            vscroll: default5.PolicyType.AUTOMATIC,
+            hscroll: default5.PolicyType.NEVER,
+            vexpand: true,
+            css: `min-height: 200px;`,
+            children: /* @__PURE__ */ jsx(
+              "box",
+              {
+                className: "bluetooth devicelist-inner",
+                halign: default5.Align.FILL,
+                valign: default5.Align.FILL,
+                visible: true,
+                vertical: true,
+                spacing: 5,
+                children: btdevicelist
+              }
+            )
+          }
+        )
+      ]
+    }
+  );
+}
+var BluetoothDevices_default = BluetoothDevices;
 
 // src/modules/Widgets/Tray.tsx
 import AstalTray from "gi://AstalTray";
@@ -1890,8 +2582,8 @@ var SysTrayItem = (item) => {
         {
           halign: default5.Align.CENTER,
           valign: default5.Align.CENTER,
+          g_icon: bind(item, "gicon"),
           pixbuf: bind(item, "icon_pixbuf"),
-          gicon: bind(item, "gicon"),
           icon: bind(item, "icon_name")
         }
       )
@@ -1936,6 +2628,8 @@ function SysInfo() {
       spacing: 5,
       children: [
         /* @__PURE__ */ jsx(VolumeIndicator_default, {}),
+        /* @__PURE__ */ jsx(BarButton_default, {}),
+        /* @__PURE__ */ jsx(BarButton_default2, {}),
         /* @__PURE__ */ jsx(battery_default, {})
       ]
     }
@@ -1944,7 +2638,7 @@ function SysInfo() {
 
 // src/modules/bar/MediaTicker.tsx
 import Mpris3 from "gi://AstalMpris";
-import Pango4 from "gi://Pango";
+import Pango5 from "gi://Pango";
 var player3 = Mpris3.Player.new("Deezer");
 function TickerTrack() {
   return /* @__PURE__ */ jsx(
@@ -1955,7 +2649,7 @@ function TickerTrack() {
       wrap: false,
       halign: default5.Align.CENTER,
       valign: default5.Align.CENTER,
-      ellipsize: Pango4.EllipsizeMode.END,
+      ellipsize: Pango5.EllipsizeMode.END,
       label: bind(player3, "title").as((title) => TrimTrackTitle_default(title))
     }
   );
@@ -1968,7 +2662,7 @@ function TickerArtist() {
       wrap: false,
       halign: default5.Align.CENTER,
       valign: default5.Align.CENTER,
-      ellipsize: Pango4.EllipsizeMode.END,
+      ellipsize: Pango5.EllipsizeMode.END,
       maxWidthChars: 35,
       label: bind(player3, "artist").as((artist) => artist || "Unknown Artist")
     }
@@ -2010,8 +2704,8 @@ function TickerBox() {
       hexpand: true,
       vexpand: false,
       valign: default5.Align.CENTER,
-      children: bind(player3, "playbackStatus").as((status) => {
-        switch (status) {
+      children: bind(player3, "playbackStatus").as((status2) => {
+        switch (status2) {
           case Mpris3.PlaybackStatus.STOPPED:
             return NoMedia;
           case Mpris3.PlaybackStatus.PLAYING:
@@ -2187,9 +2881,9 @@ function NotificationList() {
             className: "notif panel box",
             spacing: 20,
             valign: default5.Align.FILL,
-            halign: default5.Align.CENTER,
+            halign: default5.Align.FILL,
             vertical: false,
-            startWidget: /* @__PURE__ */ jsx(
+            centerWidget: /* @__PURE__ */ jsx(
               "label",
               {
                 label: "Notifications",
@@ -2197,50 +2891,52 @@ function NotificationList() {
                 halign: default5.Align.END
               }
             ),
-            centerWidget: /* @__PURE__ */ jsx(
-              "button",
-              {
-                halign: default5.Align.START,
-                valign: default5.Align.START,
-                onClick: (_, event) => {
-                  if (event.button === default6.BUTTON_PRIMARY) {
-                    Notif2.get_notifications().forEach(
-                      (item, id) => timeout(50 * id, () => item.dismiss())
-                    );
-                  }
-                },
-                children: /* @__PURE__ */ jsx(
-                  "icon",
-                  {
-                    icon: bind(Notif2, "notifications").as(
-                      (items) => items.length > 0 ? icons_default.trash.full : icons_default.trash.empty
-                    )
-                  }
-                )
-              }
-            ),
-            endWidget: /* @__PURE__ */ jsx(
-              "button",
-              {
-                halign: default5.Align.END,
-                valign: default5.Align.START,
-                onClick: (_, event) => {
-                  if (event.button === default6.BUTTON_PRIMARY) {
-                    Notif2.set_dont_disturb(!Notif2.get_dont_disturb());
-                  }
-                },
-                children: /* @__PURE__ */ jsx(
-                  "icon",
-                  {
-                    icon: bind(Notif2, "dont_disturb").as(
-                      (d) => d === false ? Icons("bell-disabled-symbolic") : Icons("bell-enabled-symbolic")
-                    ),
-                    valign: default5.Align.CENTER,
-                    halign: default5.Align.CENTER
-                  }
-                )
-              }
-            )
+            endWidget: /* @__PURE__ */ jsxs("box", { halign: default5.Align.CENTER, valign: default5.Align.CENTER, vertical: false, spacing: 20, children: [
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  halign: default5.Align.START,
+                  valign: default5.Align.START,
+                  onClick: (_, event) => {
+                    if (event.button === default6.BUTTON_PRIMARY) {
+                      Notif2.get_notifications().forEach(
+                        (item, id) => timeout(50 * id, () => item.dismiss())
+                      );
+                    }
+                  },
+                  children: /* @__PURE__ */ jsx(
+                    "icon",
+                    {
+                      icon: bind(Notif2, "notifications").as(
+                        (items) => items.length > 0 ? icons_default.trash.full : icons_default.trash.empty
+                      )
+                    }
+                  )
+                }
+              ),
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  halign: default5.Align.END,
+                  valign: default5.Align.START,
+                  onClick: (_, event) => {
+                    if (event.button === default6.BUTTON_PRIMARY) {
+                      Notif2.set_dont_disturb(!Notif2.get_dont_disturb());
+                    }
+                  },
+                  children: /* @__PURE__ */ jsx(
+                    "icon",
+                    {
+                      icon: bind(Notif2, "dont_disturb").as(
+                        (d) => d === false ? Icons("bell-disabled-symbolic") : Icons("bell-enabled-symbolic")
+                      ),
+                      valign: default5.Align.CENTER,
+                      halign: default5.Align.CENTER
+                    }
+                  )
+                }
+              )
+            ] })
           }
         ),
         NotifBox
@@ -2270,11 +2966,12 @@ var LeftSide = () => /* @__PURE__ */ jsxs(
     spacing: 10,
     children: [
       /* @__PURE__ */ jsx(Calendar, {}),
-      /* @__PURE__ */ jsx(powerprofiles_default, {})
+      /* @__PURE__ */ jsx(powerprofiles_default, {}),
+      /* @__PURE__ */ jsx(BluetoothDevices_default, {})
     ]
   }
 );
-var RightSide = () => /* @__PURE__ */ jsx(
+var RightSide = () => /* @__PURE__ */ jsxs(
   "box",
   {
     className: "dashboard rightSide",
@@ -2283,11 +2980,15 @@ var RightSide = () => /* @__PURE__ */ jsx(
     valign: default5.Align.FILL,
     hexpand: false,
     spacing: 10,
-    children: /* @__PURE__ */ jsx(NotificationList, {})
+    children: [
+      /* @__PURE__ */ jsx(NotificationList, {}),
+      /* @__PURE__ */ jsx(Ethernet_default, {}),
+      /* @__PURE__ */ jsx(WiFi_default, {})
+    ]
   }
 );
 function Dashboard() {
-  const content = /* @__PURE__ */ jsx(
+  const content2 = /* @__PURE__ */ jsx(
     "eventbox",
     {
       onKeyPressEvent: (_, event) => {
@@ -2303,7 +3004,7 @@ function Dashboard() {
         {
           className: "dashboard container",
           vertical: true,
-          vexpand: false,
+          vexpand: true,
           hexpand: false,
           valign: default5.Align.START,
           halign: default5.Align.CENTER,
@@ -2335,7 +3036,7 @@ function Dashboard() {
       keymode: default2.Keymode.EXCLUSIVE,
       visible: false,
       application: application_default,
-      children: content
+      children: content2
     }
   );
 }
@@ -2417,7 +3118,7 @@ var AudioMixer_default = () => /* @__PURE__ */ jsx(
 
 // src/modules/Windows/notificationPopups.tsx
 import Notifd3 from "gi://AstalNotifd";
-import Pango5 from "gi://Pango";
+import Pango6 from "gi://Pango";
 var Notif3 = Notifd3.get_default();
 var expireTime = 3e4;
 var Time2 = (time, format = "%H:%M.%S") => default7.DateTime.new_from_unix_local(time).format(format);
@@ -2514,7 +3215,7 @@ var NotifWidget2 = () => {
                             label: item.summary,
                             maxWidthChars: 50,
                             lines: 2,
-                            ellipsize: Pango5.EllipsizeMode.END,
+                            ellipsize: Pango6.EllipsizeMode.END,
                             halign: default5.Align.START,
                             valign: default5.Align.START
                           }
@@ -2526,7 +3227,7 @@ var NotifWidget2 = () => {
                             label: item.body,
                             maxWidthChars: 50,
                             lines: 3,
-                            ellipsize: Pango5.EllipsizeMode.END,
+                            ellipsize: Pango6.EllipsizeMode.END,
                             halign: default5.Align.START,
                             valign: default5.Align.CENTER
                           }

@@ -1,4 +1,4 @@
-import { Widget, Gdk, Gtk, bind, Variable, App, Astal, GLib } from "astal";
+import { Gdk, Gtk, bind } from "astal";
 import AstalTray from "gi://AstalTray";
 import Icon, { Icons } from "../lib/icons";
 
@@ -32,8 +32,8 @@ const SysTrayItem = (item) => {
       <icon
         halign={Gtk.Align.CENTER}
         valign={Gtk.Align.CENTER}
+        g_icon={bind(item, "gicon")}
         pixbuf={bind(item, "icon_pixbuf")}
-        gicon={bind(item, "gicon")}
         icon={bind(item, "icon_name")}
       />
     </button>

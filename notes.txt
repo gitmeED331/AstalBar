@@ -4,6 +4,9 @@ ellipsize={Pango.EllipsizeMode.END}
 
 transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
 
+valign={Gtk.Align.CENTER}
+halign={Gtk.Align.CENTER}
+
 import { execAsync, App, Astal, bind, Gtk, GObject, Gdk } from "astal"
 import Hyprland from "gi://AstalHyprland"
 import Battery from "gi://AstalBattery"

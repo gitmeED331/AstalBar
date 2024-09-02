@@ -16,21 +16,3 @@ export function createSurfaceFromWidget(widget: Gtk.Widget) {
     widget.draw(cr)
     return surface
 }
-
-function kebabify(str: string): string {
-    return str.replace(/([A-Z])/g, '-$1').toLowerCase();
-}
-
-type Dep<T> = Binding<any, any, T>
-
-export function merge<V,
-    const Deps extends Dep<unknown>[],
-    Args extends { [K in keyof Deps]: Deps[K] extends Dep<infer T> ? T : never }
->(deps: Deps, fn: (...args: Args) => V) {
-    const update = () => fn(...deps.map(d => d.transformFn(d.emitter[d.prop])) as Args);
-    const watcher = new Variable(update());
-    for (const dep of deps)
-        dep.emitter.connect(`notify::${kebabify(dep.prop)}`, () => watcher.value = update());
-
-    return bind(watcher);
-}

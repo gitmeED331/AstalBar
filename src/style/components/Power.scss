@@ -69,6 +69,12 @@
     color: lime;
   }
 
+  &.header {
+    border-radius: $radius;
+    border-bottom: $border;
+    box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+  }
+
   box {
     padding: 1.5px;
   }

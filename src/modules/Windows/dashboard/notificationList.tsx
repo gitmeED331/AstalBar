@@ -60,54 +60,55 @@ export function NotificationList() {
         className="notif panel box"
         spacing={20}
         valign={Gtk.Align.FILL}
-        halign={Gtk.Align.CENTER}
+        halign={Gtk.Align.FILL}
         vertical={false}
-        startWidget={
+        centerWidget={
           <label
             label="Notifications"
             valign={Gtk.Align.START}
             halign={Gtk.Align.END}
           />
         }
-        centerWidget={
-          <button
-            halign={Gtk.Align.START}
-            valign={Gtk.Align.START}
-            onClick={(_, event) => {
-              if (event.button === Gdk.BUTTON_PRIMARY) {
-                Notif.get_notifications().forEach((item, id) =>
-                  timeout(50 * id, () => item.dismiss()),
-                );
-              }
-            }}
-          >
-            <icon
-              icon={bind(Notif, "notifications").as((items) =>
-                items.length > 0 ? Icon.trash.full : Icon.trash.empty,
-              )}
-            />
-          </button>
-        }
+
         endWidget={
-          <button
-            halign={Gtk.Align.END}
-            valign={Gtk.Align.START}
-            onClick={(_, event) => {
-              if (event.button === Gdk.BUTTON_PRIMARY) {
-                Notif.set_dont_disturb(!Notif.get_dont_disturb());
-              }
-            }}
-          >
-            <icon
-              icon={bind(Notif, "dont_disturb").as((d) =>
-                d === false
-                  ? Icons("bell-disabled-symbolic")
-                  : Icons("bell-enabled-symbolic"),
-              )}
-              valign={Gtk.Align.CENTER}
-              halign={Gtk.Align.CENTER}
-            />
-          </button>
+          <box halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} vertical={false} spacing={20}>
+            <button
+              halign={Gtk.Align.START}
+              valign={Gtk.Align.START}
+              onClick={(_, event) => {
+                if (event.button === Gdk.BUTTON_PRIMARY) {
+                  Notif.get_notifications().forEach((item, id) =>
+                    timeout(50 * id, () => item.dismiss()),
+                  );
+                }
+              }}
+            >
+              <icon
+                icon={bind(Notif, "notifications").as((items) =>
+                  items.length > 0 ? Icon.trash.full : Icon.trash.empty,
+                )}
+              />
+            </button>
+            <button
+              halign={Gtk.Align.END}
+              valign={Gtk.Align.START}
+              onClick={(_, event) => {
+                if (event.button === Gdk.BUTTON_PRIMARY) {
+                  Notif.set_dont_disturb(!Notif.get_dont_disturb());
+                }
+              }}
+            >
+              <icon
+                icon={bind(Notif, "dont_disturb").as((d) =>
+                  d === false
+                    ? Icons("bell-disabled-symbolic")
+                    : Icons("bell-enabled-symbolic"),
+                )}
+                valign={Gtk.Align.CENTER}
+                halign={Gtk.Align.CENTER}
+              />
+            </button>
+          </box>
         }
       />
 
