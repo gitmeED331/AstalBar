@@ -46,6 +46,7 @@ const btControls = () => {
 
     return (
         <box
+            className={"bluetooth devicelist-header controls"}
             halign={Gtk.Align.CENTER}
             valign={Gtk.Align.CENTER}
             spacing={5}
@@ -69,7 +70,6 @@ function content(device) {
 
         const DeviceTypeIcon = (
             <icon
-                className={`bluetooth devicelist ${device.connected ? "connected" : ""} itemicon`}
                 icon={device.icon || "bluetooth-symbolic"}
                 halign={Gtk.Align.START} valign={Gtk.Align.CENTER}
             />
@@ -77,7 +77,6 @@ function content(device) {
 
         return (
             <button
-                className={"bluetooth devicelist itemcontent"}
                 halign={Gtk.Align.FILL}
                 valign={Gtk.Align.CENTER}
                 onClick={() => {
@@ -98,6 +97,7 @@ function content(device) {
     const btDeviceControls = () => {
         const PairDevice = (
             <button
+                className={"bluetooth devicelist-inner controls pair"}
                 onClick={(_, event) => {
                     if (event.button === Gdk.BUTTON_PRIMARY) {
                         execAsync(`bluetoothctl ${device.paired ? "Unpair" : "Pair"} ${device.address}`);
@@ -116,6 +116,7 @@ function content(device) {
         );
         const TrustDevice = (
             <button
+                className={"bluetooth devicelist-inner controls trust"}
                 onClick={(_, event) => {
                     if (event.button === Gdk.BUTTON_PRIMARY) {
                         execAsync(`bluetoothctl ${device.trusted ? "untrust" : "trust"} ${device.address}`);
@@ -132,6 +133,7 @@ function content(device) {
         );
         const ConnectDevice = (
             <button
+                className={"bluetooth devicelist-inner controls connect"}
                 onClick={(_, event) => {
                     if (event.button === Gdk.BUTTON_PRIMARY) {
                         execAsync(`bluetoothctl ${device.connected ? "disconnect" : "connect"} ${device.address}`);
@@ -148,7 +150,7 @@ function content(device) {
         );
         const ForgetDevice = (
             <button
-                className={"bluetooth deviceList delete"}
+                className={"bluetooth devicelist-inner controls forget"}
                 onClick={(_, event) => {
                     if (event.button === Gdk.BUTTON_PRIMARY) {
                         execAsync(`bluetoothctl remove ${device.address}`);
@@ -168,7 +170,7 @@ function content(device) {
 
         return (
             <box
-                className={"bluetooth devicelist items controls"}
+                className={"bluetooth devicelist-inner controls"}
                 halign={Gtk.Align.END}
                 valign={Gtk.Align.FILL}
                 spacing={5}
@@ -183,7 +185,7 @@ function content(device) {
 
     return (
         <box
-            className={`bluetooth devicelist items ${device.connected ? "connected" : ""}`}
+            className={`bluetooth devicelist-inner items ${device.connected ? "connected" : ""}`}
             halign={Gtk.Align.FILL}
             valign={Gtk.Align.FILL}
             visible={true}
@@ -193,7 +195,7 @@ function content(device) {
                 vertical={false}
                 halign={Gtk.Align.FILL}
                 valign={Gtk.Align.CENTER}
-                startWidget={<DeviceButton />}
+                startWidget={DeviceButton()}
                 endWidget={btDeviceControls()}
             />
         </box>
@@ -220,7 +222,7 @@ function BluetoothDevices() {
 
     return (
         <box
-            className={"bluetooth devicelist container"}
+            className={"bluetooth container"}
             halign={Gtk.Align.FILL}
             valign={Gtk.Align.FILL}
             visible={true}
@@ -228,7 +230,7 @@ function BluetoothDevices() {
             spacing={10}
         >
             <centerbox
-                className={"bluetooth devicelist header"}
+                className={"bluetooth devicelist-header"}
                 vertical={false}
                 halign={Gtk.Align.FILL}
                 valign={Gtk.Align.CENTER}

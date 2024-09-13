@@ -1,7 +1,6 @@
-import { App, Applications, Widget, Utils, Gtk } from "imports"
+import { App, Astal, Widget, Gdk, Gtk } from "astal"
 import { AppIcon } from "./search";
-
-const { Box, Button, Label, Icon } = Widget;
+import Pango from "gi://Pango";
 
 const mainCategories = [
   "AudioVideo",
@@ -49,7 +48,7 @@ const CategoryList = () => {
   Applications.list.forEach(app => {
     const cats = getCategories(app);
     cats.forEach(cat => {
-      if(!catsMap.has(cat)) catsMap.set(cat, []);
+      if (!catsMap.has(cat)) catsMap.set(cat, []);
       catsMap.get(cat).push(app);
     });
   });
@@ -59,30 +58,32 @@ const CategoryList = () => {
 /**
  * @param {import('types/service/applications.js').Application} app
  */
-const AppButton = app => Button({
-  on_clicked: () => {
-    app.launch();
-    App.closeWindow("launcher");
-  },
-  tooltip_text: app.description,
-  class_name: "app-button",
-  child: Box({
-    vertical: true,
-    children: [
-      AppIcon(app),
-      Label({
-        max_width_chars: 8,
-        truncate: "end",
-        label: app.name,
-        vpack: "center",
-        class_name: "app-name",
-      }),
-    ]
-  }),
+const AppButton = app => (
+  <button
+    className={"app-button"}
+    on_clicked={() => {
+      app.launch();
+      App.toggle_window("launcher");
+    }}
+    tooltip_text={app.description}
+
+  >
+    <box
+      vertical={true}
+    >
+      {AppIcon(app)}
+      <label
+        className={"app-name"}
+        max_width_chars={8}
+        ellipsize={Pango.EllipsizeMode.END}
+        label={app.name}
+        valign={Gtk.Align.CENTER}
+      />
+    </box>
+  </button >
+).on("focus-in-event", (self) => {
+  self.toggleClassName("focused", true);
 })
-  .on("focus-in-event", (self) => {
-    self.toggleClassName("focused", true);
-  })
   .on("focus-out-event", (self) => {
     self.toggleClassName("focused", false);
   });
@@ -93,27 +94,29 @@ const AppButton = app => Button({
  * @returns {import('types/widgets/box').default}
  */
 const CategoryListWidget = list => {
-  const flowBox = Widget.FlowBox({});
+  const flowBox = <flowbox />
   list.forEach(app => {
     flowBox.add(AppButton(app));
   });
-  return Box({
-    class_name: "launcher-category",
-    children: [
-      Widget.Scrollable({
-        hscroll: "never",
-        vscroll: "automatic",
-        hexpand: true,
-        child: Box({
-          vertical: true,
-          children: [
-            flowBox,
-            Box({vexpand: true})
-          ]
-        })
-      })
-    ]
-  });
+  return (
+    <box
+      className={"launcher-category"}
+    >
+      <scrollable
+        hscroll={"never"}
+        vscroll={"automatic"}
+        hexpand={true}
+      >
+        <box
+          vertical={true}
+        >
+          {flowBox}
+
+          <box vexpand={true} />
+        </box>
+      </scrollable>
+    </box>
+  );
 };
 
 const Categories = () => {

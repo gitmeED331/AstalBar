@@ -4,7 +4,7 @@ import AstalBluetooth from "gi://AstalBluetooth";
 
 const Bluetooth = AstalBluetooth.get_default();
 
-let btreveal = Variable(true);
+let btreveal = Variable(false);
 
 const BluetoothWidget = () => {
   const updateLabel = (btLabel) => {

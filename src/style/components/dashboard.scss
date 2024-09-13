@@ -18,8 +18,7 @@
   &.leftSide {
     border-radius: $radius;
     margin: 0.25rem;
-    // border: $border;
-    //background: $PrimaryBG;
+
   }
 
   &.calendar {
@@ -32,7 +31,6 @@
   &.rightSide {
     border-radius: $radius;
     margin: 0.25rem;
-    border: $border;
-    background: rgba(0, 0, 0, 0.8);
+
   }
 }

@@ -1,6 +1,6 @@
-import Window from "./Window";
 import { Variable, Gdk, Gtk, Astal, Widget, App, execAsync } from "astal";
 import Hyprland from "gi://AstalHyprland"
+import Window from "./Window";
 
 const hyprland = Hyprland.get_default()
 
@@ -26,13 +26,18 @@ const size = (id: number) => {
 
 const OVScale = new Variable(15)
 const scale = (size: number) => (OVScale.get() / 100) * size
-function Boxsetup(box) {
+
+
+hyprland.connect("notify::clients", () => {
+
+})
+function Boxsetup(box, update, id) {
     box
         .hook(15, update)
-        .hook(Hyprland, update, "notify::clients")
-        .hook(Hyprland.active.client, update)
-        .hook(Hyprland.active.workspace, () => {
-            box.toggle_className("active", Hyprland.active.workspace.id === id)
+        .hook(hyprland, update, "notify::clients")
+        .hook(hyprland.focused_client, update)
+        .hook(hyprland.focused_workspace, () => {
+            box.toggle_className("active", hyprland.focused_workspace?.id === id)
         })
 }
 

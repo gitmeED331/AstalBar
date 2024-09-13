@@ -1,10 +1,10 @@
 import { execAsync, Widget, Astal, GLib, App, Gtk, Gdk, bind, Variable } from "astal"
 import { Arrow, Menu } from "../buttons/ToggleButton";
 import Icon, { Icons } from "../lib/icons";
-import Wp from "gi://AstalWp";
+import AstalWp from "gi://AstalWp";
 import Pango from "gi://Pango";
 
-const { audio } = Wp.get_default_wp()
+const { audio } = AstalWp.get_default_wp()
 const Speaker = audio.get_default_speaker()
 const Microphone = audio.get_default_microphone()
 

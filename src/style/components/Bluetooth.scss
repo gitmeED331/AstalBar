@@ -1,77 +1,121 @@
 .bluetooth {
-    button {
-        &.power-on {
-            color: $font-color3;
-        }
-
-        &.power-off {
-            color: $font-color4;
-        }
-
-        &:hover {
-            color: $font-color5
-        }
-    }
-
-    .refreshing {
-        color: $font-color3;
-
-        icon {
-            animation: spin 1s infinite linear;
-        }
-    }
-
     &.container {
         background: $TertiaryBG;
         border-radius: $radius;
         border: $border;
     }
 
-    &.devicelist {
+    &.devicelist-header {
+        color: $font-color1;
+        border-radius: $radius;
+        border-bottom: $border;
+        padding: 0.25rem 1rem;
+        box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+
+        &.controls {
+            border: unset;
+            box-shadow: unset;
+            padding: unset;
+
+            button {
+
+                &.power-on {
+                    color: $font-color3;
+                }
+
+                &.power-off {
+                    color: $font-color4;
+                }
+
+                &:hover {
+                    label {
+                        color: $font-color5;
+                    }
+
+                    icon {
+                        color: $font-color5;
+                    }
+                }
+            }
+        }
+
+        .refreshing {
+            color: $font-color3;
+
+            icon {
+                animation: spin 1s infinite linear;
+            }
+        }
+    }
+
+    &.devicelist-inner {
         color: $font-color1;
         padding: 0.25rem;
 
-        &.header {
-            background: $PrimaryBG;
+        &.controls {
+            all: unset;
+            background: transparent;
             border-radius: $radius;
-            border-bottom: $border;
-            box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+            border-left: $border;
+            padding: 0rem 0.5rem;
+            box-shadow: -0.75rem 0rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+
+            icon {
+                font-size: 1.25rem;
+            }
+
+            button {
+                all: unset;
+
+                &:hover {
+                    label {
+                        color: $font-color5;
+                    }
+
+                    icon {
+                        color: $font-color5;
+                    }
+                }
+            }
         }
 
         &.items {
             border-radius: $radius;
             border-bottom: $border;
 
-            icon {
-                color: $font-color1;
+            button {
+                label {
+                    color: $font-color1;
+                }
+
+                icon {
+                    color: $font-color1;
+                }
+
+                &:hover {
+                    label {
+                        color: $font-color5;
+                    }
+
+                    icon {
+                        color: $font-color5;
+                    }
+                }
+            }
+
+            &.itemicon {
+                color: $font-color3;
             }
 
             &.connected {
                 border-color: $font-color3;
 
-                &.itemicon {
-                    border: none;
-                    color: $font-color3;
-                }
-
                 label {
                     color: $font-color3;
                 }
-
             }
 
-            &.controls {
-                all: unset;
-                background: transparent;
-                border-radius: $radius;
-                border-left: $border;
-                padding: 0rem 0.5rem;
-                box-shadow: -0.75rem 0rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
 
-                icon {
-                    font-size: 1.25rem;
-                }
-            }
         }
     }
 
@@ -85,122 +129,3 @@
         }
     }
 }
-
-
-// .bluetooth {
-//     &-disabled {
-//         color: $font-color4;
-
-//         &.dim {
-//             opacity: 0.7;
-//         }
-//     }
-
-//     &-no-devices {
-//         color: $font-color4;
-
-//         &.dim {
-//             opacity: 0.7;
-//         }
-//     }
-
-//     &.menu-switch {
-//         .toggle-enabled {
-//             color: $font-color3;
-//         }
-
-//         .toggle-disabled {
-//             color: $font-color4;
-//         }
-
-//         &:hover {
-//             .toggle-enabled {
-//                 color: $font-color4;
-//             }
-
-//             .toggle-disabled {
-//                 color: $font-color3;
-//             }
-//         }
-//     }
-
-//     &-element-item {
-//         border-radius: $radius;
-//         //margin: 0.25rem 0rem;
-//         color: $font-color1;
-//         padding: 0.25rem 0.5rem;
-
-//         &:hover {
-//             color: $font-color2;
-//             border-bottom: $border;
-
-//             border-radius: 3rem;
-
-//             .connection-status {
-//                 color: $font-color1;
-//                 padding-left: 2rem;
-//             }
-//         }
-
-//         .connection-status {
-//             color: $font-color2;
-//             padding-left: 2rem;
-//         }
-
-//     }
-
-//     &-controls {
-//         color: $font-color1;
-
-//         &:hover {
-//             color: $font-color5
-//         }
-//     }
-
-//     &.menu-icon-button {
-//         &.paired {
-//             color: $font-color3;
-
-//             &:hover {
-//                 color: $font-color4
-//             }
-//         }
-
-//         &.unpaired {
-//             color: yellow;
-//         }
-
-//         &.untrust {
-//             &:hover {
-//                 color: $font-color4;
-//             }
-//         }
-
-//         &.delete {
-//             &:hover {
-//                 color: $font-color4;
-//             }
-//         }
-
-//         &.disconnect {
-//             &:hover {
-//                 color: $font-color4;
-//             }
-//         }
-
-//     }
-
-//     .search {
-//         color: $font-color1;
-
-//         &:hover {
-//             color: $font-color5
-//         }
-
-//         .spinning {
-//             color: $font-color3;
-//             animation: spin 1s linear infinite;
-//         }
-//     }
-
-// }

@@ -3,19 +3,17 @@ import Icon, { Icons } from "../../lib/icons";
 import AstalNetwork from "gi://AstalNetwork";
 
 const network = AstalNetwork.get_default();
-const Wired = network.wired;
+const Wired = network.wired
 
 function header() {
     const ethernetIcon = (
         <icon
-            className={"network-ethernet"}
             icon={bind(Wired, "icon_name")}
         />
     );
 
     const ethernetLabel = (
         <label
-            className={"network-ethernet barlabel"}
             label={"Ethernet"}
         />
     )
@@ -24,7 +22,7 @@ function header() {
         <box
             halign={Gtk.Align.CENTER}
             valign={Gtk.Align.CENTER}
-            visible={bind(network, "wired").as((showLabel) => !!showLabel)}
+            vertical={false}
             spacing={5}
         >
             {[ethernetIcon, ethernetLabel]}
@@ -40,7 +38,18 @@ const status = (
         spacing={5}
     >
         <label
-            label={bind(Wired, "internet").as((i) => i == 0 ? "Connected" : i == 1 ? "Connecting" : "Disconnected")}
+            label={bind(Wired, "internet").as((i) => {
+                switch (i) {
+                    case 0:
+                        return "Connected";
+                    case 1:
+                        return "Connecting";
+                    case 2:
+                        return "Disconnected";
+                    default:
+                        return "Disconnected";
+                }
+            })}
             halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}
         />
     </box>
@@ -53,7 +62,7 @@ function EthernetWidget() {
             vertical={true}
         >
             <box
-                className={"network-ethernet container"}
+                className={"network ethernet container"}
                 halign={Gtk.Align.CENTER}
                 valign={Gtk.Align.CENTER}
                 spacing={5}

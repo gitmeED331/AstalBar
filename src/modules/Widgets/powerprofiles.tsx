@@ -59,13 +59,22 @@ function PowerProfiles() {
         centerWidget={<label
           valign={Gtk.Align.CENTER}
           halign={Gtk.Align.CENTER}
+          css={bind(powerprofile, "active_profile").as((l) =>
+            l === "power-saver" ? `color: lime;` :
+              l === "balanced" ? `color: yellow;` :
+                l === "performance" ? `color: red;` : ""
+          )}
           label={bind(powerprofile, "active_profile").as((l) => l.toUpperCase())}
         />}
         endWidget={<box halign={Gtk.Align.CENTER} vertical={false} spacing={10}>
           <icon
-            valign={Gtk.Align.END}
+            valign={Gtk.Align.CENTER}
             halign={Gtk.Align.CENTER}
-            css={`padding-bottom: 5px;`}
+            css={bind(powerprofile, "active_profile").as((l) =>
+              l === "power-saver" ? `color: lime;` :
+                l === "balanced" ? `color: yellow;` :
+                  l === "performance" ? `color: red;` : ""
+            )}
             icon={bind(powerprofile, "active_profile").as((l) =>
               l === "power-saver" ? Icon.brightness.levels.low :
                 l === "balanced" ? Icon.brightness.levels.medium :
@@ -75,6 +84,11 @@ function PowerProfiles() {
           <label
             valign={Gtk.Align.CENTER}
             halign={Gtk.Align.CENTER}
+            css={bind(powerprofile, "active_profile").as((l) =>
+              l === "power-saver" ? `color: lime;` :
+                l === "balanced" ? `color: yellow;` :
+                  l === "performance" ? `color: red;` : ""
+            )}
             label={bind(powerprofile, "active_profile").as((l) =>
               l === "power-saver" ? "30%" :
                 l === "balanced" ? "60%" :

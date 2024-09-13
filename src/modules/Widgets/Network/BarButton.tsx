@@ -6,20 +6,27 @@ const network = AstalNetwork.get_default();
 const Wired = network.wired;
 const Wifi = network.wifi;
 
+let netreveal = Variable(false);
 
 const NetworkWidget = () => {
   const wifiIcon = (
     <icon
-      className={"network-wifi"}
+      className={"barbutton wifi icon"}
       icon={bind(Wifi, "icon_name")}
     />
   );
 
   const wifiLabel = (
-    <label
-      className={"network-barlabel-wifi"}
-      label={"--"} // Default label, will be updated dynamically
-    />
+    <revealer
+      transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
+      clickThrough={true}
+      reveal_child={bind(netreveal)}
+    >
+      <label
+        className={"barbutton wifi label"}
+        label={"--"} // Default label, will be updated dynamically
+      />
+    </revealer >
   );
 
   const updateWifiLabel = () => {
@@ -37,8 +44,7 @@ const NetworkWidget = () => {
     <box
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
-      visible={bind(network, "wifi").as((showLabel) => !!showLabel)
-      }
+      visible={bind(network, "wifi").as((showLabel) => !!showLabel)}
     >
       {[wifiIcon, wifiLabel]}
     </box>
@@ -46,16 +52,22 @@ const NetworkWidget = () => {
 
   const wiredIcon = (
     <icon
-      className={"network-baricon-wired"}
+      className={"barbutton wired icon"}
       icon={bind(Wired, "icon_name")}
     />
   );
 
   const wiredLabel = (
-    <label
-      className={"network-barlabel-wired"}
-      label={"Wired"}
-    />
+    <revealer
+      transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
+      clickThrough={true}
+      reveal_child={bind(netreveal)}
+    >
+      <label
+        className={"network wired label"}
+        label={"Wired"}
+      />
+    </revealer>
   );
 
   const wiredIndicator = (
@@ -72,7 +84,7 @@ const NetworkWidget = () => {
     <box
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
-      className={"network-barbox"}
+      className={"barbutton box"}
       visible={true}
     >
       {bind(network, "primary").as((w) => w === AstalNetwork.Primary.WIRED ? wiredIndicator : wifiIndicator)}
@@ -87,8 +99,15 @@ function NetworkButton() {
       className={"network barbutton"}
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
-      onClick={() => {
-        App.toggle_window("dashboard");
+      onClick={(_, event) => {
+        if (event.button === Gdk.BUTTON_PRIMARY) {
+          const win = App.get_window("dashboard");
+          if (win) {
+            win.visible = !win.visible;
+          }
+        } else if (event.button === Gdk.BUTTON_SECONDARY) {
+          netreveal.set(!netreveal.get())
+        }
       }}
     >
       <NetworkWidget />

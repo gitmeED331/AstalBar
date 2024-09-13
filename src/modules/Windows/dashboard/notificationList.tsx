@@ -1,11 +1,9 @@
 import {
   Widget,
-  Gio,
   Gtk,
   Gdk,
   GLib,
   Astal,
-  GObject,
   timeout,
   bind,
 } from "astal";
@@ -57,7 +55,7 @@ export function NotificationList() {
       valign={Gtk.Align.FILL}
     >
       <centerbox
-        className="notif panel box"
+        className="header"
         spacing={20}
         valign={Gtk.Align.FILL}
         halign={Gtk.Align.FILL}

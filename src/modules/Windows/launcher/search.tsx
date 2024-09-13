@@ -1,9 +1,12 @@
-import { App, Applications, Widget, Gtk, Hyprland } from "imports"
-import { Fzf } from "../../../node_modules/fzf/dist/fzf.es.js"
-import icons from "lib/icons"
-import { icon } from "lib/utils"
+import { App, Widget, Gtk, Gdk, execAsync } from "astal"
+import Fzf from "../../../../node_modules/fzf/dist/fzf.es.js"
+import Icon, { Icons } from "../../lib/icons"\
+import AstalHyprland from "gi://AstalHyprland"
+import Pango from "gi://Pango"
 
-const { Box, Button, Label, Icon } = Widget
+
+const Hyprland = AstalHyprland.get_default()
+
 /**
  * @typedef {import('node_modules/fzf/dist/types/main').Fzf<import('types/widgets/button').default[]>} FzfAppButton
  * @typedef {import('node_modules/fzf/dist/types/main').FzfResultItem<import('types/widgets/button').default>}
@@ -18,54 +21,58 @@ export const AppIcon = app => {
   //   ? app.icon_name
   //   : "image-missing";
 
-  return Icon({
-    class_name: "app-icon",
-    icon: icon(app.icon_name),
-  });
+  return (
+    <icon
+      className={"app-icon"}
+      icon={Icons(app.icon_name)}
+    />
+  )
 };
 
 /**
  * @param {import('types/service/applications.js').Application} app
  */
-const AppButton = app => Button({
-  on_clicked: () => {
-    App.closeWindow("launcher");
-    //app.launch();
-    Hyprland.messageAsync(`dispatch exec ${app.executable}`).then(e => print(e)).catch(logError);
-    app.frequency++;
-  },
-  attribute: { "app": app },
-  tooltip_text: app.description,
-  class_name: "app-button",
-  child: Box({
-    children: [
-      AppIcon(app),
-      Box({
-        vertical: true,
-        children: [
-          Label({
-            xalign: 0,
-            max_width_chars: 28,
-            truncate: "end",
-            use_markup: true,
-            label: app.name,
-            class_name: "app-name",
-          }),
-          Label({
-            xalign: 0,
-            max_width_chars: 40,
-            truncate: "end",
-            label: app.description,
-            class_name: "app-description",
-          })
-        ]
-      })
-    ]
-  }),
+const AppButton = app => (
+  <button
+    className={"app-button"}
+    onClick={() => {
+      App.toggle_window("launcher");
+      //app.launch();
+      execAsync(`${app.executable}`).then(e => print(e)).catch(logError);
+      app.frequency++;
+    }}
+    //attribute: { "app": app },
+    tooltip_text={app.description}
+  >
+    <box>
+      {AppIcon(app)}
+      <box
+        vertical={true}
+      >
+        <label
+          className={"app-name"}
+          xalign={0}
+          max_width_chars={28}
+          ellipsize={Pango.EllipsizeMode.END}
+          use_markup={true}
+          label={app.name}
+        />
+
+        <label
+          className={"app-description"}
+          xalign={0}
+          max_width_chars={40}
+          ellipsize={Pango.EllipsizeMode.END}
+          use_markup={true}
+          label={app.description}
+        />
+
+      </box>
+    </box>
+  </button >
+).on("focus-in-event", (self) => {
+  self.toggleClassName("focused", true);
 })
-  .on("focus-in-event", (self) => {
-    self.toggleClassName("focused", true);
-  })
   .on("focus-out-event", (self) => {
     self.toggleClassName("focused", false);
   });
@@ -84,8 +91,8 @@ const fzf = new Fzf(Applications.list.map(AppButton), {
 
 /**
  * @param {string} text
- * @param {import('types/widgets/box').default} results
- */
+          * @param {import('types/widgets/box').default} results
+          */
 function searchApps(text, results) {
   results.children.forEach(c => results.remove(c));
   const fzfResults = fzf.find(text);
@@ -108,21 +115,24 @@ function searchApps(text, results) {
 }
 
 const SearchBox = (launcherState) => {
-  const results = Box({
-    vertical: true,
-    vexpand: true,
-    class_name: "search-results",
-  });
-  const entry = Widget.Entry({
-    class_name: "search-entry",
-    placeholder_text: "search",
-    primary_icon_name: icons.launcher.search,
-  })
-    .on("notify::text", (entry) => searchApps(entry.text || "", results))
+  const results = (
+    < box
+      className={"search-results"}
+      vertical={true}
+      vexpand={true}
+    />
+  )
+  const entry = (
+    < entry
+      className={"search-entry"}
+      placeholder_text={"search"}
+      primary_icon_name={Icon.launcher.search}
+    />
+  ).on("notify::text", (entry) => searchApps(entry.text || "", results))
     .on("activate", () => {
       // @ts-ignore
       results.children[0]?.attribute.app.launch();
-      App.closeWindow("launcher");
+      App.toggle_window("launcher");
     })
     .hook(launcherState, () => {
       if (launcherState.value != "Search") return;
@@ -139,17 +149,20 @@ const SearchBox = (launcherState) => {
       }
     }, "window-toggled");
 
-  return Box({
-    vertical: true,
-    class_name: "launcher-search",
-    children: [
-      entry,
-      Widget.Scrollable({
-        class_name: "search-scroll",
-        child: results
-      })
-    ]
-  });
+  return (
+    <box
+      vertical={true}
+      className={"launcher-search"}
+    >
+
+      {entry}
+      <scrollable
+        className={"search-scroll"}
+      >
+        {results}
+      </scrollable>
+    </box>
+  )
 };
 export default SearchBox;
 

@@ -8,12 +8,18 @@
   &.panel {
     margin-top: 0.25rem;
     padding: 0rem 0.5rem;
+    padding-bottom: 0.25rem;
+    background: $TertiaryBG;
+    border-radius: $radius;
+    border: $border;
 
 
-    &.box {
+    .header {
       border-radius: $radius;
       border-bottom: $border;
       box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+      margin-bottom: 0.5rem;
+      padding: 0.25rem 0rem;
 
       label {
         font-size: 1.1rem;
@@ -26,6 +32,12 @@
 
         icon {
           font-size: 1.1rem;
+        }
+
+        &:hover {
+          icon {
+            color: $font-color5;
+          }
         }
       }
     }

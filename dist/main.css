@@ -44,7 +44,7 @@ tooltip * {
   border: none;
 }
 tooltip > * > * {
-  background: rgba(0, 0, 0, 0.5);
+  background: black;
   border-radius: 2rem;
   border: 0.1rem solid rgba(0, 0, 0, 0);
   color: rgb(255, 140, 0);
@@ -120,6 +120,7 @@ tooltip > * > * {
 .volumebtn {
   color: rgb(255, 140, 0);
 }
+.volumebtn icon,
 .volumebtn image {
   font-size: 1.15rem;
 }
@@ -348,8 +349,6 @@ tooltip > * > * {
 .dashboard.rightSide {
   border-radius: 2rem;
   margin: 0.25rem;
-  border: 2px solid #0f9bff;
-  background: rgba(0, 0, 0, 0.8);
 }
 .launcher-switcher {
   background: rgba(0, 0, 0, 0.5);
@@ -683,21 +682,30 @@ tooltip > * > * {
 .notif.panel {
   margin-top: 0.25rem;
   padding: 0rem 0.5rem;
+  padding-bottom: 0.25rem;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 2rem;
+  border: 2px solid #0f9bff;
 }
-.notif.panel.box {
+.notif.panel .header {
   border-radius: 2rem;
   border-bottom: 2px solid #0f9bff;
   box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0rem;
 }
-.notif.panel.box label {
+.notif.panel .header label {
   font-size: 1.1rem;
   color: rgb(255, 140, 0);
 }
-.notif.panel.box button {
+.notif.panel .header button {
   color: rgb(255, 140, 0);
 }
-.notif.panel.box button icon {
+.notif.panel .header button icon {
   font-size: 1.1rem;
+}
+.notif.panel .header button:hover icon {
+  color: rgb(0, 0, 255);
 }
 .notif .title {
   font-size: 1.1rem;
@@ -823,7 +831,7 @@ tooltip * {
   border: none;
 }
 tooltip > * > * {
-  background: rgba(0, 0, 0, 0.5);
+  background: black;
   border-radius: 2rem;
   border: 0.1rem solid rgba(0, 0, 0, 0);
   color: rgb(255, 140, 0);
@@ -1037,18 +1045,15 @@ tooltip > * > * {
   border-radius: 1rem;
   background: rgba(0, 0, 0, 0.8);
   font-size: 1rem;
-  color: lime;
+  color: rgb(255, 140, 0);
 }
 .powerprofiles.header {
   border-radius: 2rem;
   border-bottom: 2px solid #0f9bff;
   box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
-}
-.powerprofiles box {
-  padding: 1.5px;
+  padding: 0.25rem;
 }
 .powerprofiles label {
-  margin-top: 0.5rem;
   font-weight: bold;
 }
 .powerprofiles button {
@@ -1208,8 +1213,10 @@ tooltip > * > * {
   color: rgb(255, 140, 0);
   border-radius: 2rem;
 }
+.tray button image,
 .tray button icon {
   color: rgb(255, 140, 0);
+  font-size: 1.5rem;
   border-radius: 2rem;
 }
 .tray button:hover {
@@ -1218,7 +1225,7 @@ tooltip > * > * {
   border: 2px solid #0f9bff;
 }
 menu > menuitem {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgb(0, 0, 0);
   border-radius: 2rem;
   border-bottom: 2px solid #0f9bff;
   color: rgb(255, 140, 0);
@@ -1226,32 +1233,25 @@ menu > menuitem {
   padding: 5px;
 }
 menu > menuitem:hover {
-  color: rgb(255, 0, 0);
-  border: 2px solid #0000ff;
-  font-weight: bold;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(15, 155, 255, 0) 0%,
-      rgba(0, 0, 0, 0.5) 45%,
-      rgb(0, 0, 0) 65%,
-      rgb(15, 155, 255) 100%);
+  color: rgb(0, 0, 255);
+  border-right: 2px solid #0f9bff;
+  border-left: 2px solid #0f9bff;
+  border-bottom: none;
+  font-weight: bolder;
+  border-color: rgb(255, 0, 0);
 }
+menu > menuitem:hover icon,
 menu > menuitem:hover image {
   color: rgb(255, 0, 0);
 }
+menu > menuitem icon,
 menu > menuitem image {
   color: rgb(255, 140, 0);
 }
 menu > menuitem:disabled {
   color: gray;
-  background:
-    linear-gradient(
-      0deg,
-      rgb(83, 94, 101) 0%,
-      rgb(0, 0, 0) 45%,
-      rgb(0, 0, 0) 65%,
-      rgb(83, 94, 101) 100%);
+  background: rgba(39, 38, 38, 0.5);
+  border: none;
 }
 .audio-mixer {
   margin-top: 0.5rem;
@@ -1505,54 +1505,46 @@ menu > menuitem:disabled {
 .sessioncontrols button:active label {
   color: rgb(0, 0, 255);
 }
-.bluetooth button.power-on {
-  color: rgb(155, 255, 15);
-}
-.bluetooth button.power-off {
-  color: rgb(255, 0, 0);
-}
-.bluetooth button:hover {
-  color: rgb(0, 0, 255);
-}
-.bluetooth .refreshing {
-  color: rgb(155, 255, 15);
-}
-.bluetooth .refreshing icon {
-  animation: spin 1s infinite linear;
-}
 .bluetooth.container {
   background: rgba(0, 0, 0, 0.8);
   border-radius: 2rem;
   border: 2px solid #0f9bff;
 }
-.bluetooth.devicelist {
+.bluetooth.devicelist-header {
+  color: rgb(255, 140, 0);
+  border-radius: 2rem;
+  border-bottom: 2px solid #0f9bff;
+  padding: 0.25rem 1rem;
+  box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+}
+.bluetooth.devicelist-header.controls {
+  border: unset;
+  box-shadow: unset;
+  padding: unset;
+}
+.bluetooth.devicelist-header.controls button.power-on {
+  color: rgb(155, 255, 15);
+}
+.bluetooth.devicelist-header.controls button.power-off {
+  color: rgb(255, 0, 0);
+}
+.bluetooth.devicelist-header.controls button:hover label {
+  color: rgb(0, 0, 255);
+}
+.bluetooth.devicelist-header.controls button:hover icon {
+  color: rgb(0, 0, 255);
+}
+.bluetooth.devicelist-header .refreshing {
+  color: rgb(155, 255, 15);
+}
+.bluetooth.devicelist-header .refreshing icon {
+  animation: spin 1s infinite linear;
+}
+.bluetooth.devicelist-inner {
   color: rgb(255, 140, 0);
   padding: 0.25rem;
 }
-.bluetooth.devicelist.header {
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 2rem;
-  border-bottom: 2px solid #0f9bff;
-  box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
-}
-.bluetooth.devicelist.items {
-  border-radius: 2rem;
-  border-bottom: 2px solid #0f9bff;
-}
-.bluetooth.devicelist.items icon {
-  color: rgb(255, 140, 0);
-}
-.bluetooth.devicelist.items.connected {
-  border-color: rgb(155, 255, 15);
-}
-.bluetooth.devicelist.items.connected.itemicon {
-  border: none;
-  color: rgb(155, 255, 15);
-}
-.bluetooth.devicelist.items.connected label {
-  color: rgb(155, 255, 15);
-}
-.bluetooth.devicelist.items.controls {
+.bluetooth.devicelist-inner.controls {
   all: unset;
   background: transparent;
   border-radius: 2rem;
@@ -1560,12 +1552,119 @@ menu > menuitem:disabled {
   padding: 0rem 0.5rem;
   box-shadow: -0.75rem 0rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
 }
-.bluetooth.devicelist.items.controls icon {
+.bluetooth.devicelist-inner.controls icon {
   font-size: 1.25rem;
+}
+.bluetooth.devicelist-inner.controls button {
+  all: unset;
+}
+.bluetooth.devicelist-inner.controls button:hover label {
+  color: rgb(0, 0, 255);
+}
+.bluetooth.devicelist-inner.controls button:hover icon {
+  color: rgb(0, 0, 255);
+}
+.bluetooth.devicelist-inner.items {
+  border-radius: 2rem;
+  border-bottom: 2px solid #0f9bff;
+}
+.bluetooth.devicelist-inner.items button label {
+  color: rgb(255, 140, 0);
+}
+.bluetooth.devicelist-inner.items button icon {
+  color: rgb(255, 140, 0);
+}
+.bluetooth.devicelist-inner.items button:hover label {
+  color: rgb(0, 0, 255);
+}
+.bluetooth.devicelist-inner.items button:hover icon {
+  color: rgb(0, 0, 255);
+}
+.bluetooth.devicelist-inner.items.itemicon {
+  color: rgb(155, 255, 15);
+}
+.bluetooth.devicelist-inner.items.connected {
+  border-color: rgb(155, 255, 15);
+}
+.bluetooth.devicelist-inner.items.connected label {
+  color: rgb(155, 255, 15);
 }
 .bluetooth.barbutton:hover {
   color: rgb(0, 0, 255);
 }
 .bluetooth.barbutton-label {
   color: rgb(15, 155, 255);
+}
+.network.barbutton {
+  color: rgb(255, 140, 0);
+}
+.network.barbutton:hover {
+  color: rgb(0, 0, 255);
+}
+.network.dashboard {
+  border-radius: 2rem;
+  border: 2px solid #0f9bff;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+.network .ethernet.container {
+  border-radius: 2rem;
+  border-bottom: 2px solid #0f9bff;
+  color: rgb(255, 140, 0);
+  padding: 0.5rem 1rem;
+  box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+}
+.network .ethernet.dim {
+  opacity: 0.7;
+}
+.network .wifi.container {
+  color: rgb(255, 140, 0);
+  padding: 0.5rem 1rem;
+}
+.network .wifi.header {
+  border-radius: 2rem;
+  border-bottom: 2px solid #0f9bff;
+  color: rgb(255, 140, 0);
+  box-shadow: 0rem 0.5rem 0.5rem -0.25rem rgba(15, 155, 255, 0.8);
+  padding: 0.25rem 1rem;
+}
+.network .wifi.header button.enabled {
+  color: rgb(155, 255, 15);
+}
+.network .wifi.header button.disabled {
+  color: grey;
+}
+.network .wifi.header button.scanning {
+  color: rgb(255, 0, 0);
+}
+.network .wifi.header button.scanning icon {
+  animation: spin 1s linear infinite;
+}
+.network .wifi.header button:hover {
+  color: rgb(0, 0, 255);
+}
+.network .wifi.connected {
+  background: transparent;
+  border-bottom: 2px solid rgb(155, 255, 15);
+  border-radius: 2rem;
+  padding: 0.25rem 0.5rem;
+}
+.network .wifi.connected label {
+  color: rgb(155, 255, 15);
+}
+.network .wifi.connected.controls {
+  all: unset;
+  background: transparent;
+  border-radius: 2rem;
+  border-left: 2px solid #0f9bff;
+  padding: 0rem 0.5rem;
+  box-shadow: -0.75rem 0rem 0.35rem -0.25rem rgba(15, 155, 255, 0.8);
+}
+.network .wifi.connected.controls icon {
+  font-size: 1rem;
+}
+.network .wifi.connected.controls button {
+  all: unset;
+}
+.network .wifi.connected.controls button:hover icon {
+  color: rgb(255, 0, 0);
 }

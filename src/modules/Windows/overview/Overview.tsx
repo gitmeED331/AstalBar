@@ -43,14 +43,15 @@ const Overview = ({ ws }: { ws: number }) => (
     </box>
 )
 
-export default () => (<window
-    name={"overview"}
-    layer={Astal.Layer.TOP}
-    exclusivity={Astal.Exclusivity.NORMAL}
-    keymode={Astal.Keymode.NONE}
-    visible={false}
-    application={App}
->
-    <Overview ws={hyprland.workspaces.length} />
-</window>
+export default () => (
+    <window
+        name={"overview"}
+        layer={Astal.Layer.TOP}
+        exclusivity={Astal.Exclusivity.NORMAL}
+        keymode={Astal.Keymode.NONE}
+        visible={false}
+        application={App}
+    >
+        <Overview ws={hyprland.workspaces.length} />
+    </window>
 )

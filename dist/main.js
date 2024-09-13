@@ -58,9 +58,6 @@ function execAsync(cmd) {
 function interval(interval2, callback) {
   return default2.Time.interval(interval2, () => void callback?.());
 }
-function timeout(timeout4, callback) {
-  return default2.Time.timeout(timeout4, () => void callback?.());
-}
 
 // node_modules/astal/src/binding.ts
 var snakeify = (str) => str.replace(/([a-z])([A-Z])/g, "$1_$2").replaceAll("-", "_").toLowerCase();
@@ -917,9 +914,11 @@ function Workspaces({ id }) {
           onClick: (_, event) => {
             if (event.button === default6.BUTTON_PRIMARY) {
               dispatch(id2);
-            } else if (event.button === default6.BUTTON_SECONDARY) {
+            }
+            if (event.button === default6.BUTTON_SECONDARY) {
               moveSilently(id2);
-            } else if (event.button === default6.BUTTON_MIDDLE) {
+            }
+            if (event.button === default6.BUTTON_MIDDLE) {
               openOverview(id2);
             }
           },
@@ -1482,136 +1481,6 @@ var MediaPlayer_default = Player;
 import Notifd from "gi://AstalNotifd";
 import Pango3 from "gi://Pango";
 var Notif = Notifd.get_default();
-var Time = (time, format = "%H:%M") => default7.DateTime.new_from_unix_local(time).format(format);
-var Date2 = (time, format = "%b %d") => default7.DateTime.new_from_unix_local(time).format(format);
-var NotifWidget = () => {
-  return /* @__PURE__ */ jsx(
-    "box",
-    {
-      className: "notif",
-      halign: default5.Align.CENTER | default5.Align.FILL,
-      valign: default5.Align.START,
-      vexpand: true,
-      vertical: true,
-      spacing: 10,
-      widthRequest: 350,
-      children: bind(Notif, "notifications").as((items) => {
-        if (items) {
-          items.sort((a, b) => b.time - a.time);
-        }
-        return items.map((item) => /* @__PURE__ */ jsx("eventbox", { onClick: () => item.dismiss(), children: /* @__PURE__ */ jsxs(
-          "box",
-          {
-            className: `level${item.get_hint("urgency")?.unpack()} outerbox`,
-            vertical: false,
-            vexpand: true,
-            hexpand: false,
-            visible: true,
-            children: [
-              /* @__PURE__ */ jsxs(
-                "box",
-                {
-                  className: "icondatetime",
-                  vertical: true,
-                  valign: default5.Align.CENTER,
-                  halign: default5.Align.START,
-                  spacing: 5,
-                  children: [
-                    /* @__PURE__ */ jsx(
-                      "icon",
-                      {
-                        className: "icon",
-                        icon: item.get_app_icon() || item.get_desktop_entry() || icons_default.fallback.notification,
-                        valign: default5.Align.CENTER,
-                        halign: default5.Align.CENTER
-                      }
-                    ),
-                    /* @__PURE__ */ jsxs("box", { vertical: true, className: "datetime", children: [
-                      /* @__PURE__ */ jsx(
-                        "label",
-                        {
-                          valign: default5.Align.CENTER,
-                          halign: default5.Align.CENTER,
-                          lines: 1,
-                          maxWidthChars: 6,
-                          label: Date2(item.time)?.toString()
-                        }
-                      ),
-                      /* @__PURE__ */ jsx(
-                        "label",
-                        {
-                          valign: default5.Align.CENTER,
-                          halign: default5.Align.CENTER,
-                          lines: 1,
-                          maxWidthChars: 6,
-                          label: Time(item.time)?.toString()
-                        }
-                      )
-                    ] })
-                  ]
-                }
-              ),
-              /* @__PURE__ */ jsxs(
-                "box",
-                {
-                  vertical: true,
-                  valign: default5.Align.START,
-                  halign: default5.Align.START,
-                  children: [
-                    /* @__PURE__ */ jsx(
-                      "label",
-                      {
-                        className: "title",
-                        label: item.summary,
-                        maxWidthChars: 50,
-                        lines: 2,
-                        ellipsize: Pango3.EllipsizeMode.END,
-                        halign: default5.Align.START,
-                        valign: default5.Align.START
-                      }
-                    ),
-                    /* @__PURE__ */ jsx(
-                      "label",
-                      {
-                        className: "body",
-                        label: item.body,
-                        maxWidthChars: 50,
-                        lines: 3,
-                        ellipsize: Pango3.EllipsizeMode.END,
-                        halign: default5.Align.START,
-                        valign: default5.Align.CENTER
-                      }
-                    ),
-                    /* @__PURE__ */ jsx(
-                      "box",
-                      {
-                        className: "actions",
-                        valign: default5.Align.END,
-                        halign: default5.Align.FILL,
-                        children: item.get_actions().map((action) => /* @__PURE__ */ jsx(
-                          "button",
-                          {
-                            onClick: () => {
-                              item.invoke(action.id);
-                              item.dismiss();
-                            },
-                            hexpand: true,
-                            children: /* @__PURE__ */ jsx("label", { label: action.label })
-                          }
-                        ))
-                      }
-                    )
-                  ]
-                }
-              )
-            ]
-          }
-        ) }));
-      })
-    }
-  );
-};
-var Notification_default = NotifWidget;
 
 // src/modules/Widgets/VolumeIndicator.tsx
 import Wp from "gi://AstalWp";
@@ -1660,8 +1529,8 @@ function VolumeIndicator() {
 var VolumeIndicator_default = VolumeIndicator;
 
 // src/modules/Widgets/AudioMixer.tsx
-import Wp2 from "gi://AstalWp";
-var { audio: audio2 } = Wp2.get_default_wp();
+import AstalWp from "gi://AstalWp";
+var { audio: audio2 } = AstalWp.get_default_wp();
 var Speaker2 = audio2.get_default_speaker();
 var Microphone = audio2.get_default_microphone();
 var volumeIndicatorClassName = () => {
@@ -1852,6 +1721,9 @@ function PowerProfiles2() {
               {
                 valign: default5.Align.CENTER,
                 halign: default5.Align.CENTER,
+                css: bind(powerprofile, "active_profile").as(
+                  (l) => l === "power-saver" ? `color: lime;` : l === "balanced" ? `color: yellow;` : l === "performance" ? `color: red;` : ""
+                ),
                 label: bind(powerprofile, "active_profile").as((l) => l.toUpperCase())
               }
             ),
@@ -1859,9 +1731,11 @@ function PowerProfiles2() {
               /* @__PURE__ */ jsx(
                 "icon",
                 {
-                  valign: default5.Align.END,
+                  valign: default5.Align.CENTER,
                   halign: default5.Align.CENTER,
-                  css: `padding-bottom: 5px;`,
+                  css: bind(powerprofile, "active_profile").as(
+                    (l) => l === "power-saver" ? `color: lime;` : l === "balanced" ? `color: yellow;` : l === "performance" ? `color: red;` : ""
+                  ),
                   icon: bind(powerprofile, "active_profile").as(
                     (l) => l === "power-saver" ? icons_default.brightness.levels.low : l === "balanced" ? icons_default.brightness.levels.medium : l === "performance" ? icons_default.brightness.levels.high : ""
                   )
@@ -1872,6 +1746,9 @@ function PowerProfiles2() {
                 {
                   valign: default5.Align.CENTER,
                   halign: default5.Align.CENTER,
+                  css: bind(powerprofile, "active_profile").as(
+                    (l) => l === "power-saver" ? `color: lime;` : l === "balanced" ? `color: yellow;` : l === "performance" ? `color: red;` : ""
+                  ),
                   label: bind(powerprofile, "active_profile").as(
                     (l) => l === "power-saver" ? "30%" : l === "balanced" ? "60%" : l === "performance" ? "100%" : ""
                   )
@@ -1907,19 +1784,28 @@ import AstalNetwork from "gi://AstalNetwork";
 var network = AstalNetwork.get_default();
 var Wired = network.wired;
 var Wifi = network.wifi;
+var netreveal = Variable(false);
 var NetworkWidget = () => {
   const wifiIcon = /* @__PURE__ */ jsx(
     "icon",
     {
-      className: "network-wifi",
+      className: "barbutton wifi icon",
       icon: bind(Wifi, "icon_name")
     }
   );
   const wifiLabel = /* @__PURE__ */ jsx(
-    "label",
+    "revealer",
     {
-      className: "network-barlabel-wifi",
-      label: "--"
+      transitionType: default5.RevealerTransitionType.SLIDE_RIGHT,
+      clickThrough: true,
+      reveal_child: bind(netreveal),
+      children: /* @__PURE__ */ jsx(
+        "label",
+        {
+          className: "barbutton wifi label",
+          label: "--"
+        }
+      )
     }
   );
   const updateWifiLabel = () => {
@@ -1940,15 +1826,23 @@ var NetworkWidget = () => {
   const wiredIcon = /* @__PURE__ */ jsx(
     "icon",
     {
-      className: "network-baricon-wired",
+      className: "barbutton wired icon",
       icon: bind(Wired, "icon_name")
     }
   );
   const wiredLabel = /* @__PURE__ */ jsx(
-    "label",
+    "revealer",
     {
-      className: "network-barlabel-wired",
-      label: "Wired"
+      transitionType: default5.RevealerTransitionType.SLIDE_RIGHT,
+      clickThrough: true,
+      reveal_child: bind(netreveal),
+      children: /* @__PURE__ */ jsx(
+        "label",
+        {
+          className: "network wired label",
+          label: "Wired"
+        }
+      )
     }
   );
   const wiredIndicator = /* @__PURE__ */ jsx(
@@ -1965,7 +1859,7 @@ var NetworkWidget = () => {
     {
       halign: default5.Align.CENTER,
       valign: default5.Align.CENTER,
-      className: "network-barbox",
+      className: "barbutton box",
       visible: true,
       children: bind(network, "primary").as((w) => w === AstalNetwork.Primary.WIRED ? wiredIndicator : wifiIndicator)
     }
@@ -1978,8 +1872,15 @@ function NetworkButton() {
       className: "network barbutton",
       halign: default5.Align.CENTER,
       valign: default5.Align.CENTER,
-      onClick: () => {
-        application_default.toggle_window("dashboard");
+      onClick: (_, event) => {
+        if (event.button === default6.BUTTON_PRIMARY) {
+          const win = application_default.get_window("dashboard");
+          if (win) {
+            win.visible = !win.visible;
+          }
+        } else if (event.button === default6.BUTTON_SECONDARY) {
+          netreveal.set(!netreveal.get());
+        }
       },
       children: /* @__PURE__ */ jsx(NetworkWidget, {})
     }
@@ -1995,14 +1896,12 @@ function header() {
   const ethernetIcon = /* @__PURE__ */ jsx(
     "icon",
     {
-      className: "network-ethernet",
       icon: bind(Wired2, "icon_name")
     }
   );
   const ethernetLabel = /* @__PURE__ */ jsx(
     "label",
     {
-      className: "network-ethernet barlabel",
       label: "Ethernet"
     }
   );
@@ -2011,7 +1910,7 @@ function header() {
     {
       halign: default5.Align.CENTER,
       valign: default5.Align.CENTER,
-      visible: bind(network2, "wired").as((showLabel) => !!showLabel),
+      vertical: false,
       spacing: 5,
       children: [ethernetIcon, ethernetLabel]
     }
@@ -2027,7 +1926,18 @@ var status = /* @__PURE__ */ jsx(
     children: /* @__PURE__ */ jsx(
       "label",
       {
-        label: bind(Wired2, "internet").as((i) => i == 0 ? "Connected" : i == 1 ? "Connecting" : "Disconnected"),
+        label: bind(Wired2, "internet").as((i) => {
+          switch (i) {
+            case 0:
+              return "Connected";
+            case 1:
+              return "Connecting";
+            case 2:
+              return "Disconnected";
+            default:
+              return "Disconnected";
+          }
+        }),
         halign: default5.Align.CENTER,
         valign: default5.Align.CENTER
       }
@@ -2044,7 +1954,7 @@ function EthernetWidget() {
       children: /* @__PURE__ */ jsxs(
         "box",
         {
-          className: "network-ethernet container",
+          className: "network ethernet container",
           halign: default5.Align.CENTER,
           valign: default5.Align.CENTER,
           spacing: 5,
@@ -2062,6 +1972,8 @@ var Ethernet_default = EthernetWidget;
 
 // src/modules/Widgets/Network/WiFi.tsx
 import AstalNetwork3 from "gi://AstalNetwork";
+import Pango4 from "gi://Pango";
+import NM from "gi://NM";
 var network3 = AstalNetwork3.get_default();
 var Wifi2 = network3.wifi;
 function header2() {
@@ -2076,6 +1988,7 @@ function header2() {
       halign: default5.Align.CENTER,
       valign: default5.Align.CENTER,
       tooltip_text: bind(Wifi2, "scanning").as((v) => v ? "wifi scanning" : ""),
+      className: bind(Wifi2, "scanning").as((v) => v ? "scanning" : ""),
       children: /* @__PURE__ */ jsx(
         "icon",
         {
@@ -2118,67 +2031,251 @@ function header2() {
   return /* @__PURE__ */ jsx(
     "centerbox",
     {
-      className: "network-wifi header",
+      className: "wifi header",
       halign: default5.Align.FILL,
       valign: default5.Align.FILL,
-      spacing: 5,
       vertical: false,
-      startWidget: head,
-      endWidget: /* @__PURE__ */ jsxs("box", { halign: default5.Align.CENTER, vertical: false, spacing: 5, children: [
+      centerWidget: head,
+      endWidget: /* @__PURE__ */ jsxs("box", { halign: default5.Align.CENTER, vertical: false, spacing: 15, children: [
         enable,
         refresh
       ] })
     }
   );
 }
-function WifiWidget() {
-  const wifiIcon = /* @__PURE__ */ jsx(
-    "icon",
+function WifiAP(ap) {
+  const isActiveAP = Wifi2.active_access_point && Wifi2.active_access_point.ssid === ap.ssid ? true : false;
+  const passreveal = Variable(false);
+  const APSecurityReveal = Variable(true);
+  const noPw = NM["80211ApSecurityFlags"].NONE;
+  const apPrivacy = NM["80211ApFlags"].NONE;
+  const SecuredAP = !apPrivacy && !noPw;
+  const PasswordEntry = /* @__PURE__ */ jsx(
+    "revealer",
     {
-      className: "network-wifi",
-      icon: bind(Wifi2, "icon_name")
+      halign: default5.Align.FILL,
+      valign: default5.Align.FILL,
+      transitionType: default5.RevealerTransitionType.SLIDE_DOWN,
+      transitionDuration: 300,
+      revealChild: isActiveAP ? false : bind(passreveal),
+      visible: isActiveAP ? false : bind(passreveal),
+      children: /* @__PURE__ */ jsx(
+        "entry",
+        {
+          placeholder_text: "Enter Password",
+          visibility: false,
+          visible: true,
+          halign: default5.Align.FILL,
+          valign: default5.Align.FILL,
+          css: `min-width: 100px; min-height: 10px;`,
+          onActivate: (self) => {
+            const password = self.get_text();
+            if (password) {
+              execAsync(`nmcli dev wifi connect ${ap.ssid} password ${password}`).then(
+                () => {
+                  execAsync(`notify-send "WiFi" "Successfully connected to Secured ${ap.ssid}"`);
+                },
+                (error) => {
+                  execAsync(`notify-send -u critical "WiFi Error" "Failed to connect to ${ap.ssid}"`);
+                }
+              );
+            }
+          }
+        }
+      )
     }
   );
-  const wifiLabel = /* @__PURE__ */ jsx(
-    "label",
-    {
-      className: "network-barlabel-wifi",
-      label: "--"
-    }
-  );
-  const updateWifiLabel = () => {
-    const wifi = network3.wifi;
-    wifiLabel.label = wifi && wifi.ssid ? `${wifi.ssid.substring(0, 15)}` : "--";
+  const APEntry = () => {
+    const IconLabel = /* @__PURE__ */ jsxs("box", { vertical: false, spacing: 5, halign: default5.Align.START, valign: default5.Align.CENTER, children: [
+      /* @__PURE__ */ jsx(
+        "icon",
+        {
+          icon: ap.icon_name,
+          valign: default5.Align.CENTER
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        "label",
+        {
+          label: ap.ssid,
+          valign: default5.Align.CENTER,
+          ellipsize: Pango4.EllipsizeMode.MIDDLE,
+          tooltip_text: isActiveAP ? "" : SecuredAP ? "Secured: Password Required" : "Unsecured"
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        "label",
+        {
+          label: (ap.frequency / 1e3).toFixed(1) + "GHz",
+          valign: default5.Align.CENTER
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        "label",
+        {
+          label: (ap.maxBitrate / 1e3).toFixed(0) + "Mbps",
+          valign: default5.Align.CENTER
+        }
+      )
+    ] });
+    return /* @__PURE__ */ jsx(
+      "button",
+      {
+        halign: default5.Align.FILL,
+        valign: default5.Align.CENTER,
+        cursor: "pointer",
+        onClick: (_, event) => {
+          if (event.button === default6.BUTTON_PRIMARY) {
+            if (SecuredAP) {
+              passreveal.set(!passreveal.get());
+              APSecurityReveal.set(!APSecurityReveal.get());
+              PasswordEntry.grab_focus();
+            } else if (!SecuredAP) {
+              execAsync(`nmcli con up ${ap.ssid}`);
+            }
+          }
+        },
+        children: IconLabel
+      }
+    );
   };
-  updateWifiLabel();
-  network3.connect("notify::wifi", updateWifiLabel);
-  const wifiIndicator = /* @__PURE__ */ jsx(
+  const APDisconnect = /* @__PURE__ */ jsx(
     "button",
     {
-      halign: default5.Align.CENTER,
-      valign: default5.Align.CENTER,
-      visible: bind(network3, "wifi").as((showLabel) => !!showLabel),
-      onClick: () => {
-        execAsync(`nmcli dev wifi ${network3.wifi.connected ? "disconnect" : "connect"} ${network3.wifi.ssid}`);
+      className: "wifi ap disconnect",
+      onClick: (_, event) => {
+        if (event.button === default6.BUTTON_PRIMARY) {
+          execAsync(`nmcli con down ${ap.ssid}`);
+        }
       },
-      children: /* @__PURE__ */ jsx("box", { spacing: 5, children: [wifiIcon, wifiLabel] })
+      halign: default5.Align.END,
+      valign: default5.Align.CENTER,
+      tooltip_text: "Disconnect",
+      cursor: "pointer",
+      visible: isActiveAP,
+      children: /* @__PURE__ */ jsx(
+        "icon",
+        {
+          icon: Icons("circle-x-symbolic"),
+          halign: default5.Align.END,
+          valign: default5.Align.CENTER
+        }
+      )
     }
   );
-  return wifiIndicator;
+  const APForget = /* @__PURE__ */ jsx(
+    "button",
+    {
+      className: "wifi ap forget",
+      onClick: (_, event) => {
+        if (event.button === default6.BUTTON_PRIMARY) {
+          execAsync(`nmcli con delete ${ap.ssid}`).then(
+            () => {
+              execAsync(`notify-send "WiFi" "Forgot ${ap.ssid}"`);
+            },
+            (error) => {
+              execAsync(`notify-send -u critical "WiFi Error" "Failed to forget ${ap.ssid}"`);
+              console.error(`Failed to forget ${ap.ssid}: ${error}`);
+            }
+          );
+        }
+      },
+      halign: default5.Align.END,
+      valign: default5.Align.CENTER,
+      tooltip_text: "Forget SSID",
+      cursor: "pointer",
+      visible: isActiveAP,
+      children: /* @__PURE__ */ jsx(
+        "icon",
+        {
+          icon: Icons("edit-delete-symbolic"),
+          halign: default5.Align.END,
+          valign: default5.Align.CENTER
+        }
+      )
+    }
+  );
+  const APItem = /* @__PURE__ */ jsxs("box", { vertical: true, children: [
+    /* @__PURE__ */ jsx(
+      "centerbox",
+      {
+        className: `wifi ap ${isActiveAP ? "connected" : ""}`,
+        vertical: false,
+        halign: default5.Align.FILL,
+        valign: default5.Align.FILL,
+        startWidget: APEntry(),
+        endWidget: /* @__PURE__ */ jsxs("box", { className: "wifi connected controls", visible: isActiveAP, halign: default5.Align.END, spacing: 5, children: [
+          APDisconnect,
+          APForget
+        ] })
+      }
+    ),
+    PasswordEntry
+  ] });
+  return /* @__PURE__ */ jsx("box", { vertical: true, spacing: 10, children: APItem });
 }
 function WifiAPs() {
+  const APList = bind(Wifi2, "accessPoints").as((aps) => {
+    const activeAP = Wifi2.active_access_point || null;
+    const groupedAPs = aps.reduce((acc, ap) => {
+      const ssid = ap.ssid ? ap.ssid.trim() : null;
+      if (!ssid) return acc;
+      if (!acc[ssid]) {
+        acc[ssid] = [];
+      }
+      acc[ssid].push(ap);
+      return acc;
+    }, {});
+    const sortedAPGroups = Object.values(groupedAPs).map((apGroup) => {
+      apGroup.sort((a, b) => {
+        if (a === activeAP) return -1;
+        if (b === activeAP) return 1;
+        return b.strength - a.strength;
+      });
+      return apGroup[0];
+    });
+    sortedAPGroups.sort((a, b) => {
+      if (a === activeAP) return -1;
+      if (b === activeAP) return 1;
+      return b.strength - a.strength;
+    });
+    return sortedAPGroups.map((ap) => WifiAP(ap));
+  });
   return /* @__PURE__ */ jsxs(
     "box",
     {
-      className: "network-wifi container",
+      className: "network wifi container",
       halign: default5.Align.FILL,
       valign: default5.Align.FILL,
+      hexpand: true,
       visible: true,
       vertical: true,
       spacing: 10,
       children: [
         header2(),
-        /* @__PURE__ */ jsx(WifiWidget, {})
+        /* @__PURE__ */ jsx(
+          "scrollable",
+          {
+            halign: default5.Align.FILL,
+            valign: default5.Align.FILL,
+            visible: true,
+            vscroll: default5.PolicyType.AUTOMATIC,
+            hscroll: default5.PolicyType.NEVER,
+            vexpand: true,
+            children: /* @__PURE__ */ jsx(
+              "box",
+              {
+                className: "wifi aplist-inner",
+                halign: default5.Align.FILL,
+                valign: default5.Align.FILL,
+                visible: true,
+                vertical: true,
+                spacing: 5,
+                children: APList
+              }
+            )
+          }
+        )
       ]
     }
   );
@@ -2188,7 +2285,7 @@ var WiFi_default = WifiAPs;
 // src/modules/Widgets/Bluetooth/BarButton.tsx
 import AstalBluetooth from "gi://AstalBluetooth";
 var Bluetooth = AstalBluetooth.get_default();
-var btreveal = Variable(true);
+var btreveal = Variable(false);
 var BluetoothWidget = () => {
   const updateLabel = (btLabel) => {
     const btEnabled = Bluetooth.is_powered;
@@ -2257,301 +2354,9 @@ var BarButton_default2 = BluetoothButton;
 
 // src/modules/Widgets/Bluetooth/BluetoothDevices.tsx
 import AstalBluetooth2 from "gi://AstalBluetooth";
-import Pango4 from "gi://Pango";
+import Pango5 from "gi://Pango";
 var Bluetooth2 = AstalBluetooth2.get_default();
 var Adapter = Bluetooth2.adapter;
-var btControls = () => {
-  const btPower = /* @__PURE__ */ jsx(
-    "button",
-    {
-      className: bind(Bluetooth2, "is_powered").as((v) => v ? "bluetooth power-on" : "bluetooth power-off"),
-      onClick: (_, event) => {
-        if (event.button === default6.BUTTON_PRIMARY) {
-          execAsync(`bluetoothctl power ${Bluetooth2.is_powered ? "off" : "on"}`);
-        }
-      },
-      halign: default5.Align.END,
-      valign: default5.Align.CENTER,
-      tooltip_text: bind(Bluetooth2, "is_powered").as((v) => v ? "Power off" : "Power on"),
-      children: /* @__PURE__ */ jsx(
-        "icon",
-        {
-          icon: bind(Bluetooth2, "is_powered").as((v) => v ? icons_default.bluetooth.enabled : icons_default.bluetooth.disabled),
-          halign: default5.Align.END,
-          valign: default5.Align.CENTER
-        }
-      )
-    }
-  );
-  const Refresh = /* @__PURE__ */ jsx(
-    "button",
-    {
-      className: bind(Adapter, "discovering").as((v) => v ? "bluetooth refreshing" : "bluetooth stale"),
-      onClick: async (_, event) => {
-        if (event.button === default6.BUTTON_PRIMARY) {
-          await execAsync("bluetoothctl --timeout 120 scan on").catch(console.error);
-        }
-      },
-      halign: default5.Align.END,
-      valign: default5.Align.CENTER,
-      tooltip_text: "Refresh",
-      children: /* @__PURE__ */ jsx(
-        "icon",
-        {
-          icon: "view-refresh-symbolic",
-          halign: default5.Align.END,
-          valign: default5.Align.CENTER
-        }
-      )
-    }
-  );
-  return /* @__PURE__ */ jsxs(
-    "box",
-    {
-      halign: default5.Align.CENTER,
-      valign: default5.Align.CENTER,
-      spacing: 5,
-      children: [
-        btPower,
-        Refresh
-      ]
-    }
-  );
-};
-function content(device) {
-  const DeviceButton = () => {
-    const btDeviceLabel = /* @__PURE__ */ jsx(
-      "label",
-      {
-        label: device.name,
-        halign: default5.Align.START,
-        valign: default5.Align.CENTER,
-        ellipsize: Pango4.EllipsizeMode.END,
-        tooltip_text: device.address || "No Address"
-      }
-    );
-    const DeviceTypeIcon = /* @__PURE__ */ jsx(
-      "icon",
-      {
-        className: `bluetooth devicelist ${device.connected ? "connected" : ""} itemicon`,
-        icon: device.icon || "bluetooth-symbolic",
-        halign: default5.Align.START,
-        valign: default5.Align.CENTER
-      }
-    );
-    return /* @__PURE__ */ jsx(
-      "button",
-      {
-        className: "bluetooth devicelist itemcontent",
-        halign: default5.Align.FILL,
-        valign: default5.Align.CENTER,
-        onClick: () => {
-          execAsync(`bluetoothctl ${device.connected ? "disconnect" : "connect"} ${device.address}`);
-        },
-        children: /* @__PURE__ */ jsx(
-          "centerbox",
-          {
-            halign: default5.Align.START,
-            valign: default5.Align.CENTER,
-            spacing: 5,
-            startWidget: DeviceTypeIcon,
-            centerWidget: btDeviceLabel
-          }
-        )
-      }
-    );
-  };
-  const btDeviceControls = () => {
-    const PairDevice = /* @__PURE__ */ jsx(
-      "button",
-      {
-        onClick: (_, event) => {
-          if (event.button === default6.BUTTON_PRIMARY) {
-            execAsync(`bluetoothctl ${device.paired ? "Unpair" : "Pair"} ${device.address}`);
-          } else if (event.button === default6.BUTTON_SECONDARY) {
-            execAsync(`bluetoothctl cancel-pairing ${device.address}`);
-          }
-        },
-        halign: default5.Align.END,
-        valign: default5.Align.CENTER,
-        tooltip_text: bind(device, "paired").as((v) => v ? "Unpair" : "Pair"),
-        children: /* @__PURE__ */ jsx(
-          "icon",
-          {
-            icon: bind(device, "paired").as((v) => v ? Icons("bluetooth-link-symbolic") : Icons("bluetooth-unlink-symbolic")),
-            halign: default5.Align.END,
-            valign: default5.Align.CENTER
-          }
-        )
-      }
-    );
-    const TrustDevice = /* @__PURE__ */ jsx(
-      "button",
-      {
-        onClick: (_, event) => {
-          if (event.button === default6.BUTTON_PRIMARY) {
-            execAsync(`bluetoothctl ${device.trusted ? "untrust" : "trust"} ${device.address}`);
-          }
-        },
-        halign: default5.Align.END,
-        valign: default5.Align.CENTER,
-        tooltip_text: bind(device, "trusted").as((v) => v ? "Untrust" : "Trust"),
-        children: /* @__PURE__ */ jsx(
-          "icon",
-          {
-            icon: bind(device, "trusted").as((v) => v ? Icons("bluetooth-trust-symbolic") : Icons("bluetooth-untrust-symbolic")),
-            halign: default5.Align.END,
-            valign: default5.Align.CENTER
-          }
-        )
-      }
-    );
-    const ConnectDevice = /* @__PURE__ */ jsx(
-      "button",
-      {
-        onClick: (_, event) => {
-          if (event.button === default6.BUTTON_PRIMARY) {
-            execAsync(`bluetoothctl ${device.connected ? "disconnect" : "connect"} ${device.address}`);
-          }
-        },
-        halign: default5.Align.END,
-        valign: default5.Align.CENTER,
-        tooltip_text: bind(device, "connected").as((v) => v ? "Disconnect" : "Connect"),
-        children: /* @__PURE__ */ jsx(
-          "icon",
-          {
-            icon: bind(device, "connected").as((v) => v ? Icons("bluetooth-connect-symbolic") : Icons("bluetooth-disconnect-symbolic")),
-            halign: default5.Align.END,
-            valign: default5.Align.CENTER
-          }
-        )
-      }
-    );
-    const ForgetDevice = /* @__PURE__ */ jsx(
-      "button",
-      {
-        className: "bluetooth deviceList delete",
-        onClick: (_, event) => {
-          if (event.button === default6.BUTTON_PRIMARY) {
-            execAsync(`bluetoothctl remove ${device.address}`);
-          }
-        },
-        visible: device.paired,
-        halign: default5.Align.END,
-        valign: default5.Align.CENTER,
-        tooltip_text: "Forget",
-        children: /* @__PURE__ */ jsx(
-          "icon",
-          {
-            tooltip_text: "Forget",
-            icon: Icons("circle-x-symbolic"),
-            halign: default5.Align.END,
-            valign: default5.Align.CENTER
-          }
-        )
-      }
-    );
-    return /* @__PURE__ */ jsxs(
-      "box",
-      {
-        className: "bluetooth devicelist items controls",
-        halign: default5.Align.END,
-        valign: default5.Align.FILL,
-        spacing: 5,
-        children: [
-          PairDevice,
-          TrustDevice,
-          ConnectDevice,
-          ForgetDevice
-        ]
-      }
-    );
-  };
-  return /* @__PURE__ */ jsx(
-    "box",
-    {
-      className: `bluetooth devicelist items ${device.connected ? "connected" : ""}`,
-      halign: default5.Align.FILL,
-      valign: default5.Align.FILL,
-      visible: true,
-      vertical: true,
-      children: /* @__PURE__ */ jsx(
-        "centerbox",
-        {
-          vertical: false,
-          halign: default5.Align.FILL,
-          valign: default5.Align.CENTER,
-          startWidget: /* @__PURE__ */ jsx(DeviceButton, {}),
-          endWidget: btDeviceControls()
-        }
-      )
-    }
-  );
-}
-function BluetoothDevices() {
-  const btdevicelist = bind(Bluetooth2, "devices").as((devices) => {
-    const availableDevices = devices.filter((btDev) => {
-      const name = btDev.name ? btDev.name.trim() : null;
-      return name && name !== "Unknown Device" && name !== "";
-    }).sort((a, b) => {
-      if (a.connected && !b.connected) return -1;
-      if (!a.connected && b.connected) return 1;
-      if (a.paired && !b.paired) return -1;
-      if (!a.paired && b.paired) return 1;
-      return a.name.localeCompare(b.name);
-    });
-    return availableDevices.map((device) => content(device));
-  });
-  return /* @__PURE__ */ jsxs(
-    "box",
-    {
-      className: "bluetooth devicelist container",
-      halign: default5.Align.FILL,
-      valign: default5.Align.FILL,
-      visible: true,
-      vertical: true,
-      spacing: 10,
-      children: [
-        /* @__PURE__ */ jsx(
-          "centerbox",
-          {
-            className: "bluetooth devicelist header",
-            vertical: false,
-            halign: default5.Align.FILL,
-            valign: default5.Align.CENTER,
-            centerWidget: /* @__PURE__ */ jsx("label", { label: "Bluetooth" }),
-            endWidget: btControls()
-          }
-        ),
-        /* @__PURE__ */ jsx(
-          "scrollable",
-          {
-            halign: default5.Align.FILL,
-            valign: default5.Align.FILL,
-            visible: true,
-            vscroll: default5.PolicyType.AUTOMATIC,
-            hscroll: default5.PolicyType.NEVER,
-            vexpand: true,
-            css: `min-height: 200px;`,
-            children: /* @__PURE__ */ jsx(
-              "box",
-              {
-                className: "bluetooth devicelist-inner",
-                halign: default5.Align.FILL,
-                valign: default5.Align.FILL,
-                visible: true,
-                vertical: true,
-                spacing: 5,
-                children: btdevicelist
-              }
-            )
-          }
-        )
-      ]
-    }
-  );
-}
-var BluetoothDevices_default = BluetoothDevices;
 
 // src/modules/Widgets/Tray.tsx
 import AstalTray from "gi://AstalTray";
@@ -2638,7 +2443,7 @@ function SysInfo() {
 
 // src/modules/bar/MediaTicker.tsx
 import Mpris3 from "gi://AstalMpris";
-import Pango5 from "gi://Pango";
+import Pango6 from "gi://Pango";
 var player3 = Mpris3.Player.new("Deezer");
 function TickerTrack() {
   return /* @__PURE__ */ jsx(
@@ -2649,7 +2454,7 @@ function TickerTrack() {
       wrap: false,
       halign: default5.Align.CENTER,
       valign: default5.Align.CENTER,
-      ellipsize: Pango5.EllipsizeMode.END,
+      ellipsize: Pango6.EllipsizeMode.END,
       label: bind(player3, "title").as((title) => TrimTrackTitle_default(title))
     }
   );
@@ -2662,7 +2467,7 @@ function TickerArtist() {
       wrap: false,
       halign: default5.Align.CENTER,
       valign: default5.Align.CENTER,
-      ellipsize: Pango5.EllipsizeMode.END,
+      ellipsize: Pango6.EllipsizeMode.END,
       maxWidthChars: 35,
       label: bind(player3, "artist").as((artist) => artist || "Unknown Artist")
     }
@@ -2829,123 +2634,6 @@ var winwidth = (value) => {
 
 // src/modules/Windows/dashboard/dashboard.tsx
 import Mpris4 from "gi://AstalMpris";
-
-// src/modules/Windows/dashboard/notificationList.tsx
-import Notifd2 from "gi://AstalNotifd";
-var Notif2 = Notifd2.get_default();
-var NotifBox = /* @__PURE__ */ jsx(
-  "scrollable",
-  {
-    className: "notif container",
-    vscroll: default5.PolicyType.AUTOMATIC,
-    hscroll: default5.PolicyType.NEVER,
-    vexpand: true,
-    hexpand: false,
-    halign: default5.Align.FILL,
-    valign: default5.Align.FILL,
-    children: /* @__PURE__ */ jsx(Notification_default, {})
-  }
-);
-var Empty = /* @__PURE__ */ jsx(
-  "box",
-  {
-    className: "notif empty",
-    halign: default5.Align.CENTER,
-    valign: default5.Align.CENTER,
-    vertical: true,
-    children: /* @__PURE__ */ jsx(
-      "label",
-      {
-        label: `\u{F164E}`,
-        valign: default5.Align.CENTER,
-        halign: default5.Align.CENTER,
-        vexpand: true
-      }
-    )
-  }
-);
-function NotificationList() {
-  return /* @__PURE__ */ jsxs(
-    "box",
-    {
-      className: "notif panel",
-      vertical: true,
-      vexpand: true,
-      hexpand: false,
-      halign: default5.Align.FILL,
-      valign: default5.Align.FILL,
-      children: [
-        /* @__PURE__ */ jsx(
-          "centerbox",
-          {
-            className: "notif panel box",
-            spacing: 20,
-            valign: default5.Align.FILL,
-            halign: default5.Align.FILL,
-            vertical: false,
-            centerWidget: /* @__PURE__ */ jsx(
-              "label",
-              {
-                label: "Notifications",
-                valign: default5.Align.START,
-                halign: default5.Align.END
-              }
-            ),
-            endWidget: /* @__PURE__ */ jsxs("box", { halign: default5.Align.CENTER, valign: default5.Align.CENTER, vertical: false, spacing: 20, children: [
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  halign: default5.Align.START,
-                  valign: default5.Align.START,
-                  onClick: (_, event) => {
-                    if (event.button === default6.BUTTON_PRIMARY) {
-                      Notif2.get_notifications().forEach(
-                        (item, id) => timeout(50 * id, () => item.dismiss())
-                      );
-                    }
-                  },
-                  children: /* @__PURE__ */ jsx(
-                    "icon",
-                    {
-                      icon: bind(Notif2, "notifications").as(
-                        (items) => items.length > 0 ? icons_default.trash.full : icons_default.trash.empty
-                      )
-                    }
-                  )
-                }
-              ),
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  halign: default5.Align.END,
-                  valign: default5.Align.START,
-                  onClick: (_, event) => {
-                    if (event.button === default6.BUTTON_PRIMARY) {
-                      Notif2.set_dont_disturb(!Notif2.get_dont_disturb());
-                    }
-                  },
-                  children: /* @__PURE__ */ jsx(
-                    "icon",
-                    {
-                      icon: bind(Notif2, "dont_disturb").as(
-                        (d) => d === false ? Icons("bell-disabled-symbolic") : Icons("bell-enabled-symbolic")
-                      ),
-                      valign: default5.Align.CENTER,
-                      halign: default5.Align.CENTER
-                    }
-                  )
-                }
-              )
-            ] })
-          }
-        ),
-        NotifBox
-      ]
-    }
-  );
-}
-
-// src/modules/Windows/dashboard/dashboard.tsx
 var player4 = Mpris4.Player.new("Deezer");
 var Calendar = () => /* @__PURE__ */ jsx(
   "box",
@@ -2956,73 +2644,80 @@ var Calendar = () => /* @__PURE__ */ jsx(
     children: /* @__PURE__ */ jsx(GridCalendar_default, {})
   }
 );
-var LeftSide = () => /* @__PURE__ */ jsxs(
-  "box",
-  {
-    className: "dashboard leftSide",
-    vertical: true,
-    halign: default5.Align.CENTER,
-    valign: default5.Align.CENTER,
-    spacing: 10,
-    children: [
-      /* @__PURE__ */ jsx(Calendar, {}),
-      /* @__PURE__ */ jsx(powerprofiles_default, {}),
-      /* @__PURE__ */ jsx(BluetoothDevices_default, {})
-    ]
-  }
-);
-var RightSide = () => /* @__PURE__ */ jsxs(
-  "box",
-  {
-    className: "dashboard rightSide",
-    vertical: true,
-    halign: default5.Align.CENTER,
-    valign: default5.Align.FILL,
-    hexpand: false,
-    spacing: 10,
-    children: [
-      /* @__PURE__ */ jsx(NotificationList, {}),
-      /* @__PURE__ */ jsx(Ethernet_default, {}),
-      /* @__PURE__ */ jsx(WiFi_default, {})
-    ]
-  }
-);
-function Dashboard() {
-  const content2 = /* @__PURE__ */ jsx(
-    "eventbox",
+var LeftSide = () => {
+  return /* @__PURE__ */ jsxs(
+    "box",
     {
-      onKeyPressEvent: (_, event) => {
-        if (event.get_keyval()[1] === default6.KEY_Escape) {
-          application_default.toggle_window("dashboard");
-        }
-      },
-      onClick: () => {
-        application_default.toggle_window("dashboard");
-      },
-      children: /* @__PURE__ */ jsxs(
-        "box",
-        {
-          className: "dashboard container",
-          vertical: true,
-          vexpand: true,
-          hexpand: false,
-          valign: default5.Align.START,
-          halign: default5.Align.CENTER,
-          heightRequest: winheight(0.5),
-          widthRequest: winwidth(0.25),
-          css: `
+      className: "dashboard leftSide",
+      vertical: true,
+      halign: default5.Align.CENTER,
+      valign: default5.Align.CENTER,
+      spacing: 10,
+      children: [
+        /* @__PURE__ */ jsx(Calendar, {}),
+        /* @__PURE__ */ jsx(powerprofiles_default, {})
+      ]
+    }
+  );
+};
+function RightSide() {
+  const networkBox = /* @__PURE__ */ jsxs("box", { className: "network dashboard", vertical: true, halign: default5.Align.FILL, valign: default5.Align.FILL, spacing: 10, heightRequest: 50, children: [
+    /* @__PURE__ */ jsx(Ethernet_default, {}),
+    /* @__PURE__ */ jsx(WiFi_default, {})
+  ] });
+  const stack = new default5.Stack({
+    halign: default5.Align.FILL,
+    valign: default5.Align.FILL,
+    transition_type: default5.StackTransitionType.SLIDE_LEFT_RIGHT,
+    transition_duration: 300,
+    homogeneous: true
+  });
+  stack.add_titled(/* @__PURE__ */ jsx("label", { label: "test 1", css: `color: red; font-size: 3rem;` }), "test1", "test 1");
+  stack.add_titled(/* @__PURE__ */ jsx("label", { label: "test 2", css: `color: green; font-size: 3rem;` }), "test2", "test 2");
+  stack.add_titled(/* @__PURE__ */ jsx("label", { label: "test 3", css: `color: yellow; font-size: 3rem;` }), "test3", "test 3");
+  const stackSwitcher = new default5.StackSwitcher({
+    stack,
+    valign: default5.Align.FILL,
+    halign: default5.Align.FILL
+  });
+  return /* @__PURE__ */ jsx(
+    "box",
+    {
+      className: "dashboard rightSide",
+      vertical: true,
+      halign: default5.Align.CENTER,
+      valign: default5.Align.FILL,
+      hexpand: false,
+      css: `background-color: black;`,
+      widthRequest: winwidth(0.25),
+      heightRequest: winheight(0.25),
+      children: stack
+    }
+  );
+}
+function Dashboard() {
+  const content = /* @__PURE__ */ jsxs(
+    "box",
+    {
+      className: "dashboard container",
+      vertical: true,
+      vexpand: true,
+      hexpand: false,
+      valign: default5.Align.START,
+      halign: default5.Align.CENTER,
+      heightRequest: winheight(0.5),
+      widthRequest: winwidth(0.25),
+      css: `
           padding: 1.5rem;
         `,
-          children: [
-            /* @__PURE__ */ jsx("box", { vertical: true, halign: default5.Align.CENTER, valign: default5.Align.CENTER, spacing: 10, children: /* @__PURE__ */ jsx(MediaPlayer_default, { player: player4 }) }),
-            /* @__PURE__ */ jsxs("box", { vertical: false, halign: default5.Align.FILL, valign: default5.Align.FILL, spacing: 10, children: [
-              /* @__PURE__ */ jsx(LeftSide, {}),
-              /* @__PURE__ */ jsx(Tray_default, {}),
-              /* @__PURE__ */ jsx(RightSide, {})
-            ] })
-          ]
-        }
-      )
+      children: [
+        /* @__PURE__ */ jsx("box", { vertical: true, halign: default5.Align.CENTER, valign: default5.Align.CENTER, spacing: 10, children: /* @__PURE__ */ jsx(MediaPlayer_default, { player: player4 }) }),
+        /* @__PURE__ */ jsxs("box", { vertical: false, halign: default5.Align.FILL, valign: default5.Align.FILL, spacing: 10, children: [
+          /* @__PURE__ */ jsx(LeftSide, {}),
+          /* @__PURE__ */ jsx(Tray_default, {}),
+          /* @__PURE__ */ jsx(RightSide, {})
+        ] })
+      ]
     }
   );
   return /* @__PURE__ */ jsx(
@@ -3036,7 +2731,20 @@ function Dashboard() {
       keymode: default2.Keymode.EXCLUSIVE,
       visible: false,
       application: application_default,
-      children: content2
+      children: /* @__PURE__ */ jsx(
+        "eventbox",
+        {
+          onKeyPressEvent: (_, event) => {
+            if (event.get_keyval()[1] === default6.KEY_Escape) {
+              application_default.toggle_window("dashboard");
+            }
+          },
+          onClick: () => {
+            application_default.toggle_window("dashboard");
+          },
+          children: content
+        }
+      )
     }
   );
 }
@@ -3117,13 +2825,13 @@ var AudioMixer_default = () => /* @__PURE__ */ jsx(
 );
 
 // src/modules/Windows/notificationPopups.tsx
-import Notifd3 from "gi://AstalNotifd";
-import Pango6 from "gi://Pango";
-var Notif3 = Notifd3.get_default();
+import Notifd2 from "gi://AstalNotifd";
+import Pango7 from "gi://Pango";
+var Notif2 = Notifd2.get_default();
 var expireTime = 3e4;
-var Time2 = (time, format = "%H:%M.%S") => default7.DateTime.new_from_unix_local(time).format(format);
-var Date3 = (time, format = "%b %d") => default7.DateTime.new_from_unix_local(time).format(format);
-var NotifWidget2 = () => {
+var Time = (time, format = "%H:%M.%S") => default7.DateTime.new_from_unix_local(time).format(format);
+var Date2 = (time, format = "%b %d") => default7.DateTime.new_from_unix_local(time).format(format);
+var NotifWidget = () => {
   return /* @__PURE__ */ jsx(
     "box",
     {
@@ -3134,7 +2842,7 @@ var NotifWidget2 = () => {
       vertical: true,
       spacing: 10,
       widthRequest: 450,
-      children: bind(Notif3, "notifications").as((items) => {
+      children: bind(Notif2, "notifications").as((items) => {
         if (items) {
           items.sort((a, b) => b.time - a.time).forEach((item) => setTimeout(() => item.dismiss(), expireTime));
         }
@@ -3184,7 +2892,7 @@ var NotifWidget2 = () => {
                               halign: default5.Align.CENTER,
                               lines: 1,
                               maxWidthChars: 6,
-                              label: Date3(item.time)?.toString()
+                              label: Date2(item.time)?.toString()
                             }
                           ),
                           /* @__PURE__ */ jsx(
@@ -3194,7 +2902,7 @@ var NotifWidget2 = () => {
                               halign: default5.Align.CENTER,
                               lines: 1,
                               maxWidthChars: 6,
-                              label: Time2(item.time)?.toString()
+                              label: Time(item.time)?.toString()
                             }
                           )
                         ] })
@@ -3215,7 +2923,7 @@ var NotifWidget2 = () => {
                             label: item.summary,
                             maxWidthChars: 50,
                             lines: 2,
-                            ellipsize: Pango6.EllipsizeMode.END,
+                            ellipsize: Pango7.EllipsizeMode.END,
                             halign: default5.Align.START,
                             valign: default5.Align.START
                           }
@@ -3227,7 +2935,7 @@ var NotifWidget2 = () => {
                             label: item.body,
                             maxWidthChars: 50,
                             lines: 3,
-                            ellipsize: Pango6.EllipsizeMode.END,
+                            ellipsize: Pango7.EllipsizeMode.END,
                             halign: default5.Align.START,
                             valign: default5.Align.CENTER
                           }
@@ -3272,7 +2980,7 @@ var notificationPopups_default = (monitor) => /* @__PURE__ */ jsx(
     hexpand: true,
     layer: default2.Layer.OVERLAY,
     application: application_default,
-    children: /* @__PURE__ */ jsx("box", { css: "padding: 2px;", halign: default5.Align.CENTER, children: /* @__PURE__ */ jsx(NotifWidget2, {}) })
+    children: /* @__PURE__ */ jsx("box", { css: "padding: 2px;", halign: default5.Align.CENTER, children: /* @__PURE__ */ jsx(NotifWidget, {}) })
   }
 );
 

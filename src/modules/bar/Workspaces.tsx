@@ -64,9 +64,11 @@ export default function Workspaces({ id }: { id: number }) {
                     onClick={(_, event) => {
                         if (event.button === Gdk.BUTTON_PRIMARY) {
                             dispatch(id);
-                        } else if (event.button === Gdk.BUTTON_SECONDARY) {
+                        }
+                        if (event.button === Gdk.BUTTON_SECONDARY) {
                             moveSilently(id);
-                        } else if (event.button === Gdk.BUTTON_MIDDLE) {
+                        }
+                        if (event.button === Gdk.BUTTON_MIDDLE) {
                             openOverview(id);
                         }
                     }}>

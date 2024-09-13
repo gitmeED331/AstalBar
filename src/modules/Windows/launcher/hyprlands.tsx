@@ -1,9 +1,10 @@
-import { App, Hyprland, Widget, Gtk } from "imports"
+import { App, Astal, Widget, Gtk, Gdk } from "astal"
 import { Fzf } from "../../../node_modules/fzf/dist/fzf.es.js"
-import icons from "lib/icons"
-import { icon } from "lib/utils"
+import Icon, { Icons } from "../../lib/icons.js"
+import AstalHyprland from "gi://AstalHyprland"
+import Pango from "gi://Pango"
 
-const { Box, Button, Label, Icon } = Widget
+const Hyprland = AstalHyprland.get_default()
 
 /**i
  * @typedef {import('node_modules/fzf/dist/types/main').Fzf<import('types/widgets/button.js').default[]>} FzfAppButton
@@ -14,52 +15,53 @@ const { Box, Button, Label, Icon } = Widget
 /**
  * @param {import('types/service/hyprland.js').Client} app
  */
-export const AppIcon = app => {
-  return Icon({
-    class_name: "app-icon",
-    icon: icon(app.class),
-  });
-};
+export const AppIcon = app => (
+  <icon
+    className={"app-icon"}
+    icon={Icons(app.class)}
+  />
+)
 
 /**
  * @param {import('types/service/hyprland.js').Client} app
  */
-const AppButton = app => Button({
-  on_clicked: () => {
-    Hyprland.messageAsync(`dispatch focuswindow address:${app.address}`)
-      .catch(logError);
-    App.closeWindow("launcher");
-  },
-  attribute: { "app": app },
-  tooltip_text: app.title,
-  class_name: "app-button",
-  child: Box({
-    children: [
-      AppIcon(app),
-      Box({
-        vertical: true,
-        children: [
-          Label({
-            xalign: 0,
-            max_width_chars: 28,
-            truncate: "end",
-            use_markup: true,
-            label: app.title,
-            class_name: "app-name",
-          }),
-          Label({
-            xalign: 0,
-            max_width_chars: 40,
-            truncate: "end",
-            use_markup: true,
-            label: app.class,
-            class_name: "app-description",
-          })
-        ]
-      })
-    ]
-  }),
-})
+const AppButton = app => (
+  <button
+    className={"app-button"}
+    on_clicked={() => {
+      Hyprland.messageAsync(`dispatch focuswindow address:${app.address}`)
+        .catch(logError)
+      App.toggle_window("launcher")
+    }}
+    // attribute={"app": app}
+    tooltip_text={app.title}
+  >
+    <box>
+      {AppIcon(app)}
+      <box
+        vertical={true}
+      >
+        <label
+          class_name={"app-name"}
+          xalign={0}
+          max_width_chars={28}
+          ellipsize={Pango.EllipsizeMode.END}
+          use_markup={true}
+          label={app.title}
+        />
+        <label
+          className={"app-description"}
+          xalign={0}
+          max_width_chars={40}
+          ellipsize={Pango.EllipsizeMode.END}
+          use_markup={true}
+          label={app.class}
+        />
+      </box>
+    </box>
+  </button >
+)
+
   .on("focus-in-event", (self) => {
     self.toggleClassName("focused", true);
   })
@@ -74,8 +76,8 @@ let fzf;
 
 /**
  * @param {string} text
- * @param {import('types/widgets/box').default} results
- */
+    * @param {import('types/widgets/box').default} results
+    */
 function searchApps(text, results) {
   results.children.forEach(c => results.remove(c));
   const fzfResults = fzf.find(text);
@@ -106,22 +108,26 @@ function searchApps(text, results) {
 }
 
 const SearchBox = (launcherState) => {
-  const results = Box({
-    vertical: true,
-    vexpand: true,
-    class_name: "search-results",
-  });
-  const entry = Widget.Entry({
-    class_name: "search-entry",
-    placeholder_text: "search",
-    primary_icon_name: icons.launcher.search,
-  })
-    .on("notify::text", (entry) => searchApps(entry.text || "", results))
+  const results = (
+    <box
+      className={"search-results"}
+      vertical={true}
+      vexpand={true}
+    />
+  )
+
+  const entry = (
+    <entry
+      className={"search-entry"}
+      placeholder_text={"search"
+      } primary_icon_name={Icon.launcher.search}
+    />
+  ).on("notify::text", (entry) => searchApps(entry.text || "", results))
     .on("activate", () => {
       const address = results.children[0]?.attribute.app.address;
       if (address) Hyprland.messageAsync(`dispatch focuswindow address:${address}`)
         .catch(logError);
-      App.closeWindow("launcher");
+      App.toggle_window("launcher");
     })
     .hook(launcherState, () => {
       if (launcherState.value != "Hyprland") return;
@@ -145,18 +151,22 @@ const SearchBox = (launcherState) => {
         entry.text = "";
         entry.grab_focus();
       }
-    }, "window-toggled");
-  return Box({
-    vertical: true,
-    class_name: "launcher-search",
-    children: [
-      entry,
-      Widget.Scrollable({
-        class_name: "search-scroll",
-        child: results
-      })
-    ]
-  });
-};
+    }
+    )
+  return (
+    <box
+      className={"launcher-search"}
+      vertical={true}
+    >
+      {entry}
+      <scrollable
+        className={"search-scroll"}
+      >
+        {results}
+      </scrollable>
+    </box>
+  )
+}
+
 export default SearchBox;
 
